@@ -1,0 +1,13 @@
+def RTM64ChkSUM(pbuffer,Len):
+  """ CheckSum RTM64"""
+  sum = 0
+  i = 0
+  while (i<Len):
+    sum = sum + pbuffer[i]
+    i+=1
+  return sum
+
+cmd_vm = [0x7e,0x03,0xF0,0x0E,0x00,0x52,0x30,0x01,0x80,0x05,0xd0,0x63,0x00,0x3c,0x03,0x7e]  
+ChekSum = RTM64ChkSUM(cmd_vm[1:-3] , len(cmd_vm)-4)
+print (hex(ChekSum))
+

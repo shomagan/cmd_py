@@ -1,25 +1,13 @@
-#7E 03 F0 11 00 46 52 A0 8F 03 70 05 00 10  01 02 56 03 7E 
-#7E 03 F0 11 00 46 52 A0 8F 03 70 05 00 10 01 02 56 03 7E
-#7E 03 F0 11 00 46 52 A0 8F 03 70 05 00 FE 00 32 73 04 7E 
-#7E 03 F0 11 00 46 52 A0 8F 03 70 05 00 FE 00 32 73 04 7E 
-#7E 03 F0 0E 00 56 4D A0 8F 03 70 05 00 4B 03 7E  
-#7E 03 F0 0E 00 56 4D A0 8F 03 70 05 00 4B 03 7E 
-#7E 02 F0 0C 00 56 4D A0 8F 03 00 D3 02 7E 
-
-#7E 02 F0 0F 00 46 52 A0 8F 03 00 10 01 02 DE 02 7E 
-#7E 02 F0 0F 00 46 52 A0 8F 03 00 28 01 02 F6 02 7E 
-
-#7E 03 F0 11 00 46 52 A0 8F 03 70 05 00 03 03 00 01 00 01
 """
-FB_MODBUS_Buffer[0] = IN->MODBUS_Addr.Data.uint8;     
-FB_MODBUS_Buffer[1] = IN->MODBUS_Func.Data.uint8;     
-FB_MODBUS_Buffer[2] = IN->RegAddr.Data.uint16 >> 8;   
-FB_MODBUS_Buffer[3] = IN->RegAddr.Data.uint16 & 0xFF; 
-FB_MODBUS_Buffer[4] = IN->RegNum.Data.uint16 >> 8;    
-FB_MODBUS_Buffer[5] = IN->RegNum.Data.uint16 & 0xFF;  
-CRC = crc16(FB_MODBUS_Buffer, LengthPak-2);
-FB_MODBUS_Buffer[LengthPak-2] = (char)CRC;
-FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
+h_ 
+7E 02 F0 0C 00 68 20 A0 8F 03 00 B8 02 7E 
+h_ 
+7E 02 F0 4C 00 68 20 03 D0 A0 0F 01 00 01 00 00 00 A0 42 00 00 A1 42 CD CC CC 3E 0A D7 23 3C CD CC CC 3D 00 00 00 3F 00 00 00 00 00 00 00 00 40 00 00 00 45 DC 81 42 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F7 0D 7E
+7E 02 F0 4C 00 68 20 03 D0 A0 0F 01 00 01 00 00 00 A0 42 00 00 8C 42 CD CC CC 3E 0A D7 23 3C CD CC CC 3D 00 00 00 3F 00 00 00 00 00 00 00 00 54 00 00 00 F1 8A A8 42 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 77 0E 7E
+H' 
+7E 02 F0 30 00 48 60 A0 8F 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FC 02 7E 
+H' 
+7E 02 F0 0C 00 48 60 03 D0 A0 0F 28 03 7E
 """
 import sys, os, threading, atexit,io,serial
 try:
@@ -46,14 +34,8 @@ def main():
   ser.write("hello")      # write a string
   cmd_en = 0
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x00,0x46,0x52,0xA0,0x8F,0x05,0x70,0x21,0x02,0x03,0x04,0x00,0x01,0x00,0x01]
-#            7E 03   F0   16   00    4D  42    E8   83   B5  7F    21   02   01   03   00  01    00    01 D5 CA FF 05 7E
+  cmd = [0x7E,0x03,0xF0,0x16,0x03,0x46,0x52,0xA0,0x8F,0x03,0x70,0x05,0x00,0x20,0x04,0x00,0x00,0x00,0x04]
   CRC = crc16(cmd[-6:],6)
-  Buff= [0x7E, 0x02, 0xF0, 0x0C, 0x00, 0x56, 0x4D, 0x03, 0x80, 0x05, 0x00 ]
-  ChekSum = RTM64ChkSUM(Buff[1:] , len(Buff)-1)
-  Buff.append(ChekSum&0xFF)
-  Buff.append((ChekSum>>8)&0xFF)
-  print_hex (Buff,len(Buff))
   cmd.append(CRC&0xFF)
   cmd.append((CRC>>8)&0xFF)
   ChekSum = RTM64ChkSUM(cmd[1:] , len(cmd)-1)
@@ -66,6 +48,11 @@ def main():
   cmd_vm = [0x02,0xF0,0x0C,0x00,0x56,0x4D,0xA0,0x8F,0x03,0x00]
   cmd_four = [0xAE,0x08,0x18,0x28]
   cmd_fs = [0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x28,0x01,0x02]
+  cmd_HW = [0x7E,0x02,0xF0,0x30,0x00,0x48,0x60,0xA0,0x8F,0x03,0x00,0x00,0x0F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFC,0x02,0x7E]
+  ChekSum = RTM64ChkSUM(cmd_HW[1:-3] , len(cmd_HW)-4)
+  cmd_HW[-3]=(ChekSum&0xFF)
+  cmd_HW[-2]=((ChekSum>>8)&0xFF)
+
   cmd_s = [0 for x in range(100)]
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
@@ -110,6 +97,10 @@ def main():
         mdb = int_to_char(cmd[-11:-3])
         print (cmd[-11:-3])
         ser.write(mdb)
+      elif q=='h':
+        cmd_HW1 = int_to_char(cmd_HW)
+        print (cmd_HW1)
+        ser.write(cmd_HW1)
 
 #        sys.stderr.write(cmd_mdb)
 def RTM64CRC16(pbuffer , Len):
