@@ -11,6 +11,7 @@ import msvcrt as m
 def main():
   time_start=time.time()
   ser = serial.Serial(1)  # open first serial port
+  ser.baudrate =115200
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -24,22 +25,35 @@ def main():
     sys.stderr.write("could not open port %r: %s\n" % (port, e))
     sys.exit(1)
   cmd_en = 0
+  Packet_class = Packet()
   packet = list(range(0,200))
   log = open('log.log','w')
+  ptr_packet = 0
+  time_packet = time.time()
+  count = 0 
   while 1:
     hello = ser.readline(ser.inWaiting())
+    if (((time.time()-time_packet)>1.0)and cmd_en):
+      cmd_en=0
     if (hello == '~'): 
       if (cmd_en == 0):
+        time_packet = time.time()
         cmd_en = 1
         count = 0
         packet[count] = hello
         count = 1
       else: 
+        time_packet = time.time()
         packet[count] = hello
         cmd_en = 0
         count += 1
-        log.write (char_to_int(packet,count)+'\n')
-        print_hex(char_to_int(packet,count),count)
+        ptr_packet+=1
+        packet_temp = char_to_int(packet,count)
+        print(time.time()-time_start)
+        log.write(str(time.time()-time_start)+'\t')  
+        Packet_class.parser(packet_temp,count,ptr_packet)
+        Packet_class.packet_print(log)
+        
     elif (hello != ''):
       if (len(hello)>1):
         i=0
@@ -58,28 +72,40 @@ def main():
       if q == 'q':
         log.close()
         sys.exit(1)
-      elif q=='f':
-        temp_buff = int_to_char(cmd_FS_FullStart)
-        print_hex (cmd_FS_FullStart,len(cmd_FS_FullStart))
-        ser.write(temp_buff)
 #        sys.stderr.write(cmd_mdb)
 class Packet:
   def __init__(self):
     self.number = 0
     self.comand = "ZZ"
-    self.const = {}
-    self.input_variable = {}
-    self.var_variable   = {}
-    self.out_variable   = {}    
-  def new_var(self,name,address,type_v):
-    if (type_v == 0):
-      self.const[name] = address
-    elif(type_v == 1):      
-      self.input_variable[name] = address
-    elif(type_v == 2):
-      self.out_variable[name] = address
+    self.addres_size = 0
+    self.lenght = 0
+    self.addres = [0 for x in range(5)]
+    self.CRC_in   = 0
+    self.CHSUM_calc   = 0
+    self.CRC_calc   = 0
+    self.CRC_status   = "OK"    
+  def parser(self,packet,lenght,number):
+    self.number = number
+    self.addres_size = packet[1]
+    self.lenght = packet[3]
+    self.comand = (chr(packet[5])+chr(packet[6]))
+    for x in range(self.addres_size):
+      self.addres[x] = (packet[x*2+8]<<8|packet[x*2+7])&0x0FFF 
+    self.CRC_in = (packet[self.lenght]<<8|packet[self.lenght-1])
+    self.CRC_calc = RTM64CRC16(packet[1:],self.lenght-1)
+    self.CHSUM_calc   = RTM64ChkSUM(packet[1:],self.lenght-2)
+    if (self.CRC_in==self.CRC_calc or self.CHSUM_calc==self.CRC_in):
+      self.CRC_status   = "OK"    
     else:
-      self.var_variable[name] = address
+      self.CRC_status   = "Err"    
+  def packet_print(self,log):
+    log.write ('number'+str(self.number)+'\t'+'comm'+str(self.comand))
+    print ('number'+str(self.number)+'comm'+str(self.comand))
+    for x in range(self.addres_size):
+      log.write ('adress'+str(x)+'='+str(self.addres[x])+'\t')
+      print ('adress'+str(x)+'='+str(self.addres[x])+'\t')
+    log.write('CRC'+str(self.CRC_in)+'CRC_calc'+str(self.CRC_calc)+'checksumm'+str(self.CHSUM_calc)+str(self.CRC_status)+'\n')
+    print('CRC'+str(self.CRC_in)+'CRC_calc'+str(self.CRC_calc)+'checksumm'+str(self.CHSUM_calc)+str(self.CRC_status)+'\n')
 
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""
@@ -116,7 +142,7 @@ def RTM64ChkSUM(pbuffer,Len):
     i+=1
   return sum
 def int_to_char(cmd_x):
-  """char to string array confersion"""
+  """char to string array conversion"""
   i = 0
   cmd_r = ['~']
   while (i<len(cmd_x)):
@@ -124,7 +150,7 @@ def int_to_char(cmd_x):
     i+=1
   return cmd_r[1:]
 def char_to_int(cmd_x,lenth):
-  """char to string array confersion"""
+  """char to string array conversion"""
   i = 0
   cmd_r = [0 for x in range(lenth)]
   while (i<lenth):
