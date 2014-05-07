@@ -35,38 +35,34 @@ def main():
     hello = ser.readline(ser.inWaiting())
     if (((time.time()-time_packet)>1.0)and cmd_en):
       cmd_en=0
-    if (hello == '~'): 
-      if (cmd_en == 0):
-        time_packet = time.time()
-        cmd_en = 1
-        count = 0
-        packet[count] = hello
-        count = 1
-      else: 
-        time_packet = time.time()
-        packet[count] = hello
-        cmd_en = 0
-        count += 1
-        ptr_packet+=1
-        packet_temp = char_to_int(packet,count)
-        print(time.time()-time_start)
-        log.write(str(time.time()-time_start)+'\t')  
-        Packet_class.parser(packet_temp,count,ptr_packet)
-        Packet_class.packet_print(log)
-        
-    elif (hello != ''):
-      if (len(hello)>1):
-        i=0
-        while(i<len(hello)):
-          packet[count] = hello[i]
-          i+=1
-          if (count == len(packet)-1): count =0
-          else: count += 1  
-      else:
-        packet[count] = hello
-#        print(char_to_int(hello,1))
+    j=0
+    while(j<len(hello)):
+      if (hello[j] == '~'): 
+        if (cmd_en == 0):
+          time_packet = time.time()
+          cmd_en = 1
+          count = 0
+          packet[count] = hello[j]
+          count = 1
+        else: 
+          time_packet = time.time()
+          packet[count] = hello[j]
+          cmd_en = 0
+          count += 1
+          ptr_packet+=1
+          log = open('log.log','a')
+          packet_temp = char_to_int(packet,count)
+          print(time.time()-time_start)
+          log.write(str(time.time()-time_start)+'\t')  
+          Packet_class.parser(packet_temp,count,ptr_packet)
+          Packet_class.packet_print(log)
+          log.close()
+      elif (hello != '' and cmd_en == 1):
+        packet[count] = hello[j]
+    #    print_hex(char_to_int(hello,1),1)
         if (count == len(packet)-1): count =0
         else: count += 1  
+      j+=1
     if m.kbhit() == 1:
       q = m.getche()
       if q == 'q':
@@ -80,17 +76,25 @@ class Packet:
     self.addres_size = 0
     self.lenght = 0
     self.addres = [0 for x in range(5)]
+    self.addres_state = ['passed' for x in range(5)]
     self.CRC_in   = 0
     self.CHSUM_calc   = 0
     self.CRC_calc   = 0
     self.CRC_status   = "OK"    
   def parser(self,packet,lenght,number):
+    
+    if len(packet)<7: return
     self.number = number
     self.addres_size = packet[1]
+    if self.addres_size>5:self.addres_size = 5
     self.lenght = packet[3]
+    if len(packet)<packet[3]: return    
     self.comand = (chr(packet[5])+chr(packet[6]))
     for x in range(self.addres_size):
-      self.addres[x] = (packet[x*2+8]<<8|packet[x*2+7])&0x0FFF 
+      self.addres[x] = (packet[x*2+8]<<8|packet[x*2+7])&0x0FFF
+      if((packet[x*2+8]<<8|packet[x*2+7])&0x8000):
+        self.addres_state[x] = 'passed'
+      else:self.addres_state[x] = 'fails'
     self.CRC_in = (packet[self.lenght]<<8|packet[self.lenght-1])
     self.CRC_calc = RTM64CRC16(packet[1:],self.lenght-1)
     self.CHSUM_calc   = RTM64ChkSUM(packet[1:],self.lenght-2)
@@ -99,11 +103,11 @@ class Packet:
     else:
       self.CRC_status   = "Err"    
   def packet_print(self,log):
-    log.write ('number'+str(self.number)+'\t'+'comm'+str(self.comand))
-    print ('number'+str(self.number)+'comm'+str(self.comand))
+    log.write ('number'+str(self.number)+'\t'+'comm'+str(self.comand)+'\t')
+    print ('number'+str(self.number)+'\t'+'comm'+str(self.comand)+'\t')
     for x in range(self.addres_size):
-      log.write ('adress'+str(x)+'='+str(self.addres[x])+'\t')
-      print ('adress'+str(x)+'='+str(self.addres[x])+'\t')
+      log.write ('adress'+str(x)+'='+str(self.addres[x])+'\t'+self.addres_state[x]+'\t')
+      print ('adress'+str(x)+'='+str(self.addres[x])+'\t'+self.addres_state[x]+'\t')
     log.write('CRC'+str(self.CRC_in)+'CRC_calc'+str(self.CRC_calc)+'checksumm'+str(self.CHSUM_calc)+str(self.CRC_status)+'\n')
     print('CRC'+str(self.CRC_in)+'CRC_calc'+str(self.CRC_calc)+'checksumm'+str(self.CHSUM_calc)+str(self.CRC_status)+'\n')
 
