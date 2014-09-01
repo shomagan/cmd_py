@@ -22,6 +22,7 @@ def main():
   except serial.SerialException as e:
     sys.stderr.write("could not open port %r: %s\n" % (port, e))
     sys.exit(1)
+  ser.baudrate = 115200;
   ser.write("hello")      # write a string
   cmd_en = 0
   cmd_FS_stop = [0x7E,0x02,0xF0,0x10,0x00,0x46,0x53,0xA0,0x8F,0x03,0x00,0x36,0x00,0xE3,0x15]
@@ -39,7 +40,7 @@ def main():
   cmd_FS_FullStop.append(ChekSum&0xFF)
   cmd_FS_FullStop.append((ChekSum>>8)&0xFF)
   cmd_FS_FullStop.append(0x7e)
-  cmd_FS_FullStart = [0x7E,0x02,0xF0,0x10,0x00,0x46,0x53,0xA0,0x8F,0x03,0x00,0x36,0x00,0xE1,0x15]  
+  cmd_FS_FullStart = [0x7E,0x02,0xF0,0x10,0x00,0x46,0x53,0xA0,0x8F,0x03,0x00,0x36,0x00,0xE2,0x15]  
   ChekSum = RTM64ChkSUM(cmd_FS_FullStart[1:] , len(cmd_FS_FullStart)-1)
   cmd_FS_FullStart.append(ChekSum&0xFF)
   cmd_FS_FullStart.append((ChekSum>>8)&0xFF)
@@ -59,7 +60,19 @@ def main():
   cmd_FR_0.append(ChekSum&0xFF)
   cmd_FR_0.append((ChekSum>>8)&0xFF)
   cmd_FR_0.append(0x7e)
+  cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x03,0x00,0x04]  
+  ChekSum = RTM64ChkSUM(cmd_FR_T[1:] , len(cmd_FR_T)-1)
+  cmd_FR_T.append(ChekSum&0xFF)
+  cmd_FR_T.append((ChekSum>>8)&0xFF)
+  cmd_FR_T.append(0x7e)
+  cmd_FS_IP = [0x7E,0x02,0xF0,0x10,0x00,0x46,0x53,0xA0,0x8F,0x03,0x00,0x08,0x00,0x01,0xEC]  #0xC0,0xA8]#
+  ChekSum = RTM64ChkSUM(cmd_FS_IP[1:] , len(cmd_FS_IP)-1)
+  cmd_FS_IP.append(ChekSum&0xFF)
+  cmd_FS_IP.append((ChekSum>>8)&0xFF)
+  cmd_FS_IP.append(0x7e)
+
   cmd_s = list(range(0,200))
+
   while 1:
     hello = ser.readline(ser.inWaiting())
     if (hello == '~'): 
@@ -114,7 +127,15 @@ def main():
         temp_buff = int_to_char(cmd_FR_0)
         print (cmd_FR_0)
         ser.write(temp_buff)
-
+      elif q=='t':
+        temp_buff = int_to_char(cmd_FR_T)
+        print (cmd_FR_T)
+        ser.write(temp_buff)
+      elif q=='i':
+        temp_buff = int_to_char(cmd_FS_IP)
+        print (cmd_FS_IP)
+        ser.write(temp_buff)
+           
 #        sys.stderr.write(cmd_mdb)
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""

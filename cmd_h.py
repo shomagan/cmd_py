@@ -1,3 +1,4 @@
+#!/c/Python33/ python
 """
 h_ 
 7E 02 F0 0C 00 68 20 A0 8F 03 00 B8 02 7E 
@@ -15,9 +16,17 @@ try:
 except ImportError:
     comports = None
 import msvcrt as m
+import tkinter as tk
 #def hextoascii():
 
 def main():
+  def onKeyPress(event):
+    #cmd_HW1 = int_to_char(cmd_HW)
+    print(cmd_HW)
+    ser.write(cmd_HW)
+  def quitKeyPress(event):
+    sys.exit(1)
+
   ser = serial.Serial(1)  # open first serial port
   print (ser.name)          # check which port was really used
   try:
@@ -31,7 +40,7 @@ def main():
   except serial.SerialException as e:
     sys.stderr.write("could not open port %r: %s\n" % (port, e))
     sys.exit(1)
-  ser.write("hello")      # write a string
+#  ser.write("hello")      # write a string
   cmd_en = 0
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
   cmd = [0x7E,0x03,0xF0,0x16,0x03,0x46,0x52,0xA0,0x8F,0x03,0x70,0x05,0x00,0x20,0x04,0x00,0x00,0x00,0x04]
@@ -55,6 +64,14 @@ def main():
 
   cmd_s = [0 for x in range(100)]
   count = 0
+  root = tk.Tk()
+#  root.geometry('300x200')
+#  text = tk.Text(root, background='black', foreground='white', font=('Comic Sans MS', 12))
+#  text.pack()
+  root.bind('h', onKeyPress)
+  root.bind('q', quitKeyPress)
+  root.mainloop()
+
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
   while 1:
@@ -85,8 +102,6 @@ def main():
         else: count += 1  
     if m.kbhit() == 1:
       q = m.getche()
-      if q == 'q':
-        sys.exit(1)
       elif q=='w':
 #        cmd_VM_str =str(int(0x7E,16),int(0x02,16),int(0xF0,16),int(0x0C,16),int(0x00,16),int(0x56,16),int(0x4D,16),
 #                      int(0xA0,16),int(0x8F,16),int(0x08,16),int(0x00,16),int(0xD3,16),int(0x02,16),int(0x7E,16))  
@@ -97,12 +112,10 @@ def main():
         mdb = int_to_char(cmd[-11:-3])
         print (cmd[-11:-3])
         ser.write(mdb)
-      elif q=='h':
-        cmd_HW1 = int_to_char(cmd_HW)
-        print (cmd_HW1)
-        ser.write(cmd_HW1)
 
 #        sys.stderr.write(cmd_mdb)
+
+
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""
   CRC = 0x0000

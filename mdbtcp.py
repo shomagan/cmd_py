@@ -24,7 +24,7 @@ FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
 """
 add addres property befor start program
 """
-import sys, os, threading, atexit,io,serial
+import sys, os, threading,socket,atexit,io,serial,time
 try:
     from serial.tools.list_ports import comports
 except ImportError:
@@ -46,15 +46,19 @@ def main():
   except serial.SerialException as e:
     sys.stderr.write("could not open port %r: %s\n" % (port, e))
     sys.exit(1)
+  ser.baudrate = 115200;
   ser.write("hello")      # write a string
-#  ser.baudrate = 115200;
-  ser.stopbits = 1
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x00,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02, 0x03,0x03,0x00,0x1e,0x00,0x04]
+  cmd = [0x7E,0x03,0xF0,0x16,0x00,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x06]
+  mdbtcp = [0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x80,0x00,0x06]
+  cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x03,0x00,0x04]  
+  ChekSum = RTM64ChkSUM(cmd_FR_T[1:] , len(cmd_FR_T)-1)
+  cmd_FR_T.append(ChekSum&0xFF)
+  cmd_FR_T.append((ChekSum>>8)&0xFF)
+  cmd_FR_T.append(0x7e)
+
 #            7E 03   F0   16   00    4D  42    E8   83   B5  7F    21   02   01   03   00  01    00    01 D5 CA FF 05 7E
-  MdbWrite = [0x03,0x06,0x00,0x1F,0x00,0x60,0x00,0x00]
-  MdbKskn = [0x01,0x03,0x00,0x02,0x00,0x04,0x00,0x00]
   CRC = crc16(cmd[-6:],6)
   Buff= [0x7E, 0x02, 0xF0, 0x0C, 0x00, 0x56, 0x4D, 0x03, 0x80, 0x05, 0x00 ]
   ChekSum = RTM64ChkSUM(Buff[1:] , len(Buff)-1)
@@ -77,9 +81,15 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
+  TCP_IP = '192.168.1.232'
+  TCP_PORT = 502
+  BUFFER_SIZE = 1024
+  MESSAGE = "Hello, World!"
+  s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
   while 1:
     hello = ser.readline(ser.inWaiting())
-#    hello = ser.readline()
+
     if (hello == '~'): 
       if (cmd_en == 0):
         cmd_en = 1
@@ -108,6 +118,7 @@ def main():
     if m.kbhit() == 1:
       q = m.getche()
       if q == 'q':
+        s.close()
         sys.exit(1)
       elif q=='w':
 #        cmd_VM_str =str(int(0x7E,16),int(0x02,16),int(0xF0,16),int(0x0C,16),int(0x00,16),int(0x56,16),int(0x4D,16),
@@ -119,31 +130,37 @@ def main():
         mdb = int_to_char(cmd[-11:-3])
         print (cmd[-11:-3])
         ser.write(mdb)
-      elif q=='t':#test modbus adreess
-        for x in range(250):
-          MdbKskn[0] = x
-          CRC = crc16(MdbKskn[0:6],6)
-          MdbKskn[ 6]=(CRC&0xFF)
-          MdbKskn[7]=((CRC>>8)&0xFF)
-          mdb = int_to_char(MdbKskn[0:8])
-          print (MdbKskn[0:8])
-          ser.write(mdb)
-      elif q=='k':#test modbus adreess
-        CRC = crc16(MdbKskn[0:6],6)
-        MdbKskn[6]=(CRC&0xFF)
-        MdbKskn[7]=((CRC>>8)&0xFF)
-        mdb = int_to_char(MdbKskn[0:8])
-        print (MdbKskn[0:8])
-        ser.write(mdb)
-      elif q=='y':#test modbus adreess
-        CRC = crc16(MdbWrite[0:6],6)
-        MdbWrite[6]=(CRC&0xFF)
-        MdbWrite[7]=((CRC>>8)&0xFF)
-        mdb = int_to_char(MdbWrite[0:8])
-        print (MdbWrite[0:8])
-        ser.write(mdb)
-
-
+      elif q=='c':
+        s.connect((TCP_IP, TCP_PORT))
+      elif q=='t':
+        mdb = int_to_char(mdbtcp)
+        mdbtcp_s=''
+        for i in range(0,len(mdb)):
+            mdbtcp_s=mdbtcp_s+mdb[i]
+        s.send(mdbtcp_s)
+        time_start=time.time()
+        s.settimeout(4)
+        data_s = s.recv(BUFFER_SIZE)
+        time_pr=time.time() - time_start
+        data = char_to_int(data_s,len(data_s))
+        kerneltime = (data[9]<<8|data[10])/10
+        print (data)
+        print(kerneltime,'ms')
+        print(time_pr,'ms')
+      elif q=='f':
+        mdb = int_to_char(cmd_FR_T)
+        mdbtcp_s=''
+        for i in range(0,len(mdb)):
+            mdbtcp_s=mdbtcp_s+mdb[i]
+        s.send(mdbtcp_s)
+        time_start=time.time()
+        s.settimeout(4)
+        data_s = s.recv(BUFFER_SIZE)
+        time_pr=time.time() - time_start
+        data = char_to_int(data_s,len(data_s))
+        kerneltime = (data[9]<<8|data[10])/10
+        print (data)
+        print(time_pr,'ms')
 
 
 #        sys.stderr.write(cmd_mdb)
