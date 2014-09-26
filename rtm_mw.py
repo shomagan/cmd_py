@@ -33,16 +33,17 @@ except ImportError:
     comports = None
 import msvcrt
 #def hextoascii():
-def ComList(ser):
+def ComList(ser,a):
   while(1):
     hello = ser.read(1)
     if (hello != ''):
+      a+=1
       #print(char_to_int(hello,len(hello)))
-      print(ord(hello))
+      print(hello)
 def main():
   ser = serial.Serial(1)  # open first serial port
   port = 1
-#  ser.baudrate = 115200;
+  ser.baudrate = 115200;
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -54,16 +55,16 @@ def main():
     ))
   except serial.SerialException as e:
     sys.stderr.write("could not open port %r: %s\n" % (port, e))
-    sys.exit(1)
+#    sys.exit(1)
   hello = 'hello'
-  ser.write(serial.to_bytes([4]))      # write a string
+  ser.write(serial.to_bytes([4]))
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
+  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x01]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
   mdbtcp = [0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x80,0x00,0x06]
-  cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x00,0x01,0x02]  
+  cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x03,0x00,0x04]  
   ChekSum = RTM64ChkSUM(cmd_FR_T[1:] , len(cmd_FR_T)-1)
   cmd_FR_T.append(ChekSum&0xFF)
   cmd_FR_T.append((ChekSum>>8)&0xFF)
@@ -100,9 +101,13 @@ def main():
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  thread.start_new_thread(ComList, (ser, ))
+  a = 0
+  thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  print(ord('q'))
+  chan = 0x01
+  data = [0x01,0x0b,0x00]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  Packet = RTM_MW(chan,data)  
+
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -124,44 +129,123 @@ def main():
       mdb = cmd[-11:-3]
       print (cmd[-11:-3])
       ser.write(mdb)
+    elif ord(q)==97:#a
+      Packet.SendPacket(ser)
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
+    elif ord(q)==115:#s
+      Packet.SendTcpPacket(s,BUFFER_SIZE)
     elif ord(q)==116:#t
-      mdb = mdbtcp
-      mdbtcp_s=''
-      for i in range(0,len(mdb)):
-          mdbtcp_s=mdbtcp_s+mdb[i]
+      mdbtcp_s=bytearray(mdbtcp[0:])
+      print(mdbtcp_s)
       s.send(mdbtcp_s)
       time_start=time.time()
       s.settimeout(4)
-      data_s = s.recv(BUFFER_SIZE)
+      data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
-      data = char_to_int(data_s,len(data_s))
-      kerneltime = (data[9]<<8|data[10])/10
+#      kerneltime = (data[9]<<8|data[10])/10
       print (data)
-      print(kerneltime,'ms')
-      print(time_pr,'ms')
+ #     print(kerneltime,'ms')
+      print(time_pr,'s')
     elif ord(q)==102:#f
-      mdb = int_to_char(cmd_FR_T)
-      mdbtcp_s=''
-      for i in range(0,len(mdb)):
-          mdbtcp_s=mdbtcp_s+mdb[i]
+      mdbtcp_s=bytearray(cmd_fr[0:])
       s.send(mdbtcp_s)
       time_start=time.time()
       s.settimeout(4)
-      data_s = s.recv(BUFFER_SIZE)
+      data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
-      data = char_to_int(data_s,len(data_s))
       kerneltime = (data[9]<<8|data[10])/10
       print(data)
       print(time_pr,'ms')
   #        sys.stderr.write(cmd_mdb)
+class RTM_MW(object):
+  def __init__(self,Chan,Data):
+    self.Kod = 250
+    self.Len = [0x00,0x00]
+    self.RetranNum = 0
+    self.Flag = 0x02
+    self.MyAdd = [0x05,0x00,0x00]
+    self.MyAdd[2] = Chan
+    self.DestAdd = [0x04,0x00,0x00]
+    self.DestAdd[2] = Chan
+    self.Tranzaction  = 1
+    self.PacketNumber = 1
+    self.PacketItem   = 1
+    self.Data=Data
+
+  def SendPacket(self,ser):
+    Packet = [self.Kod]
+    Packet.append(self.Len[0])
+    Packet.append(self.Len[1])
+    Packet.append(self.RetranNum)
+    Packet.append(self.Flag)
+    Packet.append(self.MyAdd[0])
+    Packet.append(self.MyAdd[1])
+    Packet.append(self.MyAdd[2])
+    Packet.append(self.DestAdd[0])
+    Packet.append(self.DestAdd[1])
+    Packet.append(self.DestAdd[2])
+    Packet.append(self.Tranzaction)
+    Packet.append(self.PacketNumber)
+    Packet.append(self.PacketItem)
+    for i in range(0,len(self.Data)):
+      Packet.append(self.Data[i])
+    lenght = len(Packet)
+    lenght+=2
+    self.Len[0] = lenght&0xFF 
+    self.Len[1] = (lenght>>8)&0xFF
+    Packet[1] = self.Len[0]
+    Packet[2] = self.Len[1]
+    CRC = RTM64CRC16(Packet, len(Packet))
+    Packet.append(CRC&0xFF)
+    Packet.append((CRC>>8)&0xFF)
+    print(Packet)
+    ser.write(Packet)
+  def SendTcpPacket(self,s,BUFFER_SIZE):
+    Packet = [self.Kod]
+    Packet.append(self.Len[0])
+    Packet.append(self.Len[1])
+    Packet.append(self.RetranNum)
+    Packet.append(self.Flag)
+    Packet.append(self.MyAdd[0])
+    Packet.append(self.MyAdd[1])
+    Packet.append(self.MyAdd[2])
+    Packet.append(self.DestAdd[0])
+    Packet.append(self.DestAdd[1])
+    Packet.append(self.DestAdd[2])
+    Packet.append(self.Tranzaction)
+    Packet.append(self.PacketNumber)
+    Packet.append(self.PacketItem)
+    for i in range(0,len(self.Data)):
+      Packet.append(self.Data[i])
+    lenght = len(Packet)
+    lenght+=2
+    self.Len[0] = lenght&0xFF 
+    self.Len[1] = (lenght>>8)&0xFF
+    Packet[1] = self.Len[0]
+    Packet[2] = self.Len[1]
+    CRC = RTM64CRC16(Packet, len(Packet))
+    Packet.append(CRC&0xFF)
+    Packet.append((CRC>>8)&0xFF)
+    Packet_str = bytearray(Packet[0:])
+    print(Packet_str)
+    time_start=time.time()
+    s.send(Packet_str)
+    s.settimeout(4)
+    data = s.recv(BUFFER_SIZE)
+    time_pr=time.time() - time_start
+#    data = char_to_int(data_s,len(data_s))
+    print (data)
+    print(time_pr,'s')
+
+    
+
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""
   CRC = 0x0000
   k = 0
   while (k < Len):
-    CRC = (CRC^(((pbuffer[k])<<8)&0xFFFF))
+    CRC = (CRC^((pbuffer[k]<<8)&0xFFFF))
     k+=1
     i=8
     while (i):
@@ -198,6 +282,22 @@ def int_to_char(cmd_x):
     cmd_r += chr(int(cmd_x[i]))
     i+=1
   return cmd_r[1:]
+def list_to_str(cmd_x):
+  """char to string array confersion"""
+  i = 0
+  cmd_r = ''
+  while (i<len(cmd_x)):
+    cmd_r += chr(int(cmd_x[i]))
+    i+=1
+  return cmd_r
+def str_to_int(cmd_x,lenth):
+  i = 0
+  cmd_r = [0 for x in range(lenth)]
+  while (i<lenth):
+    cmd_r[i]=ord(cmd_x[i])
+    i+=1
+  return cmd_r
+
 def char_to_int(cmd_x,lenth):
   i = 0
   cmd_r = [0 for x in range(lenth)]
