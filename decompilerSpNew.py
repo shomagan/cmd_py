@@ -1,5 +1,5 @@
 #!/c/Python33/ python
-import sys, os, threading, atexit,io,time
+import sys, os, threading, atexit,io,time,re
 import msvcrt as m
 from struct import *
 def main():
@@ -7,79 +7,149 @@ def main():
   HtmlFile = open ('sp.shtml','w')
   TagStructFile = open ('struct.pat','w')      
   OwnVariableFile = open('ownvariablname.pat','w')
-  Vars = open('vars.h','r')
-  TempC = open('ownvariablname.c','r')
+  Vars = open('vars.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
+  struct = 0
   #WorkHtml.write(TempHtml.readline())
   #WorkHtml.write(TempHtml.())
   for i in range(27):
     HtmlFile.writelines(TempHtml.readline())
-
-  struct = 0
-  start  = 0
-  finish = 0
-  first = 1
-  cnt = 0
-  for linefull in TempC:
+  OwnVariableFile.writelines('NetworkFlashVariable_t const NetworkFlashVariable[INTERNAL_VAR_NUM ]={'+'\n')
+  for linefull in Vars:
+#    line_x = Vars.readline()
     if('//' in linefull):
       start = linefull.find('//')
       line = linefull[:start]
     else:
       line = linefull
-    if 'NetworkFlashVariable_t' in line:
+    p = re.compile('\WMyAdr\W')
+#    print(re.search(p,line))
+#    print(linefull)
+    if re.search(p,line):
       struct = 1
+      SP_b = SP()
     if (struct == 1):
-
-      if ('"'in line)&(first ==0):
-        start = line.find('"')
-        finish = line.find('"',start+1)
-        name = line[start+1:finish]
-        #HtmlFile.write('<span style="font-family: Verdana;"></span><span style="font-family: Verdana;"></span>'+'\n')
-        HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
-        HtmlFile.write('<tbody>'+'\n')
-        HtmlFile.write('<tr>'+'\n')
-        HtmlFile.write('<td style="width: 100px;font-weight: bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
-        HtmlFile.write(name+'\n')
-        HtmlFile.write('</span> </small></td>'+'\n')
-        HtmlFile.write('<td style="font-style: italic;font-family: Verdana;background-color: rgb(0, 251, 213);"><span style="color: black ;"><!--#'+str(cnt)+'--></span></td>'+'\n')
-        HtmlFile.write('</tr>'+'\n')
-        HtmlFile.write('</tbody>'+'\n')
-        HtmlFile.write('</table>'+'\n')
-        TagStructFile.write ('"'+str(cnt)+'"'+','+'//'+name+'\n')
-        cnt +=1
-        first = 1
-      if (('NULL'in line)|('MAC_ADD' in line))&(first ==1):
-        first = 0
-    else:
-      OwnVariableFile.write(linefull)
+    #  print(line_x)
+      SP_b.check(linefull)
+      SP_b.save(OwnVariableFile,HtmlFile,TagStructFile)
     if (struct == 1 & ('}'in line)):
         struct = 0
+  OwnVariableFile.writelines('};')
   for i in range(10):
     line = TempHtml.readline()
   for i in range(11):
     HtmlFile.writelines(TempHtml.readline())
   TagStructFile.close()
   HtmlFile.close()
-  TempC.close()
+  OwnVariableFile.close()
   TempHtml.close()
-
-class FB:
+  Vars.close()
+  input ("exit")
+class SP:
   def __init__(self):
-    self.number = 0
-    self.name = "noname"
-    self.const = {}
-    self.input_variable = {}
-    self.var_variable   = {}
-    self.out_variable   = {}    
-  def new_var(self,name,address,type_v):
-    if (type_v == 0):
-      self.const[name] = address
-    elif(type_v == 1):      
-      self.input_variable[name] = address
-    elif(type_v == 2):
-      self.out_variable[name] = address
+    self.pDefault = "NULL"
+    self.Name = "noname"
+    self.InternalName = "noname"
+    self.Type = "Kod"
+    self.Ind =  0
+    self.GuID = 0
+    self.SizeArray = 0
+    self.Flag = 0x00
+    self.description = "//"
+    self.opt = 0
+  def check(self,line):
+    self.SizeArray = 1
+    w = re.compile('^\s*(?P<type>[\w\d]+)\s+(?P<name>[\w\d]+)\s*(\[(?P<size>[\d\w]+)\])?\s*\;\s*(?P<descript>\/\/[\w\W]*$)*',re.ASCII)
+    test = w.match(line)
+    if test:
+      l = w.search(line)
+      self.Name = l.group('name')
+      self.InternalName = l.group('name')
+      if(l.group('descript')):
+        self.description = l.group('descript')
+        print (l.group('descript'))
+      p = re.compile('v?u8',re.ASCII)
+
+      m = p.match(l.group('type'))
+      if m:
+        self.Type = "KodInt8"
+      else:
+        p = re.compile('v?[us]16')
+        m = p.match(l.group('type'))
+        if m:
+          self.Type = "KodInt16"
+        else:
+          p = re.compile("v?u32"
+                         "|sCfgUpdateErrorFlags"
+                         "|sKernelErrorFlags"
+                         "|sKernelEventFlags" 
+                         )
+          m = p.match(l.group('type'))
+          if m:
+            self.Type = "KodInt32"
+          else:
+            p = re.compile('Int64U')
+            m = p.match(l.group('type'))
+            if m:
+              self.Type = "KodInt32"
+              self.SizeArray = 2
+            else:
+              p = re.compile('[^\W]Flo32\W')
+              m = p.match(l.group('type'))
+              if m:
+                self.Type = "KodFloat32"
+              else:
+                self.Type = "Kod"
+                self.SizeArray = 0
+      if (l.group('size')):
+        if(l.group('size')=="LenNumDI"):
+          self.SizeArray = 18
+        elif(l.group('size')=="ChanelCount"):
+          self.SizeArray = 9
+        else:
+          self.SizeArray = int(l.group('size'))*self.SizeArray
+
     else:
-      self.var_variable[name] = address
+#      print(line)
+      self.SizeArray = 0
+#    print(l.group('size'))
+ #     print(self.SizeArray)
+
+    self.Flag = 0x00
+
+  def save(self,OwnVariableFile,HtmlFile,TagStructFile):
+    if(self.SizeArray>0):
+#      print(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(self.GuID)+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+',')
+#      print(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(self.GuID)+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+',')
+      OwnVariableFile.writelines(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(int(self.GuID))+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+'\n')
+      HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
+      HtmlFile.write('<tbody>'+'\n')
+      HtmlFile.write('<tr>'+'\n')
+      HtmlFile.write('<td style="width: 100px;font-weight: bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
+      HtmlFile.write(self.Name+'\n')
+      HtmlFile.write('</span> </small></td>'+'\n')
+      HtmlFile.write('<td style="font-style: italic;font-family: Verdana;background-color: rgb(0, 251, 213);"><span style="color: black ;"><!--#'+str(self.Ind)+'--></span></td>'+'\n')
+      HtmlFile.write('</tr>'+'\n')
+      HtmlFile.write('</tbody>'+'\n')
+      HtmlFile.write('</table>'+'\n')
+      TagStructFile.write ('"'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
+      self.Ind += 1
+      if(self.Type =="KodInt8"):
+        if(self.SizeArray==1):
+          if (self.opt==0):
+            self.GuID = self.GuID
+            self.opt = 1
+          else:
+            self.GuID +=1
+            self.opt = 0
+        else:
+          self.GuID = self.GuID + (self.SizeArray/2)
+      if(self.Type =="KodInt16"):
+        self.opt = 0
+        self.GuID +=(self.SizeArray)
+      if(self.Type =="KodInt32")|(self.Type =="KodFloat32"):
+        self.opt = 0
+        self.GuID +=(self.SizeArray*2)
 def find_name(number):
   fb_name = open('fb_name.txt','r')
   current = 0

@@ -57,24 +57,7 @@ def main():
   Work.close()
   TempC.close()
   TempHtml.close()
-
-class FB:
-  def __init__(self):
-    self.number = 0
-    self.name = "noname"
-    self.const = {}
-    self.input_variable = {}
-    self.var_variable   = {}
-    self.out_variable   = {}    
-  def new_var(self,name,address,type_v):
-    if (type_v == 0):
-      self.const[name] = address
-    elif(type_v == 1):      
-      self.input_variable[name] = address
-    elif(type_v == 2):
-      self.out_variable[name] = address
-    else:
-      self.var_variable[name] = address
+ 
 def find_name(number):
   fb_name = open('fb_name.txt','r')
   current = 0

@@ -231,11 +231,11 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [4,0,0x00]
+    self.DestAdd = [12,0,0x00]
     self.DestAdd[2] = 2
-  #  self.DestAddEnd = [202,0,0x00]
-#    self.DestAddEnd = [0xeb,0x03,0]
-    self.DestAddEnd = [202,0x00,0]
+ #   self.DestAddEnd = [202,0,0x00]
+    self.DestAddEnd = [0xeb,0x03,0]
+#    self.DestAddEnd = [202,0x00,0]
     self.DestAddEnd[2] = 2
     self.Tranzaction  = 1
     self.PacketNumber = 1
