@@ -63,8 +63,8 @@ class SP:
     test = w.match(line)
     if test:
       l = w.search(line)
-      self.Name = l.group('name')
-      self.InternalName = l.group('name')
+      self.Name = '"'+l.group('name')+'"'
+      self.InternalName ='"'+l.group('name')+'"'
       if(l.group('descript')):
         self.description = l.group('descript')
         print (l.group('descript'))
