@@ -33,32 +33,32 @@ except ImportError:
     comports = None
 import msvcrt
 #def hextoascii():
-def ComList(ser,a):
-  while(1):
-    hello = ser.read(1)
-    if (hello != ''):
-      a+=1
+#def ComList(ser,a):
+ # while(1):
+  #  hello = ser.read(1)
+   # if (hello != ''):
+    #  a+=1
       #print(char_to_int(hello,len(hello)))
-      print(hello,ord(hello))
+     # print(hello,ord(hello))
 
 def main():
-  ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
-  print (ser.name)          # check which port was really used
-  try:
-    sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
-      ser.portstr,
-      ser.baudrate,
-      ser.bytesize,
-      ser.parity,
-      ser.stopbits,
-    ))
-  except serial.SerialException as e:
-    sys.stderr.write("could not open port %r: %s\n" % (port, e))
-    sys.exit(1)
-  hello = 'hello'
+#  ser = serial.Serial(1)  # open first serial port
+#  ser.baudrate =115200
+#  print (ser.name)          # check which port was really used
+ # try:
+  #  sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
+  #    ser.portstr,
+   #   ser.baudrate,
+    #  ser.bytesize,
+    #  ser.parity,
+    #  ser.stopbits,
+    #))
+ # except serial.SerialException as e:
+  #  sys.stderr.write("could not open port %r: %s\n" % (port, e))
+   # sys.exit(1)
+ # hello = 'hello'
 
-  ser.write(serial.to_bytes([4]))
+ # ser.write(serial.to_bytes([4]))
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
   cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x01]
@@ -98,16 +98,16 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.243'
+  TCP_IP = '192.168.1.240'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   a = 0
-  thread.start_new_thread(ComList, (ser,a ))
+  #thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,0,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [2,1,0]#,81,,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data_p = [0x01,90,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
   Packet.Chan = 0x01
 
@@ -135,12 +135,9 @@ def main():
     elif ord(q)==97:#a
       Packet.SendPacket(ser,0)
     elif ord(q)==43:#+
-      data_p[1] += 1
       Packet_p = RTM_MW(data_p)  
-      try:
-        Packet_p.SendPacket(s,1)
-      except OSError:
-        print ("Can't send tcp Packet")
+      Packet_p.SendPacket(ser,0)
+      data_p[1] += 1
 
     elif ord(q)==99:#c
       try:
@@ -148,21 +145,34 @@ def main():
       except TimeoutError:
         print (time.asctime())
         print ("mega12 not TCP connected ")
-        error_log = open('error_log_rv.txt','a')
+        error_log = open('error_log_TCP_2.txt','a')
         error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
         error_log.close()
       except ConnectionAbortedError:
         print (time.asctime())
         print ("mega12 connect aborted TCP")
-        error_log = open('error_log_rv.txt','a')
+        error_log = open('error_log_TCP_2.txt','a')
         error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
         error_log.close()
         s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==115:#s
       try:
-        Packet.SendPacket(s,1)
+        data_buf = Packet.SendPacket(s,1)
       except OSError:
         print ("Can't send tcp Packet")
+      if data_buf:
+        str_temp = Packet.ChekPacket(data_buf)
+        if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!=3 or Packet.DataInPacket[2]!=0):
+          str_temp += 'DataInPacket_Error'
+        if(len(Packet.DataInPacket)!=3):
+          str_temp += 'DataInPacket_Error'
+        if str_temp:
+          print(Packet.DataInPacket)
+          print(str_temp)
+          error_log = open('error_log_TCP_2.txt','a')
+          error_log.write (str_temp+time.asctime()+'\n')
+          error_log.close()
+
     elif ord(q)==104:#h
       data = [0x01]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
       for i in range(11):
@@ -174,10 +184,10 @@ def main():
     elif ord(q)==108:#l
       while(1):
         try:
-          Packet.SendPacket(s,1)
+          data_buf = Packet.SendPacket(s,1)
         except OSError:
           print ("Can't send tcp Packet")
-          error_log = open('error_log_rv.txt','a')
+          error_log = open('error_log_TCP_2.txt','a')
           error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
           error_log.close()
           try:
@@ -187,16 +197,27 @@ def main():
           except TimeoutError:
             print (time.asctime())
             print ("mega12 not TCP connected ")
-            error_log = open('error_log_rv.txt','a')
+            error_log = open('error_log_TCP_2.txt','a')
             error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
             error_log.close()
           except ConnectionAbortedError:
             print (time.asctime())
             print ("mega12 connect aborted TCP")
-            error_log = open('error_log_rv.txt','a')
+            error_log = open('error_log_TCP_2.txt','a')
             error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
             erro_log.close()
             s.connect((TCP_IP, TCP_PORT))
+        if data_buf:
+          str_temp = Packet.ChekPacket(data_buf)
+          if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!=3 or Packet.DataInPacket[2]!=0):
+            str_temp += 'DataInPacket_Error'
+          if(len(Packet.DataInPacket)!=3):
+            str_temp += 'DataInPacket_Error'
+          if str_temp:
+            print(str_temp)
+            error_log = open('error_log_TCP_2.txt','a')
+            error_log.write (str_temp+time.asctime()+'\n')
+            error_log.close()
         print (time.asctime())
         time.sleep(0.1)
         if(msvcrt.kbhit()):
@@ -228,19 +249,14 @@ class RTM_MW(object):
   def __init__(self,Data):
     self.Kod = 250
     self.Len = [0x00,0x00]
-    self.RetranNum = 1
-    self.Flag = 0x0
+    self.RetranNum = 0
+    self.Flag = 0x00
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAddEnd = [202,0,0x00]
-    
-#    self.DestAddEnd = [0xd9,0x01,0x00]
-#    self.DestAddEnd = [0xeb,0x03,0]
-    self.DestAdd = [200,0,0]
-    self.DestAdd[2] = 7
-    self.DestAddEnd[2] = 7
-    self.Tranzaction  = 1
+    self.DestAdd = [5,0,0x00]
+    self.DestAdd[2] = 2
+    self.Tranzaction  = 0xe4
     self.PacketNumber = 1
     self.PacketItem   = 1
     self.Instruction  = 1
@@ -261,9 +277,6 @@ class RTM_MW(object):
     Packet.append(self.DestAdd[0])
     Packet.append(self.DestAdd[1])
     Packet.append(self.DestAdd[2])
-    Packet.append(self.DestAddEnd[0])
-    Packet.append(self.DestAddEnd[1])
-    Packet.append(self.DestAddEnd[2])
     Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)
@@ -278,6 +291,7 @@ class RTM_MW(object):
     CRC = RTM64CRC16(Packet, len(Packet))
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
+    data_s =[]
     if (type == 1):
       Packet_str = bytearray(Packet[0:])
       print(Packet_str)
@@ -289,24 +303,64 @@ class RTM_MW(object):
         data = s.recv(BUFFER_SIZE)
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
-#        data = char_to_int(data,len(data))
-        data_s =[]
+  #    data = char_to_int(data_s,len(data_s))
         for i in range(0,len(data)):
           data_s.append(data[i])
-        print(data,self.OkReceptionCnt)
+   #     data_s = "".join(data)
+        print (data_s,self.OkReceptionCnt)
         print(time_pr,'s')
         print(len(data))
       except socket.timeout:
         self.Errorcnt+=1
         print("TCP_RecvError",self.Errorcnt)
         print (time.asctime())
-        error_log = open('error_log_rv.txt','a')
+        error_log = open('error_log_TCP_2.txt','a')
         error_log.write ("TCP_RecvError"+time.asctime()+str(self.Errorcnt)+'\n')
         error_log.close()
     elif(type == 0):
       print(Packet)
+      send_log = open('send_log.txt','a')
+      send_log.write(str(Packet))
+      send_log.close()
       s.write(Packet)
-
+    return data_s
+  def ChekPacket(self,data):
+    str_buf = ''
+    [250, 19, 0, 0, 3, 7, 0, 1, 5, 0, 130, 228, 1, 1, 2, 5, 0, 8, 19]
+    i = 0
+    if (data[i] != self.Kod):
+      str_buf = 'Kod_error'+'\t'
+    i +=1
+    lenght = data[i]|data[i+1]<<8
+    i +=2
+    if (lenght!= len(data)):
+      str_buf+='lenght_Error'+'\t'
+    i +=1#retrannum
+    i +=1#flag
+    if (self.MyAdd[0] !=data[i] or self.MyAdd[1]!=data[i+1] or self.MyAdd[2]!=data[i+2]):
+      str_buf+='MyAddr_Error'+'\t'
+    i +=3
+    if (self.DestAdd[0] !=data[i] or self.DestAdd[1]!=data[i+1] or (self.DestAdd[2]|0x80)!=data[i+2]):
+      str_buf+='DestAddr_Error'+'\t'
+    i +=3
+    if (self.Tranzaction != data[i]):
+      str_buf+='Tranzaction_Error'+'\t'
+    i +=1
+    if (self.PacketNumber != data[i]):
+      str_buf+='PacketNumber_Error'+'\t'
+    i +=1
+    if (self.PacketItem != data[i]):
+      str_buf+='PacketItem_Error'+'\t'
+    i +=1
+    self.DataInPacket = data[i:len(data)-2]
+    i += len(self.DataInPacket)
+    CRC = RTM64CRC16(data, len(data)-2)
+    CRCin = data[i]|data[i+1]<<8
+    if(CRC != CRCin):
+      str_buf+='CRC_Error'
+    return str_buf
+    
+    
 
     
 
@@ -383,4 +437,5 @@ def print_hex(cmd,lenth):
     i+=1
   print (hexf)
 if __name__ == "__main__":
-    main()
+  print ("told one things")
+  main()

@@ -68,7 +68,7 @@ class SP:
       if(l.group('descript')):
         self.description = l.group('descript')
         print (l.group('descript'))
-      p = re.compile('v?u8',re.ASCII)
+      p = re.compile('v?[us]8',re.ASCII)
 
       m = p.match(l.group('type'))
       if m:
@@ -79,7 +79,7 @@ class SP:
         if m:
           self.Type = "KodInt16"
         else:
-          p = re.compile("v?u32"
+          p = re.compile("v?[us]32"
                          "|sCfgUpdateErrorFlags"
                          "|sKernelErrorFlags"
                          "|sKernelEventFlags" 

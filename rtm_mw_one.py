@@ -43,7 +43,7 @@ def ComList(ser,a):
 
 def main():
   ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
+  ser.baudrate =115200
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -98,7 +98,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.242'
+  TCP_IP = '192.168.1.240'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -106,8 +106,8 @@ def main():
   a = 0
   thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,73,0,74,0,0,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_p = [0x01,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [2,0,0]#,81,,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data_p = [0x01,90,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
   Packet.Chan = 0x01
 
@@ -135,9 +135,9 @@ def main():
     elif ord(q)==97:#a
       Packet.SendPacket(ser,0)
     elif ord(q)==43:#+
-      data_p[1] += 1
       Packet_p = RTM_MW(data_p)  
       Packet_p.SendPacket(ser,0)
+      data_p[1] += 1
 
     elif ord(q)==99:#c
       try:
@@ -230,13 +230,13 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [8,0x0,0x00]
-    self.DestAdd[2] = 5
+    self.DestAdd = [5,0,0x00]
+    self.DestAdd[2] = 2
 #    self.DestAddEnd = [8,0,0x00]
     self.DestAddEnd = [0xeb,0x03,0]
 #    self.DestAddEnd = [202,0x00,0]
-    self.DestAddEnd[2] = 5
-    self.Tranzaction  = 1
+    self.DestAddEnd[2] = 2
+    self.Tranzaction  = 0xe4
     self.PacketNumber = 1
     self.PacketItem   = 1
     self.Instruction  = 1
@@ -286,9 +286,17 @@ class RTM_MW(object):
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
   #    data = char_to_int(data_s,len(data_s))
-        print (data,self.OkReceptionCnt)
+        data_s =[]
+        for i in range(0,len(data)):
+          data_s.append(data[i])
+   #     data_s = "".join(data)
+        print (data_s,self.OkReceptionCnt)
         print(time_pr,'s')
         print(len(data))
+        send_log = open('send_log.txt','a')
+        send_log.write(str(data_s))
+        send_log.close()
+
       except socket.timeout:
         self.Errorcnt+=1
         print("TCP_RecvError",self.Errorcnt)
@@ -298,6 +306,9 @@ class RTM_MW(object):
         error_log.close()
     elif(type == 0):
       print(Packet)
+      send_log = open('send_log.txt','a')
+      send_log.write(str(Packet))
+      send_log.close()
       s.write(Packet)
 
 
@@ -376,4 +387,5 @@ def print_hex(cmd,lenth):
     i+=1
   print (hexf)
 if __name__ == "__main__":
-    main()
+  print ("told one things")
+  main()
