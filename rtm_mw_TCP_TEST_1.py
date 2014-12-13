@@ -216,7 +216,7 @@ def main():
           if str_temp:
             print(str_temp)
             error_log = open('error_log_TCP_1.txt','a')
-            error_log.write (str_temp+time.asctime()+'\n')
+            error_log.write (str_temp+str(Packet.DataInPacket)+time.asctime()+'\n')
             error_log.close()
         print (time.asctime())
         time.sleep(0.1)

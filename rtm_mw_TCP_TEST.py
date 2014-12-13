@@ -216,7 +216,7 @@ def main():
           if str_temp:
             print(str_temp)
             error_log = open('error_log_TCP.txt','a')
-            error_log.write (str_temp+time.asctime()+'\n')
+            error_log.write (str_temp+str(Packet.DataInPacket)+time.asctime()+'\n')
             error_log.close()
         print (time.asctime())
         time.sleep(0.1)
@@ -356,7 +356,7 @@ class RTM_MW(object):
     i += len(self.DataInPacket)
     CRC = RTM64CRC16(data, len(data)-2)
     CRCin = data[i]|data[i+1]<<8
-    if(CRC != CRCin):
+    if(CRC != (CRCin)):
       str_buf+='CRC_Error'
     return str_buf
     
