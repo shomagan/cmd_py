@@ -7,7 +7,7 @@ def main():
   HtmlFile = open ('sp.shtml','w')
   TagStructFile = open ('struct.pat','w')      
   OwnVariableFile = open('ownvariablname.pat','w')
-  Vars = open('vars.h','r',encoding='cp1251',errors='ignore')
+  Vars = open('../vars.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
   struct = 0
   #WorkHtml.write(TempHtml.readline())
@@ -68,11 +68,11 @@ class SP:
       if(l.group('descript')):
         self.description = l.group('descript')
         print (l.group('descript'))
-        n_t = re.compile('\".*\"'.re.ASCII)
-        match_rs = n_t.match(self.description)
-        if match_rs:
-          name_rs = n_t.search(self.description)
-          self.Name = name_rs.group(0)
+        n_t = re.compile('\"[\w\d\-\(\)\[\]]+\"')
+        name_rs = n_t.search(self.description)
+        if name_rs:
+#          input (name_rs)
+          self.Name = name_rs.group(0) 
       p = re.compile('v?[us]8',re.ASCII)
 
       m = p.match(l.group('type'))

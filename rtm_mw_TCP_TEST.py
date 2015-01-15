@@ -219,7 +219,7 @@ def main():
             error_log.write (str_temp+str(Packet.DataInPacket)+time.asctime()+'\n')
             error_log.close()
         print (time.asctime())
-        time.sleep(0.1)
+#        time.sleep(0.1)
         if(msvcrt.kbhit()):
           q = msvcrt.getch()
           print(ord(q))
@@ -254,7 +254,7 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [5,0,0x00]
+    self.DestAdd = [12,0,0x00]
     self.DestAdd[2] = 2
     self.Tranzaction  = 0xe4
     self.PacketNumber = 1
