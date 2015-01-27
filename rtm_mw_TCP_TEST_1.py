@@ -98,7 +98,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.240'
+  TCP_IP = '192.168.1.233'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -254,7 +254,7 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [5,0,0x00]
+    self.DestAdd = [12,0,0x00]
     self.DestAdd[2] = 2
     self.Tranzaction  = 0xe4
     self.PacketNumber = 1

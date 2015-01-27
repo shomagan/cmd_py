@@ -39,6 +39,11 @@ def ComList(ser,a):
     if (hello != ''):
       a+=1
       #print(char_to_int(hello,len(hello)))
+      error_log = open('recv_log.txt','a')
+      if(ord(hello)==250):
+        error_log.write ('\n')
+      error_log.write (str(hello))
+      error_log.close()
       print(hello,ord(hello))
 KodBit =	0x00
 KodInt8 =	0x20
@@ -63,7 +68,7 @@ ValType = {KodBit:1,
 
 def main():
   ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
+  ser.baudrate = 38400;
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -118,7 +123,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '192.168.1.233'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -126,7 +131,7 @@ def main():
   a = 0
   thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [1,3,0,3,1]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [1,95,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
   Packet.Chan = 0x01
@@ -218,7 +223,7 @@ def main():
             erro_log.close()
             s.connect((TCP_IP, TCP_PORT))
         print (time.asctime())
-        time.sleep(0.1)
+        time.sleep(0.02)
         if(msvcrt.kbhit()):
           q = msvcrt.getch()
           print(ord(q))
@@ -253,11 +258,11 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestOne = [12,0,2]
-    self.DestTwo = [202,0,2]
+    self.DestOne = [12,0,1]
+    self.DestTwo =  [3,0,1]
     self.DestThree = [202,0,2]
 
-    self.Tranzaction  = 1
+    self.TranzactionSend  = 1
     self.PacketNumber = 1
     self.PacketItem   = 1
     self.Instruction  = 1
@@ -304,7 +309,7 @@ class RTM_MW(object):
         Packet.append(self.DestThree[1])
         Packet.append(self.DestThree[2])
 
-    Packet.append(self.Tranzaction)
+    Packet.append(self.TranzactionSend)
 
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)
@@ -390,6 +395,7 @@ class RTM_MW(object):
           for x in range (0,self.ArraySize[i]):
             for y in range (0,ValType[self.Type[i]]):
               self.Value[x] |= DataVal[k]<<(8*y)
+              #print(x,k)
               k +=1
           print("Value = ",self.Value)
           self.FlagRecv = DataVal[k]
@@ -429,13 +435,20 @@ class RTM_MW(object):
       if (self.DestTwo[0] !=data[i] or self.DestTwo[1]!=data[i+1] or (self.DestTwo[2]|0x80)!=data[i+2]):
         str_buf+='DestAddr_Error'+'\t'
       i +=3
+      if(self.RetranNum > 1):
+        if (self.DestThree[0] !=data[i] or self.DestThree[1]!=data[i+1] or (self.DestThree[2]|0x80)!=data[i+2]):
+          str_buf+='DestAddr_Error'+'\t'
+        i +=3
 
-    if (self.Tranzaction != data[i]):
-      str_buf+='Tranzaction_Error'+'\t'
+
+    if (self.TranzactionSend != data[i]):
+      str_buf+='TranzactionSend_Error'+'\t'
     i +=1
+    self.PacketNumberRecv = data[i]
     if (self.PacketNumber != data[i]):
       str_buf+='PacketNumber_Error'+'\t'
     i +=1
+    self.PacketItemRecv = data[i] 
     if (self.PacketItem != data[i]):
       str_buf+='PacketItem_Error'+'\t'
     i +=1

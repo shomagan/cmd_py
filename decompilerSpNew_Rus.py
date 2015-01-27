@@ -71,8 +71,15 @@ class SP:
         n_t = re.compile('\"[\w\d\-\(\)\[\]]+\"')
         name_rs = n_t.search(self.description)
         if name_rs:
-#          input (name_rs)
           self.Name = name_rs.group(0) 
+        n_t = re.compile('\&(?P<pDefault>[\w\d\-\(\)\[\]]+)\&')
+        name_rs = n_t.search(self.description)
+        if name_rs:
+          self.pDefault = name_rs.group('pDefault')
+        else:
+          self.pDefault = "NULL"
+
+
       p = re.compile('v?[us]8',re.ASCII)
 
       m = p.match(l.group('type'))
@@ -111,6 +118,8 @@ class SP:
           self.SizeArray = 18
         elif(l.group('size')=="ChanelCount"):
           self.SizeArray = 9
+        elif(l.group('size')=="LOAD_BUFF_SIZE"):
+          self.SizeArray = 512
         else:
           self.SizeArray = int(l.group('size'))*self.SizeArray
 
