@@ -7,7 +7,7 @@ def main():
   HtmlFile = open ('sp.shtml','w')
   TagStructFile = open ('struct.pat','w')      
   OwnVariableFile = open('ownvariablname.pat','w')
-  Vars = open('vars.h','r',encoding='cp1251',errors='ignore')
+  Vars = open('DPN_T60.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
   struct = 0
   #WorkHtml.write(TempHtml.readline())
@@ -22,7 +22,7 @@ def main():
       line = linefull[:start]
     else:
       line = linefull
-    p = re.compile('\WMyAdr\W')
+    p = re.compile('\WMACadr0\W')
 #    print(re.search(p,line))
 #    print(linefull)
     if re.search(p,line):
@@ -73,13 +73,15 @@ class SP:
         if match_rs:
           name_rs = n_t.search(self.description)
           self.Name = name_rs.group(0)
-      p = re.compile('v?[us]8',re.ASCII)
+      p = re.compile('v?[us]8'
+                     "|uint8\_t",re.ASCII)
 
       m = p.match(l.group('type'))
       if m:
         self.Type = "KodInt8"
       else:
-        p = re.compile('v?[us]16')
+        p = re.compile('v?[us]16'
+                        "|uint16\_t")
         m = p.match(l.group('type'))
         if m:
           self.Type = "KodInt16"
@@ -88,6 +90,8 @@ class SP:
                          "|sCfgUpdateErrorFlags"
                          "|sKernelErrorFlags"
                          "|sKernelEventFlags" 
+                         "|uint32\_t"
+                         "|float"
                          )
           m = p.match(l.group('type'))
           if m:
@@ -111,6 +115,8 @@ class SP:
           self.SizeArray = 18
         elif(l.group('size')=="ChanelCount"):
           self.SizeArray = 9
+        elif(l.group('size')=="LOAD_BUFF_SIZE"):
+          self.SizeArray = 512
         else:
           self.SizeArray = int(l.group('size'))*self.SizeArray
 
