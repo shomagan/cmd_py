@@ -1,12 +1,13 @@
 #!/c/Python33/ python
 import sys, os, threading, atexit,io,time,re
+import fileinput
 import msvcrt as m
 from struct import *
 def main():
   time_start=time.time()
-  HtmlFile = open ('sp.shtml','w')
+  HtmlFile = open ('fs/sp.shtml','w')
   HtmlDescribe = open ('describe.html','w')
-  TagStructFile = open ('struct.pat','w')      
+  TagStructFile = open ('struct.pat','w')
   OwnVariableFile = open('ownvariablname.pat','w')
   Vars = open('../vars.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
@@ -26,27 +27,34 @@ def main():
     else:
       line = linefull
     p = re.compile('\WMyAdr\W')
-#    print(re.search(p,line))
-#    print(linefull)
     if re.search(p,line):
       struct = 1
       SP_b = SP()
-    if (struct == 1):
-    #  print(line_x)
-      SP_b.check(linefull)
-      SP_b.save(OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile)
     if (struct == 1 & ('}'in line)):
         struct = 0
+    if (struct == 1):
+      SP_b.check(linefull)
+      if SP_b.SizeArray:
+        SP_b.save(OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile)
+        SP_b.SP_Numm+=1
+
+  print("first config variable "+str(SP_b.GuID))
   OwnVariableFile.writelines('};')
   for i in range(10):
     line = TempHtml.readline()
   for i in range(11):
     HtmlFile.writelines(TempHtml.readline())
     HtmlDescribe.writelines(TempHtml.readline())
+  print("find " +str(SP_b.SP_Numm)+" own network variable")  
+  OwnVariableFile.close()
   TagStructFile.close()
   HtmlFile.close()
+#rewrite exist file with new network variable settings
+  WriteExistFile()
+  print ('start makefsdata.exe')
+  os.system("C:/Work_MC/Mega11/mega12family_usercopy/inc/makefsdata.exe")
   HtmlDescribe.writelines(TempHtml.readline())
-  OwnVariableFile.close()
+
   TempHtml.close()
   Vars.close()
   input ("exit")
@@ -62,6 +70,7 @@ class SP:
     self.Flag = 0x00
     self.description = "//"
     self.opt = 0
+    self.SP_Numm = 0
   def check(self,line):
     self.SizeArray = 1
     w = re.compile('^\s*(?P<type>[\w\d]+)\s+(?P<name>[\w\d]+)\s*(\[(?P<size>[\d\w]+)\])?\s*\;\s*(?P<descript>\/\/[\w\W]*$)*',re.ASCII)
@@ -72,7 +81,6 @@ class SP:
       self.InternalName ='"'+l.group('name')+'"'
       if(l.group('descript')):
         self.description = l.group('descript')
-        print (l.group('descript'))
         n_t = re.compile('\"[\w\d\-\(\)\[\]]+\"')
         name_rs = n_t.search(self.description)
         if name_rs:
@@ -120,6 +128,7 @@ class SP:
               if m:
                 self.Type = "KodFloat32"
               else:
+                print ("unvalidate type for variable"+self.InternalName+"description "+self.description)
                 self.Type = "Kod"
                 self.SizeArray = 0
       if (l.group('size')):
@@ -131,58 +140,54 @@ class SP:
           self.SizeArray = 512
         else:
           self.SizeArray = int(l.group('size'))*self.SizeArray
-
     else:
-#      print(line)
       self.SizeArray = 0
-#    print(l.group('size'))
- #     print(self.SizeArray)
 
     self.Flag = 0x00
 
   def save(self,OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile):
-    if(self.SizeArray>0):
-#      print(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(self.GuID)+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+',')
-#      print(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(self.GuID)+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+',')
-      OwnVariableFile.writelines(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(int(self.GuID))+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+'\n')
-      HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
-      HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
-      HtmlFile.write('<tbody>'+'\n')
-      HtmlDescribe.write('<tbody>'+'\n')
-      HtmlFile.write('<tr>'+'\n')
-      HtmlDescribe.write('<tr>'+'\n')
-      HtmlFile.write('<td style="width: 100px;font-weight: bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
-      HtmlDescribe.write('<td style="width: 5px;font-weight:bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
-      HtmlFile.write(self.Name+'\n')
-      HtmlDescribe.write(str(self.Ind)+'\n')
-      HtmlDescribe.write('<td style="rgb(0, 251, 213);font-weight:bold;font-family: Verdana"><small><span style="color: black ;">'+'\n')
-      HtmlDescribe.write(self.InternalName+'\t'+'Type = '+'\t'+self.Type+'\t'+'Size = '+'\t'+str(self.SizeArray)+'\t'+'Mdb_Addr = '+str(self.GuID) + '\t'+self.description+'\n')
-      HtmlFile.write('</span> </small></td>'+'\n')
-      HtmlFile.write('<td style="font-style: italic;font-family: Verdana;background-color: rgb(0, 251, 213);"><span style="color: black ;"><!--#'+str(self.Ind)+'--></span></td>'+'\n')
-      HtmlFile.write('</tr>'+'\n')
-      HtmlDescribe.write('</tr>'+'\n')
-      HtmlFile.write('</tbody>'+'\n')
-      HtmlDescribe.write('</tbody>'+'\n')
-      HtmlFile.write('</table>'+'\n')
-      HtmlDescribe.write('</table>'+'\n')
-      TagStructFile.write ('"'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
-      self.Ind += 1
-      if(self.Type =="KodInt8"):
-        if(self.SizeArray==1):
-          if (self.opt==0):
-            self.GuID = self.GuID
-            self.opt = 1
-          else:
-            self.GuID +=1
-            self.opt = 0
+    OwnVariableFile.writelines(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(int(self.GuID))+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+'\n')
+    HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
+    HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
+    HtmlFile.write('<tbody>'+'\n')
+    HtmlDescribe.write('<tbody>'+'\n')
+    HtmlFile.write('<tr>'+'\n')
+    HtmlDescribe.write('<tr>'+'\n')
+    HtmlFile.write('<td style="width: 100px;font-weight: bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
+    HtmlDescribe.write('<td style="width: 5px;font-weight:bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
+    HtmlFile.write(self.Name+'\n')
+    HtmlDescribe.write(str(self.Ind)+'\n')
+    HtmlDescribe.write('<td style="rgb(0, 251, 213);font-weight:bold;font-family: Verdana"><small><span style="color: black ;">'+'\n')
+    HtmlDescribe.write(self.InternalName+'\t'+'Type = '+'\t'+self.Type+'\t'+'Size = '+'\t'+str(self.SizeArray)+'\t'+'Mdb_Addr = '+str(self.GuID) + '\t'+self.description+'\n')
+    HtmlFile.write('</span> </small></td>'+'\n')
+    HtmlFile.write('<td style="font-style: italic;font-family: Verdana;background-color: rgb(0, 251, 213);"><span style="color: black ;"><!--#'+str(self.Ind)+'--></span></td>'+'\n')
+    HtmlFile.write('</tr>'+'\n')
+    HtmlDescribe.write('</tr>'+'\n')
+    HtmlFile.write('</tbody>'+'\n')
+    HtmlDescribe.write('</tbody>'+'\n')
+    HtmlFile.write('</table>'+'\n')
+    HtmlDescribe.write('</table>'+'\n')
+    TagStructFile.write ('    "'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
+    self.Ind += 1
+    if(self.Type =="KodInt8"):
+      if(self.SizeArray==1):
+        if (self.opt==0):
+          self.GuID = self.GuID
+          self.opt = 1
         else:
-          self.GuID = self.GuID + (self.SizeArray/2)
-      if(self.Type =="KodInt16"):
-        self.opt = 0
-        self.GuID +=(self.SizeArray)
-      if(self.Type =="KodInt32")|(self.Type =="KodFloat32"):
-        self.opt = 0
-        self.GuID +=(self.SizeArray*2)
+          self.GuID +=1
+          self.opt = 0
+      else:
+        self.GuID = self.GuID + (self.SizeArray/2)
+    if(self.Type =="KodInt16"):
+      self.opt = 0
+      self.GuID +=(self.SizeArray)
+    if(self.Type =="KodInt32")|(self.Type =="KodFloat32"):
+      self.opt = 0
+      self.GuID +=(self.SizeArray*2)
+  def __del__(self):
+    print("dlt SP")
+
 def find_name(number):
   fb_name = open('fb_name.txt','r')
   current = 0
@@ -226,8 +231,58 @@ def write_property(FB_property,decompile):
       decompile.write (key+'&'+str(FB_property.out_variable[key])+'\n')
 
 def fbparser(fb,len_fb):
-
   return array + len_fb
+
+def WriteExistFile():
+  OwnVariableFile = open('ownvariablname.pat','r')
+  replace = 0
+  number = 0
+  for line in fileinput.input('../ownvariablname.c', inplace=1):
+    if "NetworkFlashVariable_t" in line:
+      replace = 1
+    if replace:
+      cancel = re.compile('^\s*\}\;',re.ASCII)
+      test = cancel.match(line)
+      if test:
+        replace = 0
+        for own_line in OwnVariableFile:
+          print(own_line,end='')
+          number+=1
+    else:
+      print(line,end='')
+  fileinput.close()
+  if number:
+    print ('replace '+str(number)+' string in file ../ownvariablname.c')
+  else:
+    print ("don't find NetworkFlashVariable_t struct in file ../ownvariablname.c")
+
+  TagStructFile = open ('struct.pat','r')
+  replace = 0
+  number = 0
+  for line in fileinput.input('../httpd_cgi_ssi.c', inplace=1):
+    if "g_pcConfigSSITags[]" in line:
+      replace = 1
+      print(line+'{',end='')
+    if replace:
+      cancel = re.compile('^\s*\}\;',re.ASCII)
+      test = cancel.match(line)
+      if test:
+        replace = 0
+        for tag_line in TagStructFile:
+          print(tag_line,end='')
+          number+=1
+        print(line,end='')
+    else:
+      print(line,end='')
+  fileinput.close()
+  if number:
+    print ('replace '+str(number)+' string in file ../httpd_cgi_ssi.c')
+  else:
+    print ("don't find g_pcConfigSSITags struct in file ../httpd_cgi_ssi.c")
+
+
+  
+
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""
   CRC = 0x0000

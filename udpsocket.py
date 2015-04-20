@@ -10,7 +10,7 @@ def UdpList(sock):
 if __name__ == '__main__':
 
 
-  UDP_IP = '172.16.1.4'
+  UDP_IP = '172.16.1.3'
   UDP_PORT = 4000
   MESSAGE = "Hello,mega 03!"
   
