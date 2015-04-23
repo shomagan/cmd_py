@@ -3,12 +3,12 @@ import rtm_mw,sys
 import msvcrt
 if __name__ == '__main__':
   print('helo')
-  TCP_IP = '192.168.1.240'
+  TCP_IP = '172.16.1.4'
   TCP_PORT = 502
-  data = [2,73,0,3,0]
+  data = [2,73,0]
   Packet = rtm_mw.RTM_MW(data)
   Packet.RetranNum =0
-  Packet.DestOne = [3,0,5]
+  Packet.DestOne = [12,0,5]
   Packet.DestTwo =  [8,0,5]
   Packet.DestThree = [200,0,5]
 

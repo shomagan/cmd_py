@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
   UDP_IP = '172.16.1.4'
   UDP_PORT = 7
+  rtm_mw_packet= [0xfa,0x13,0x00,0x00,0x00,0x07,0x00,0x02,0x0c,0x00,0x05,0x01,0x01,0x01,0x02,73,0x00,0x9b,0x9d]
   MESSAGE = "Hello,mega 04!"
   
   print ("UDP target IP:", UDP_IP)
@@ -30,4 +31,5 @@ if __name__ == '__main__':
       sys.exit(1)
     elif ord(q)==99:#c
       msg = bytes(MESSAGE,'utf-8')
-      sock.sendto(msg, (UDP_IP, UDP_PORT))
+      Packet_str = bytearray(rtm_mw_packet[0:])
+      sock.sendto(Packet_str, (UDP_IP, UDP_PORT))

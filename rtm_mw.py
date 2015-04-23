@@ -323,6 +323,11 @@ class RTM_MW(object):
       print(Packet_str)
       time_start=time.time()
       self.s.send(Packet_str)
+      error_log = open('error_log_rv.txt','a')
+      error_log.write (str(Packet_str))
+      error_log.close()
+
+
       self.s.settimeout(2)
 #data = s.recvfrom(BUFFER_SIZE)
       try:
