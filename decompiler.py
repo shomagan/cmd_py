@@ -22,7 +22,6 @@ bit 0 01 input
 """
 import sys, os, threading, atexit,io,time
 import msvcrt as m
-from struct import *
 #def hextoascii():
 type_variable = {'bit'     :0x00000000,
                  'uint8'   :0x00100000,

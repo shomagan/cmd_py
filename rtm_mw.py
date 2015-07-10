@@ -70,7 +70,7 @@ ValType = {KodBit:1,
 
 def main():
   ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
+  ser.baudrate = 9600;
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -125,7 +125,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.242'
+  TCP_IP = '192.168.1.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -133,7 +133,7 @@ def main():
   a = 0
   thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,37,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [1,73,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -246,13 +246,13 @@ class RTM_MW(object):
     self.Len = [0x00,0x00]
     self.RetranNum =0
     self.Flag = 0x0
-    self.MyAdd = [7,0,0]
+    self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [8,0,2]
-    self.DestTwo =  [200,0,2]
+    self.DestOne = [10,0,7]
+    self.DestTwo =  [8,0,7]
     self.DestThree = [200,0,5]
 
-    self.TranzactionSend  = 1
+    self.TranzactionSend  = 3
     self.PacketNumber = 1
     self.PacketItem   = 1
     self.Instruction  = 1
@@ -322,10 +322,11 @@ class RTM_MW(object):
       Packet_str = bytearray(Packet[0:])
       print(Packet_str)
       time_start=time.time()
+#      error_log = open('error_log_rv.txt','a')
+#      error_log.write (str(Packet_str))
+#      error_log.close()
+
       self.s.send(Packet_str)
-      error_log = open('error_log_rv.txt','a')
-      error_log.write (str(Packet_str))
-      error_log.close()
 
 
       self.s.settimeout(2)
@@ -340,6 +341,9 @@ class RTM_MW(object):
         for i in range(0,len(data)):
           data_s.append(data[i])
         print(data_s,self.OkReceptionCnt)
+#        self.s.settimeout(4)
+ #       data = self.s.recv(BUFFER_SIZE)
+  #      self.OkReceptionCnt+=1
         if data_s:
           self.ChekPacket(data_s)
           if self.CheckCRC:
@@ -372,45 +376,48 @@ class RTM_MW(object):
 #        print(DataVal)
         for i in range(0,self.IndNum):
           self.IndRecv = DataVal[k]|(DataVal[1+k]<<8)
-          k+=2
-          print("IndexRecv = ",self.IndRecv,"IndWrite = ",self.Ind[i])
-          self.Type[i] = DataVal[k]
-          k+=1
-          print("Valtype = ",ValTypeName[self.Type[i]])
-          self.GUID = DataVal[k]|(DataVal[k+1]<<8)
-          k+=2
-          print("GUID = ",self.GUID)
-          self.LenName = DataVal[k]
-          k+=1
-          self.Name = DataVal[k:k+self.LenName] 
-          Name = ''
-          for l in range(self.LenName):
-            Name+=(chr(self.Name[l]))
-          #Name = ascii(self.Name)
-          k +=self.LenName
-          print ("Name = ",Name.encode('cp1252'))
-          self.LenIntName = DataVal[k]
-          k+=1
-          self.IntName = DataVal[k:k+self.LenIntName]
-          k +=self.LenIntName
-          InName = ''
-          for l in range(self.LenIntName):
-            InName+=(chr(self.IntName[l]))
+          if (self.IndRecv!=self.Ind[i]):
+            break
+          else:
+            k+=2
+            print("IndexRecv = ",self.IndRecv,"IndWrite = ",self.Ind[i])
+            self.Type[i] = DataVal[k]
+            k+=1
+            print("Valtype = ",ValTypeName[self.Type[i]])
+            self.GUID = DataVal[k]|(DataVal[k+1]<<8)
+            k+=2
+            print("GUID = ",self.GUID)
+            self.LenName = DataVal[k]
+            k+=1
+            self.Name = DataVal[k:k+self.LenName] 
+            Name = ''
+            for l in range(self.LenName):
+              Name+=(chr(self.Name[l]))
+            #Name = ascii(self.Name)
+            k +=self.LenName
+            print ("Name = ",Name.encode('cp1252'))
+            self.LenIntName = DataVal[k]
+            k+=1
+            self.IntName = DataVal[k:k+self.LenIntName]
+            k +=self.LenIntName
+            InName = ''
+            for l in range(self.LenIntName):
+              InName+=(chr(self.IntName[l]))
 
-          print("IntName = ",InName.encode('cp1252'))
-          self.ArraySize[i] = DataVal[k]|(DataVal[k+1]<<8)
-          k+=2
-          print ("ArraySize = ",self.ArraySize[i])
-          self.Value = [0 for x in range(self.ArraySize[i])]
-          for x in range (0,self.ArraySize[i]):
-            for y in range (0,ValType[self.Type[i]]):
-              self.Value[x] |= DataVal[k]<<(8*y)
-              #print(x,k)
-              k +=1
-          print("Value = ",self.Value)
-          self.FlagRecv = DataVal[k]
-          k+=1
-          print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            print("IntName = ",InName.encode('cp1252'))
+            self.ArraySize[i] = DataVal[k]|(DataVal[k+1]<<8)
+            k+=2
+            print ("ArraySize = ",self.ArraySize[i])
+            self.Value = [0 for x in range(self.ArraySize[i])]
+            for x in range (0,self.ArraySize[i]):
+              for y in range (0,ValType[self.Type[i]]):
+                self.Value[x] |= DataVal[k]<<(8*y)
+                #print(x,k)
+                k +=1
+            print("Value = ",self.Value)
+            self.FlagRecv = DataVal[k]
+            k+=1
+            print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
       elif self.Instruction == 2:
         k = 1
         flo32 = [0.0 for x in range(self.IndNum)]
@@ -449,51 +456,56 @@ class RTM_MW(object):
     str_buf = ''
     [250, 19, 0, 0, 3, 7, 0, 1, 5, 0, 130, 228, 1, 1, 2, 5, 0, 8, 19]
     i = 0
+    self.CheckCRC = 0
+
     if (data[i] != self.Kod):
       str_buf = 'Kod_error'+'\t'
-    i +=1
-    lenght = data[i]|data[i+1]<<8
-    i +=2
-    if (lenght!= len(data)):
-      str_buf+='lenght_Error'+'\t'
-    i +=1#retrannum
-    i +=1#flag
-    if (self.MyAdd[0] !=data[i] or self.MyAdd[1]!=data[i+1] or self.MyAdd[2]!=data[i+2]):
-      str_buf+='MyAddr_Error'+'\t'
-    i +=3
-    if (self.DestOne[0] !=data[i] or self.DestOne[1]!=data[i+1] or (self.DestOne[2]|0x80)!=data[i+2]):
-      str_buf+='DestAddr_Error'+'\t'
-    i +=3
-    if (self.RetranNum > 0):
-      if (self.DestTwo[0] !=data[i] or self.DestTwo[1]!=data[i+1] or (self.DestTwo[2]|0x80)!=data[i+2]):
-        str_buf+='DestAddr_Error'+'\t'
-      i +=3
-      if(self.RetranNum > 1):
-        if (self.DestThree[0] !=data[i] or self.DestThree[1]!=data[i+1] or (self.DestThree[2]|0x80)!=data[i+2]):
+    else:
+      i +=1
+      if (len(data)>3):
+        lenght = data[i]|data[i+1]<<8
+      else:
+        lenhgt = 0
+      i +=2
+      if (lenght!= len(data)):
+        str_buf+='lenght_Error'+'\t'
+      else:
+        i +=1#retrannum
+        i +=1#flag
+        if (self.MyAdd[0] !=data[i] or self.MyAdd[1]!=data[i+1] or self.MyAdd[2]!=data[i+2]):
+          str_buf+='MyAddr_Error'+'\t'
+        i +=3
+        if (self.DestOne[0] !=data[i] or self.DestOne[1]!=data[i+1] or (self.DestOne[2]|0x80)!=data[i+2]):
           str_buf+='DestAddr_Error'+'\t'
         i +=3
-
-
-    if (self.TranzactionSend != data[i]):
-      str_buf+='TranzactionSend_Error'+'\t'
-    i +=1
-    self.PacketNumberRecv = data[i]
-    if (self.PacketNumber != data[i]):
-      str_buf+='PacketNumber_Error'+'\t'
-    i +=1
-    self.PacketItemRecv = data[i] 
-    if (self.PacketItem != data[i]):
-      str_buf+='PacketItem_Error'+'\t'
-    i +=1
-    self.DataInPacket = data[i:len(data)-2]
-    i += len(self.DataInPacket)
-    CRC = RTM64CRC16(data, len(data)-2)
-    CRCin = data[i]|data[i+1]<<8
-    if(CRC != (CRCin)):
-      str_buf+='CRC_Error'
-      self.CheckCRC = 0
-    else:
-      self.CheckCRC = 1
+        if (self.RetranNum > 0):
+          if (self.DestTwo[0] !=data[i] or self.DestTwo[1]!=data[i+1] or (self.DestTwo[2]|0x80)!=data[i+2]):
+            str_buf+='DestAddr_Error'+'\t'
+          i +=3
+          if(self.RetranNum > 1):
+            if (self.DestThree[0] !=data[i] or self.DestThree[1]!=data[i+1] or (self.DestThree[2]|0x80)!=data[i+2]):
+              str_buf+='DestAddr_Error'+'\t'
+            i +=3
+        if (self.TranzactionSend != data[i]):
+          str_buf+='TranzactionSend_Error'+'\t'
+        i +=1
+        self.PacketNumberRecv = data[i]
+        if (self.PacketNumber != data[i]):
+          str_buf+='PacketNumber_Error'+'\t'
+        i +=1
+        self.PacketItemRecv = data[i] 
+        if (self.PacketItem != data[i]):
+          str_buf+='PacketItem_Error'+'\t'
+        i +=1
+        self.DataInPacket = data[i:len(data)-2]
+        i += len(self.DataInPacket)
+        CRC = RTM64CRC16(data, len(data)-2)
+        CRCin = data[i]|data[i+1]<<8
+        if(CRC != (CRCin)):
+          str_buf+='CRC_Error'
+          self.CheckCRC = 0
+        else:
+          self.CheckCRC = 1
     return str_buf
   def Send(self):
     self.Data[0] = 1

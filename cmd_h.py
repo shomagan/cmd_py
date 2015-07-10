@@ -27,7 +27,7 @@ def main():
   def quitKeyPress(event):
     sys.exit(1)
 
-  ser = serial.Serial(1)  # open first serial port
+  ser = serial.Serial(0)  # open first serial port
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (

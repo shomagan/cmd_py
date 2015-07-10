@@ -43,7 +43,7 @@ def ComList(ser,a):
 
 def main():
   ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
+  ser.baudrate = 9600;
   print (ser.name)          # check which port was really used
   try:
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -98,7 +98,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.235'
+  TCP_IP = '192.168.1.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -106,11 +106,11 @@ def main():
   a = 0
   thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,6,0,25,0,26,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [2,6,0,81,0,82,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_w =[3,6,0,64,24,25,0,0,0,26,0,0,0]
+  data_w =[3,6,0,191,108,81,0,0,82,0,0]
   Packet = RTM_MW(data)
-  Packet_w = RTM_MW(data_w)
+
 
   Packet.Chan = 0x01
 
@@ -122,7 +122,8 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w.SendPacket(ser,0)
+      Packet_w = RTM_MW(data_w)
+      Packet_w.SendPacket(s,1)
     elif ord(q)==110:#n
       print(Cmd_NI)
       ser.write(Cmd_NI)
@@ -136,12 +137,12 @@ def main():
       print (cmd[-11:-3])
       ser.write(mdb)
     elif ord(q)==97:#a
-      Packet.SendPacket(ser,0)
+      Packet.SendPacket(s,1)
     elif ord(q)==43:#+
       data_p[1] += 1
       Packet_p = RTM_MW(data_p)  
       try:
-        Packet_p.SendPacket(s,1)
+        Packet_p.SendPacket(ser,0)
       except OSError:
         print ("Can't send tcp Packet")
 
@@ -236,7 +237,7 @@ class RTM_MW(object):
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [3,0x0,0x00]
+    self.DestAdd = [3,0,0x00]
     self.DestAdd[2] = 2
     self.DestAddEnd = [8,0,0x00]
 #    self.DestAddEnd = [0xeb,0x03,0]

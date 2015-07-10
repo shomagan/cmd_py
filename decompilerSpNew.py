@@ -7,7 +7,7 @@ def main():
   HtmlFile = open ('sp.shtml','w')
   TagStructFile = open ('struct.pat','w')      
   OwnVariableFile = open('ownvariablname.pat','w')
-  Vars = open('DPN_T60.h','r',encoding='cp1251',errors='ignore')
+  Vars = open('vars.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
   struct = 0
   #WorkHtml.write(TempHtml.readline())
