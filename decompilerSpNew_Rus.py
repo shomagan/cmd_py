@@ -167,7 +167,7 @@ class SP:
     HtmlDescribe.write('</tbody>'+'\n')
     HtmlFile.write('</table>'+'\n')
     HtmlDescribe.write('</table>'+'\n')
-    TagStructFile.write ('    "'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
+    TagStructFile.write('    "'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
     self.Ind += 1
     if(self.Type =="KodInt8"):
       if(self.SizeArray==1):
