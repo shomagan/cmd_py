@@ -147,8 +147,8 @@ class SP:
 
   def save(self,OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile):
     OwnVariableFile.writelines(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(int(self.GuID))+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+'\n')
-    HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
-    HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
+    HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1">'+'\n')
+    HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellspacing="1">'+'\n')
     HtmlFile.write('<tbody>'+'\n')
     HtmlDescribe.write('<tbody>'+'\n')
     HtmlFile.write('<tr>'+'\n')
