@@ -44,6 +44,7 @@ def main():
     fb_name.write('Number FB and Name\n')
     current = 0
     start_structure = 0
+    comment = 0
     while 1:
         current += 1
         if current == 108:
@@ -52,11 +53,11 @@ def main():
             sys.exit(1)
         try:
             if current <= 9:
-                fb_temp = open('FB/fb0000'+str(current)+'.h')
+                fb_temp = open('FB/fb0000'+str(current)+'.c')
             elif current <= 99:
-                fb_temp = open('FB/fb000'+str(current)+'.h')
+                fb_temp = open('FB/fb000'+str(current)+'.c')
             else:
-                fb_temp = open('FB/fb00'+str(current)+'.h')
+                fb_temp = open('FB/fb00'+str(current)+'.c')
         except IOError:
             continue
         description_structure = SpaceType()
@@ -76,54 +77,59 @@ def main():
                         fb_name.write(line_full)
                     else:
                         fb_name.write("didn't find description")
-
                 if '//' in line_full:
                     start = line_full.find('//')
                     line = line_full[:start]
                 else:
                     line = line_full
-                if start_structure == 0:
-                    p = re.compile('^\s*typedef\s*(volatile)?\s*struct\W')
-                    if p.match(line):
-                        start_structure = 1
+                if '/*' in line_full:
+                    comment = 1
+                if comment:
+                    if '*/' in line_full:
+                        comment = 0
                 else:
-                    if start_structure == 1 & ('}'in line):
-                        p_type = re.compile('^\s*\}\s*((fb)|(FB))(?P<number>[\d]{5})_(?P<type>[\w]{2,3})_type')
-                        structure_close = p_type.match(line)
-                        if structure_close:
-                            l = p_type.search(line)
-                            description_structure.space_type = l.group('type')
-                            if description_structure.space_type == 'IN':
-                                for l in range(description_structure.num):
-                                    description_structure.in_array[l] = description_structure.temp_array[l]
-                            elif description_structure.space_type == 'VAR':
-                                for l in range(description_structure.num):
-                                    description_structure.var_array[l] = description_structure.temp_array[l]
-                            elif description_structure.space_type == 'OUT':
-                                for l in range(description_structure.num):
-                                    description_structure.out_array[l] = description_structure.temp_array[l]
-                            #write struct type
-                            fb_name.write(description_structure.space_type+'\n')
-                            for j in range(description_structure.num):
-                                fb_name.write(description_structure.temp_array[j][0]+' '
-                                              + description_structure.temp_array[j][1])
-                                if description_structure.temp_array[j][2]:
-                                    fb_name.write(description_structure.temp_array[j][2]+' ')
-                                if description_structure.temp_array[j][3]:
-                                    fb_name.write(description_structure.temp_array[j][3]+' ')
-                                fb_name.write('\n')
-                        else:
-                            fb_name.write("type_structure_error"+line)
-                        start_structure = 0
-                        description_structure.num = 0
+                    if start_structure == 0:
+                        p = re.compile('^\s*typedef\s*(volatile)?\s*struct\W')
+                        if p.match(line):
+                            start_structure = 1
                     else:
-                        p_var = re.compile('^\s*Register_type\s+(?P<name>[\w\d]+)\s*(?P<size>\[[\d\w]+\])?\s*;'
-                                           '\s*(//)?\s*(?P<type>[bit,int,uint,\d,/]*)\s*(?P<description>[\w\W]*$)')
-                        l = p_var.match(line_full)
-                        if l:
-                            r = p_var.search(line_full)
-                            description_structure.add_var(r.group('name'), r.group('type'),
-                                                          r.group('size'), r.group('description'))
+                        if start_structure == 1 & ('}'in line):
+                            p_type = re.compile('^\s*\}\s*((fb)|(FB))(?P<number>[\d]{5})_(?P<type>[\w]{2,3})_type')
+                            structure_close = p_type.match(line)
+                            if structure_close:
+                                l = p_type.search(line)
+                                description_structure.space_type = l.group('type')
+                                if description_structure.space_type == 'IN':
+                                    for l in range(description_structure.num):
+                                        description_structure.in_array[l] = description_structure.temp_array[l]
+                                elif description_structure.space_type == 'VAR':
+                                    for l in range(description_structure.num):
+                                        description_structure.var_array[l] = description_structure.temp_array[l]
+                                elif description_structure.space_type == 'OUT':
+                                    for l in range(description_structure.num):
+                                        description_structure.out_array[l] = description_structure.temp_array[l]
+                                #write struct type
+                                fb_name.write(description_structure.space_type+'\n')
+                                for j in range(description_structure.num):
+                                    fb_name.write(description_structure.temp_array[j][0]+' '
+                                                  + description_structure.temp_array[j][1])
+                                    if description_structure.temp_array[j][2]:
+                                        fb_name.write(description_structure.temp_array[j][2]+' ')
+                                    if description_structure.temp_array[j][3]:
+                                        fb_name.write(description_structure.temp_array[j][3]+' ')
+                                    fb_name.write('\n')
+                            else:
+                                fb_name.write("type_structure_error"+line)
+                            start_structure = 0
+                            description_structure.num = 0
+                        else:
+                            p_var = re.compile('^\s*Register_type\s+(?P<name>[\w\d]+)\s*(?P<size>\[[\d\w]+\])?\s*;'
+                                               '\s*(//)?\s*(?P<type>[bit,int,uint,\d,/]*)\s*(?P<description>[\w\W]*$)')
+                            l = p_var.match(line_full)
+                            if l:
+                                r = p_var.search(line_full)
+                                description_structure.add_var(r.group('name'), r.group('type'),
+                                                              r.group('size'), r.group('description'))
             except IndexError:
                 break
             line_number += 1

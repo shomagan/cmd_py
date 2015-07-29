@@ -24,7 +24,7 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
 
-    TCP_IP = '192.168.1.232'
+    TCP_IP = '192.168.1.241'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -112,7 +112,7 @@ def main():
     data_gen.raz_rezet = 0
     fig = plt.figure()
     ax = fig.add_subplot(111, autoscale_on=False)
-    line_raz_rezet, = ax.plot([], [], lw=2, label='successful packet')
+    line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
     raz_rezet_template = ' raz_rezet_text = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
 
@@ -138,11 +138,7 @@ def main():
             ax.figure.canvas.draw()
         ymin, ymax = ax.get_ylim()
         if y >= ymax:
-            ymax *= 2
-            ax.set_ylim(ymin, ymax)
-            ax.figure.canvas.draw()
-        if y <= ymin:
-            ymin *= 2
+            ymax += 20
             ax.set_ylim(ymin, ymax)
             ax.figure.canvas.draw()
 
@@ -150,7 +146,7 @@ def main():
         raz_rezet_text.set_text(raz_rezet_template % y)
 
         return line_raz_rezet, raz_rezet_text
-    ani = animation.FuncAnimation(fig, run, data_gen, blit=True, interval=10,init_func=init)
+    ani = animation.FuncAnimation(fig, run, data_gen, blit=True, interval=1000,init_func=init)
     plt.show()
 
 

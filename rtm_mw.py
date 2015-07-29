@@ -319,8 +319,8 @@ class RTM_MW(object):
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
     if (type == 1):
+      print(Packet)
       Packet_str = bytearray(Packet[0:])
-      print(Packet_str)
       time_start=time.time()
 #      error_log = open('error_log_rv.txt','a')
 #      error_log.write (str(Packet_str))
@@ -337,7 +337,7 @@ class RTM_MW(object):
         time_pr=time.time() - time_start
 #        data = char_to_int(data,len(data))
         data_s =[]
-        print(data)
+#        print(data)
         for i in range(0,len(data)):
           data_s.append(data[i])
         print(data_s,self.OkReceptionCnt)
