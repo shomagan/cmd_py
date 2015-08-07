@@ -31,7 +31,7 @@ HTML_CONTENT = '<meta http-equiv="Content-Type" content="text/html; charset=wind
 HTML_CONTENT_NAME = '<meta content="MSHTML 6.00.2900.3698" name="GENERATOR">'
 HTML_STYLE = '<style></style><!-- saved from url=(0038)http://192.168.1.232/sp.shtml --></head>'
 HTML_TABLE_OPEN = '<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'
-ITERABLE_TEMPLATE = '^\s*((while)|(for)|(if)|(else\s*if)|(switch))'
+ITERABLE_TEMPLATE = '^\s*((while)|(for)|(if)|(else\s*(if)*)|(switch))'
 ANYTHING_TEMPLATE = '\s*[\d\w]'
 class GraphType:
     """Position control"""
@@ -117,7 +117,9 @@ def main():
                     G.add_nodes_from(graph.position.keys())
                     size = abs(graph.current_position[1])
                     plt.figure(figsize=(size, size))
-                    nx.draw_networkx_nodes(G, graph.position, node_size=700, node_color='w')
+                    nx.draw_networkx_nodes(G, graph.position, node_size=500, node_color='w')
+                    for key in graph.position:
+                        graph.position[key] = (graph.position[key][0], graph.position[key][1]+0.3)
                     nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
 
                     print(size)
@@ -156,6 +158,12 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
             if '*/' in line_full:
                 comment = 0
         else:
+            if '}' in line_full:
+                graph.current_position[0] -= 1
+                close_space(fb_html_describe)
+                if '{' in line_full:
+                    find_iterable(fb_temp, fb_html_describe, line_full, graph)
+                return
             iterable_type = re.compile(ITERABLE_TEMPLATE)
             start_place = iterable_type.match(line_full)
             if start_place:
@@ -166,7 +174,6 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                     while 1:
                         line_full = fb_temp.readline()
                         anything = re.compile(ANYTHING_TEMPLATE)
-                        ones_condition = anything.match(line_full)
                         if '//' in line_full:
                             start = line_full.find('//')
                             line_full = line_full[:start]
@@ -176,13 +183,19 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                             if '*/' in line_full:
                                 comment = 0
                         else:
+                            ones_condition = anything.match(line_full)
                             if '{' in line_full:
                                 find_iterable(fb_temp, fb_html_describe,  condition, graph)
+                                break
                             elif '}' in line_full:
                                 close_space(fb_html_describe)
                                 graph.current_position[0] -= 1
                                 return
                             elif ones_condition:
+                                graph.current_position[0] += 1
+                                graph.current_position[1] -= 1
+                                graph.node(condition)
+                                graph.current_position[0] -= 1
                                 fb_html_describe.write('<tr><td valign=TOP>'+'\n')
                                 fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
                                 fb_html_describe.write('<tr>'+'\n')
@@ -192,11 +205,6 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                                 fb_html_describe.write('</tr>'+'\n')
                                 close_space(fb_html_describe)
                                 break
-
-            if '}' in line_full:
-                graph.current_position[0] -= 1
-                close_space(fb_html_describe)
-                return
         line_full = fb_temp.readline()
 
 
