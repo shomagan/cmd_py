@@ -14,6 +14,9 @@ except ImportError:
     comports = None
 import msvcrt
 
+TCP_IP = '192.168.1.232'
+TCP_PORT = 502
+BUFFER_SIZE = 1024
 
 def data_gen():
     t = data_gen.t
@@ -26,9 +29,6 @@ def data_gen():
     used = data_gen.used
     max_used = data_gen.max_used
 
-    TCP_IP = '192.168.1.232'
-    TCP_PORT = 502
-    BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     data = [2,75,0,135,0,136,0,137,0]
     packet = RTM_MW(data)
@@ -132,7 +132,8 @@ def main():
     avail_template = ' avail = %.1f '
     used_template = ' used = %.1f '
     max_used_template = ' max_used = %.1f '
-
+    label_text = ax.text(0.9, 1.0, '', transform=ax.transAxes)
+    label_text.set_text(TCP_IP)
     reset_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
     avail_text = ax.text(0.05, 0.8, '', transform=ax.transAxes)
     used_text = ax.text(0.05, 0.7, '', transform=ax.transAxes)

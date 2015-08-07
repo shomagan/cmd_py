@@ -1,5 +1,7 @@
 import sys
 import re
+import matplotlib.pyplot as plt
+import networkx as nx
 
 
 class SpaceType:
@@ -29,7 +31,21 @@ HTML_CONTENT = '<meta http-equiv="Content-Type" content="text/html; charset=wind
 HTML_CONTENT_NAME = '<meta content="MSHTML 6.00.2900.3698" name="GENERATOR">'
 HTML_STYLE = '<style></style><!-- saved from url=(0038)http://192.168.1.232/sp.shtml --></head>'
 HTML_TABLE_OPEN = '<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'
-ITERABLE_TEMPLATE = '(while)|(for)|(if)|(else\s*if)|(switch)'
+ITERABLE_TEMPLATE = '^\s*((while)|(for)|(if)|(else\s*if)|(switch))'
+ANYTHING_TEMPLATE = '\s*[\d\w]'
+class GraphType:
+    """Position control"""
+    def __init__(self):
+        self.current_position = [0, 0]
+        self.position = {}
+
+    def node(self, label):
+        self.position[label] = (self.current_position[0],self.current_position[1])
+
+    def clear(self):
+        self.current_position = [0, 0]
+        self.position = {}
+
 def main():
     """build fb description """
     fb_name = open('fb_name.txt', 'w')
@@ -42,43 +58,93 @@ def main():
     fb_html_describe.write(HTML_STYLE)
     fb_html_describe.write('<body>'+'\n')
     fb_name.write('Number FB and Name\n')
-    current = 0
+    current = 65
     start_structure = 0
     comment = 0
+    G = nx.MultiGraph()
+    graph = GraphType()
+
     while 1:
         current += 1
-        if current == 108:
+        graph.clear()
+        G.clear()
+        if current == 69:
             fb_html_describe.write('</table>'+'\n')
             fb_html_describe.write('</body></html>')
+            fb_html_describe.write('</tr>'+'\n')
+            fb_html_describe.write('</td>'+'\n')
             sys.exit(1)
         try:
             if current <= 9:
-                fb_temp = open('FB/fb0000'+str(current)+'.c')
+                name = 'fb0000'+str(current)
+                fb_temp = open('FB/' + name + '.c')
             elif current <= 99:
-                fb_temp = open('FB/fb000'+str(current)+'.c')
+                name = 'fb000'+str(current)
+                fb_temp = open('FB/'+name + '.c')
             else:
-                fb_temp = open('FB/fb00'+str(current)+'.c')
+                name = 'fb00'+str(current)
+                fb_temp = open('FB/'+name + '.c')
         except IOError:
             continue
         fb_name.write(fb_temp.name+'\n')
         line_full = fb_temp.readline()
         if (len(line_full)) > 2 & (line_full[0] == '/') & (line_full[1] == '*'):
-            fb_html_describe.write('<table style="width: 961px; height: 30px;" '
-                                   'border="1" cellspacing="1">'+'\n')
+            fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=0>'+'\n')
             fb_html_describe.write('<tr>'+'\n')
-            fb_html_describe.write('<td style="font-weight:font-style:italic;font-family:Verdana;'
-                                   'background-color:rgb(0,251,213);"><small><span style="color:black;">'+'\n')
+            fb_html_describe.write('<td style="font-weight:font-style:italic;font-family:Verdana;>'
+                                   '<small><span style="color:black;">'+'\n')
             fb_html_describe.write(fb_temp.name+line_full+'</span> </small></td>')
             fb_html_describe.write('</tr>'+'\n')
+            fb_html_describe.write('<tr><td valign=TOP>'+'\n')
             fb_name.write(line_full)
         else:
             fb_name.write("didn't find description")
+        for line_full in fb_temp:
+            if '//' in line_full:
+                start = line_full.find('//')
+                line_full = line_full[:start]
+            if '/*' in line_full:
+                comment = 1
+            if comment:
+                if '*/' in line_full:
+                    comment = 0
+            else:
+                function_name = name + '_exec'
+                function_name_r = name.upper() + '_exec'
+                if function_name in line_full:
+                    find_iterable(fb_temp, fb_html_describe, line_full, graph)
+                    print(graph.position)
+                    G.add_nodes_from(graph.position.keys())
+                    size = abs(graph.current_position[1])
+                    plt.figure(figsize=(size, size))
+                    nx.draw_networkx_nodes(G, graph.position, node_size=700, node_color='w')
+                    nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
 
-        find_iterable(fb_temp)
+                    print(size)
+                    plt.axis('off')
+                    plt.savefig(name+".png") # save as png
+                elif function_name_r in line_full:
+                    find_iterable(fb_temp, fb_html_describe, line_full, graph)
 
 
 
-def find_iterable(fb_temp):
+
+def find_iterable(fb_temp, fb_html_describe, line_current, graph):
+    graph.current_position[0] += 1
+    graph.current_position[1] -= 1
+    fb_html_describe.write('<tr><td valign=TOP>'+'\n')
+    fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
+    fb_html_describe.write('<tr>'+'\n')
+    fb_html_describe.write('<td style="font-weight:font-style:italic;font-family:Verdana;>'
+                           '<small><span style="color:black;">'+'\n')
+    fb_html_describe.write(line_current+'</span> </small></td>')
+    fb_html_describe.write('</tr>'+'\n')
+    graph.node(line_current)
+    comment = 0
+    if '}' in line_current:
+        graph.current_position[0] -= 1
+        close_space(fb_html_describe)
+        return
     line_full = fb_temp.readline()
     while line_full:
         if '//' in line_full:
@@ -90,9 +156,56 @@ def find_iterable(fb_temp):
             if '*/' in line_full:
                 comment = 0
         else:
-            if ITERABLE_TEMPLATE in line_full:
+            iterable_type = re.compile(ITERABLE_TEMPLATE)
+            start_place = iterable_type.match(line_full)
+            if start_place:
+                condition = line_full
+                if '{' in line_full:
+                    find_iterable(fb_temp, fb_html_describe, line_full, graph)
+                else:
+                    while 1:
+                        line_full = fb_temp.readline()
+                        anything = re.compile(ANYTHING_TEMPLATE)
+                        ones_condition = anything.match(line_full)
+                        if '//' in line_full:
+                            start = line_full.find('//')
+                            line_full = line_full[:start]
+                        if '/*' in line_full:
+                            comment = 1
+                        if comment:
+                            if '*/' in line_full:
+                                comment = 0
+                        else:
+                            if '{' in line_full:
+                                find_iterable(fb_temp, fb_html_describe,  condition, graph)
+                            elif '}' in line_full:
+                                close_space(fb_html_describe)
+                                graph.current_position[0] -= 1
+                                return
+                            elif ones_condition:
+                                fb_html_describe.write('<tr><td valign=TOP>'+'\n')
+                                fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
+                                fb_html_describe.write('<tr>'+'\n')
+                                fb_html_describe.write('<td style="font-weight:font-style:italic;font-family:Verdana;>'
+                                                       '<small><span style="color:black;">'+'\n')
+                                fb_html_describe.write(condition+'</span> </small></td>')
+                                fb_html_describe.write('</tr>'+'\n')
+                                close_space(fb_html_describe)
+                                break
 
+            if '}' in line_full:
+                graph.current_position[0] -= 1
+                close_space(fb_html_describe)
+                return
         line_full = fb_temp.readline()
+
+
+def close_space(fb_html_describe):
+    fb_html_describe.write('</table>'+'\n')
+    fb_html_describe.write('</td>'+'\n')
+    fb_html_describe.write('</tr>'+'\n')
+
+
 
 
 def int_to_char(cmd_x):

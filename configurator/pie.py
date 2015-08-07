@@ -1,43 +1,27 @@
+#!/usr/bin/env python
 """
-Demo of a basic pie chart plus a few additional features.
-
-In addition to the basic pie chart, this demo shows a few optional features:
-
-    * slice labels
-    * auto-labeling the percentage
-    * offsetting a slice with "explode"
-    * drop-shadow
-    * custom start angle
-
-Note about the custom start angle:
-
-The default ``startangle`` is 0, which would start the "Frogs" slice on the
-positive x-axis. This example sets ``startangle = 90`` such that everything is
-rotated counter-clockwise by 90 degrees, and the frog slice starts on the
-positive y-axis.
+Draw a graph with matplotlib.
+You must have matplotlib for this to work.
 """
-import matplotlib.pyplot as plt
-import time
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+try:
+    import matplotlib.pyplot as plt
+except:
+    raise
 
-# The slices will be ordered and plotted counter-clockwise.
-labels = 'Frogs', 'Hogs', 'Dogs', 'Logs'
-sizes = [15, 30, 45, 10]
-colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
-explode = (0, 0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
-plt.interactive(True)# enable interactive mode, in case it was
+import networkx as nx
 
-plt.hold(False)  # empty window will pop up
+G=nx.house_graph()
+# explicitly set positions
+pos={0:(0,0),
+     1:(1,0),
+     2:(0,1),
+     3:(1,1),
+     4:(0.5,2.0)}
 
-plt.pie(sizes, explode=explode, labels=labels, colors=colors,
-        autopct='%1.1f%%', shadow=True, startangle=90)
-# Set aspect ratio to be equal so that pie is drawn as a circle.
-plt.axis('equal')
-
-while 1:
-    time.sleep(5.0)
-    for i in range(len(sizes)):
-        sizes[i] += 1
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors,
-            autopct='%1.1f%%', shadow=True, startangle=90)
-
-
+nx.draw_networkx_nodes(G,pos,node_size=2000,nodelist=[4])
+nx.draw_networkx_nodes(G,pos,node_size=3000,nodelist=[0,1,2,3],node_color='b')
+nx.draw_networkx_edges(G,pos,alpha=0.5,width=6)
+plt.axis('off')
+plt.savefig("house_with_colors.png") # save as png
+plt.show() # display
