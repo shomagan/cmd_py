@@ -2,7 +2,7 @@ import sys
 import re
 import matplotlib.pyplot as plt
 import networkx as nx
-
+import variable_fb
 
 class SpaceType:
     """ storage structure info"""
@@ -38,9 +38,16 @@ class GraphType:
     def __init__(self):
         self.current_position = [0, 0]
         self.position = {}
+        self.label_position = {}
 
     def node(self, label):
-        self.position[label] = (self.current_position[0],self.current_position[1])
+        self.current_position[1] -= 0.5
+        label = str(self.current_position[1])+label
+        self.position[label] = (self.current_position[0], self.current_position[1])
+    def label(self, label):
+        self.current_position[1] -= 0.5
+        label = str(self.current_position[1])+label
+        self.label_position[label] = (self.current_position[0], self.current_position[1])
 
     def clear(self):
         self.current_position = [0, 0]
@@ -113,27 +120,42 @@ def main():
                 function_name_r = name.upper() + '_exec'
                 if function_name in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
-                    print(graph.position)
                     G.add_nodes_from(graph.position.keys())
                     size = abs(graph.current_position[1])
                     plt.figure(figsize=(size, size))
                     nx.draw_networkx_nodes(G, graph.position, node_size=500, node_color='w')
+                    max_position_x = 0
                     for key in graph.position:
+                        if graph.position[key][0] > max_position_x:
+                            max_position_x = graph.position[key][0]
                         graph.position[key] = (graph.position[key][0], graph.position[key][1]+0.3)
                     nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
+                    max_position_y = abs(graph.current_position[1])
+                    variable = variable_fb.find(current)
+                    graph.clear()
+                    G.clear()
+                    dY = max_position_y/len(variable.in_array)
+                    if dY < 1:
+                        dY = 1
+                    graph.current_position[0] = 0
 
-                    print(size)
+                    for key in variable.in_array:
+                        graph.current_position[1] -= dY
+                        graph.node(variable.in_array[key][0])
+                    G.add_nodes_from(graph.position.keys())
+                    nx.draw_networkx_nodes(G, graph.position, node_size=500, node_color='w')
+                    nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
                     plt.axis('off')
-                    plt.savefig(name+".png") # save as png
+                    plt.savefig(name+".rw") # save as png
                 elif function_name_r in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
 
 
 
 
+
 def find_iterable(fb_temp, fb_html_describe, line_current, graph):
     graph.current_position[0] += 1
-    graph.current_position[1] -= 1
     fb_html_describe.write('<tr><td valign=TOP>'+'\n')
     fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
     fb_html_describe.write('<tr>'+'\n')
@@ -143,10 +165,6 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
     fb_html_describe.write('</tr>'+'\n')
     graph.node(line_current)
     comment = 0
-    if '}' in line_current:
-        graph.current_position[0] -= 1
-        close_space(fb_html_describe)
-        return
     line_full = fb_temp.readline()
     while line_full:
         if '//' in line_full:
@@ -193,7 +211,7 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                                 return
                             elif ones_condition:
                                 graph.current_position[0] += 1
-                                graph.current_position[1] -= 1
+                                graph.current_position[1] -= 0.5
                                 graph.node(condition)
                                 graph.current_position[0] -= 1
                                 fb_html_describe.write('<tr><td valign=TOP>'+'\n')
@@ -205,6 +223,7 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                                 fb_html_describe.write('</tr>'+'\n')
                                 close_space(fb_html_describe)
                                 break
+            graph.label(line_full)
         line_full = fb_temp.readline()
 
 
