@@ -3,6 +3,8 @@ import re
 import matplotlib.pyplot as plt
 import networkx as nx
 import variable_fb
+import json
+from networkx.readwrite import json_graph
 
 class SpaceType:
     """ storage structure info"""
@@ -121,17 +123,17 @@ def main():
                 if function_name in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
                     G.add_nodes_from(graph.position.keys())
-                    size = abs(graph.current_position[1])
-                    plt.figure(figsize=(size, size))
-                    nx.draw_networkx_nodes(G, graph.position, node_size=500, node_color='w')
                     max_position_x = 0
                     for key in graph.position:
                         if graph.position[key][0] > max_position_x:
                             max_position_x = graph.position[key][0]
                         graph.position[key] = (graph.position[key][0], graph.position[key][1]+0.3)
-                    nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
                     max_position_y = abs(graph.current_position[1])
                     variable = variable_fb.find(current)
+                    data = json_graph.node_link_data(G)
+                    s = json.dumps(data)
+                    json_file = open('json_file.json', 'w')
+                    json_file.write(s)
                     graph.clear()
                     G.clear()
                     dY = max_position_y/len(variable.in_array)
@@ -143,10 +145,6 @@ def main():
                         graph.current_position[1] -= dY
                         graph.node(variable.in_array[key][0])
                     G.add_nodes_from(graph.position.keys())
-                    nx.draw_networkx_nodes(G, graph.position, node_size=500, node_color='w')
-                    nx.draw_networkx_labels(G, graph.position, font_family='sans-serif')
-                    plt.axis('off')
-                    plt.savefig(name+".rw") # save as png
                 elif function_name_r in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
 
