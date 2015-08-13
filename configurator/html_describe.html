@@ -1,0 +1,1010 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd"><html><head><title>fb describe</title><meta charset="cp1251"><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta content="MSHTML 6.00.2900.3698" name="GENERATOR"><style></style><!-- saved from url=(0038)http://192.168.1.232/sp.shtml --></head><body>
+<table border=1 cellspacing=0 cellpadding=0>
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+FB/fb00066.c/* ФБ "ГЗУ (Башнефть) v.2" */
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+void fb00066_exec(void)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (IN->Enable.Data.bit) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (IN->Hold.Data.bit)   </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    else                     </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if ( (IN->GP_enabled.Data.bit) && ((OUT->GZUsost.Data.uint16 & GP_En) == 0) ) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (IN->ManualOtvNum.Data.uint8 != OUT->ManualOtvNum.Data.uint8)    </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (IN->ManualOtvNum.Data.uint8 <= IN->GZU_OtvNum.Data.uint8)     </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (OUT->GZUsost.Data.uint16 & Zamer)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (IN->ManualOtvNum.Data.uint8 == 0)   </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else if (IN->KodPSM.Data.uint8 & 0x0F)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          else if ((OUT->GZUsost.Data.uint16 & Forward) == 0)                         </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->KodPSM.Data.uint8 & 0x0F) == IN->ManualOtvNum.Data.uint8)        </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              else if (IN->KodPSM.Data.uint8 & 0x0F)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+	  if (IN->ExtraOtvNum.Data.uint8 && (IN->ExtraOtvNum.Data.uint8 <= IN->GZU_OtvNum.Data.uint8)) {    </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				if (OUT->GZUsost.Data.uint16 & (Manual)) { </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				} else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+	  if ((IN->GP_enabled.Data.bit) && !(OUT->GZUsost.Data.uint16 & (Manual | Forward | Reverse)) && (VAR->TempExtra.Data.uint8 != 0)) { </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				if (IN->KodPSM.Data.uint8 != VAR->TempExtra.Data.uint8) {</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				        if (OUT->GZUsost.Data.uint16 & Zamer) {	OUT->EndPeriod.Data.bit = 1; }
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				} else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if ( IN->CmdStopReset.Data.bit && (OUT->GZUsost.Data.uint16 & (Stop | FullStop)) ) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->GZUsost.Data.uint16 & Zamer)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        else if (IN->KodPSM.Data.uint8 & 0x0F)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (IN->CmdSwitchOtv.Data.bit) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->GZUsost.Data.uint16 & Manual1Cnt)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->GZUsost.Data.uint16 & Zamer)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (!(OUT->GZUsost.Data.uint16 & (Stop | FullStop)) )
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (VAR->Timer1.Data.uint32)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if ((OUT->GZUsost.Data.uint16 & (Stab | Forward | Reverse | Zamer)) == 0) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if ( ((IN->KodPSM.Data.uint8 & 0x0F) == 0) || ((IN->KodPSM.Data.uint8 & 0x0F) > IN->GZU_OtvNum.Data.uint8) )
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (OUT->GZUsost.Data.uint16 & NeedPerevod) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (IN->GP_enabled.Data.bit)   </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if (IN->KodPSM.Data.uint8 & 0x0F)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else                              </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if ((IN->KodPSM.Data.uint8 & 0x0F) == 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              else if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if  ( ( ((OUT->GZUsost.Data.uint16 & Manual) == 0) && (IN->OtvMask.Data.uint16 & (1 << ((IN->KodPSM.Data.uint8 & 0x0F) - 1))) ) || \
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if (IN->KodPSM.Data.uint8 & 0x0F)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else </span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        else if (OUT->GZUsost.Data.uint16 & Forward)                            </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if ((!VAR->Timer1.Data.uint32) || (!IN->GP_enabled.Data.bit) )
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        else if (OUT->GZUsost.Data.uint16 & Reverse)                            </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (!VAR->Timer1.Data.uint32)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (OUT->GZUsost.Data.uint16 & NeedPerevod) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if ( ((OUT->GZUsost.Data.uint16 & Kluch) == 0) || ((OUT->GZUsost.Data.uint16 & Manual) == 0) )
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                if (VAR->KodPSMOld.Data.uint8 == (IN->KodPSM.Data.uint8 & 0x0F))
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                else if (((IN->KodPSM.Data.uint8 & 0x0F) == 0) || ((IN->KodPSM.Data.uint8 & 0x0F) > IN->GZU_OtvNum.Data.uint8))
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                else if (VAR->KodPSMOld.Data.uint8 >= IN->GZU_OtvNum.Data.uint8) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                  if ((IN->KodPSM.Data.uint8 & 0x0F) > 1){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+									}else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                else if ((IN->KodPSM.Data.uint8 & 0x0F) != (VAR->KodPSMOld.Data.uint8 + 1)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+								}else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if ((OUT->GZUsost.Data.uint16 & (PSMbraked | GPbraked | Stop)) == 0)  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                if ( (OUT->GZUsost.Data.uint16 & Manual) == 0)  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                  if (IN->OtvMask.Data.uint16 & (1 << ((IN->KodPSM.Data.uint8 & 0x0F) - 1)) ) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                  else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                    if (VAR->TryCount.Data.uint8 < IN->TryNum.Data.uint8){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                    else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                else    </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                  if ( ((IN->KodPSM.Data.uint8 & 0x0F) == OUT->ManualOtvNum.Data.uint8) || (OUT->GZUsost.Data.uint16 & Manual1Cnt) ) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                  else    </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                    if (VAR->TryCount.Data.uint8 < IN->TryNum.Data.uint8)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                    else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                if (OUT->GZUsost.Data.uint16 & Stop)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        else if (OUT->GZUsost.Data.uint16 & Stab)                            </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (!VAR->Timer1.Data.uint32)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->KodPSM.Data.uint8 & 0x0F) != OUT->TekOtvod.Data.uint8) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (OUT->GZUsost.Data.uint16 & Kluch)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if (++VAR->Timer2.Data.uint16 > (KluchDelay*FBkernelRate))  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                if ((IN->KodPSM.Data.uint8 & 0x0F) == 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                else if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        else if (OUT->GZUsost.Data.uint16 & Zamer)                            </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if ( (IN->EndPeriod.Data.bit) && ((OUT->GZUsost.Data.uint16 & Kluch)==0) )
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (OUT->GZUsost.Data.uint16 & Manual)  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if (OUT->GZUsost.Data.uint16 & Manual1Cnt){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else                                      </span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->KodPSM.Data.uint8 & 0x0F) != OUT->TekOtvod.Data.uint8) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (OUT->GZUsost.Data.uint16 & Kluch)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (++VAR->Timer2.Data.uint16 > (KluchDelay*FBkernelRate))  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if ((IN->KodPSM.Data.uint8 & 0x0F) == 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              else if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      else  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if ( (OUT->GZUsost.Data.uint16 & FullStop) == 0)  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (VAR->APV_TryCount.Data.uint8 >= IN->APV_TryNum.Data.uint8)  </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          else
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (VAR->Timer2.Data.uint32)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if ((IN->KodPSM.Data.uint8 & 0x0F) != OUT->TekOtvod.Data.uint8) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->GZUsost.Data.uint16 & Kluch)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (++VAR->Timer1.Data.uint32 > (KluchDelay*FBkernelRate))  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->KodPSM.Data.uint8 & 0x0F) == 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            else if ((IN->KodPSM.Data.uint8 & 0x0F) > 1)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if ( (OUT->GZUsost.Data.uint16 & Stop) && ((OUT->GZUsost.Data.uint16 & Kluch) == 0) )  </span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  else  </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (IN->GP_enabled.Data.bit)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<table border=1 cellspacing=0 cellpadding=0>
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+FB/fb00067.c/* ФБ "Фильтр дискретный" */
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+void fb00067_exec(void) {
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+	if (KernelInfo.EventFlags.Bit.CfgFirstExec) OUT->Dout.Data.bit = IN->Din.Data.bit;
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+		if (VAR->Timer.Data.uint32 < IN->Ust.Data.uint32) VAR->Timer.Data.uint32++;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<table border=1 cellspacing=0 cellpadding=0>
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+FB/fb00068.c/* ФБ "Автомат управления приводом по Кнап" */
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+void fb00068_exec(void)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  for(i=0;i<(TIME_PERIOD_NUMBER*2);i++)
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (IN->Time[i].Data.uint16 >= 1440) {IN->Time[i].Data.uint16=0xFFFF;}
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (KernelInfo.EventFlags.Bit.CfgFirstExec) </span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (OUT->WattPreviuDay.Data.uint32 == 0xFFFFFFFF){OUT->WattPreviuDay.Data.float32 =0;}          </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (OUT->WattCurrentDay.Data.uint32 == 0xFFFFFFFF){OUT->WattCurrentDay.Data.float32=0;}
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</body></html></tr>
+</td>

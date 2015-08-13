@@ -1,0 +1,6 @@
+{"nodes":[{"name":"if (VAR->Timer.Data.uint32 < IN->Ust.Data.uint32) VAR->Timer.Data.uint32++;","group":1,"x":60,"y":120.3},
+{"name":"if (KernelInfo.EventFlags.Bit.CfgFirstExec) OUT->Dout.Data.bit = IN->Din.Data.bit;","group":1,"x":40,"y":100.3},
+{"name":"Din","group":1,"x":40,"y":100.0},
+{"name":"Ust","group":1,"x":40,"y":220.0},
+{"name":"close","group":8,"x":0,"y":200}],
+"links":[]}
