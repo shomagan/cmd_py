@@ -50,8 +50,11 @@ def main():
   print (ser.name)          # check which port was really used  
   ser.write("hello")      # write a string
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
+#           7E   03   F0   16   01   51   44   05   80   96   70   97   00   97   04   C0 5A 00 02 70 EE D6 06 7E COM2
+#           7E   03   F0   16   00   51   44   05   80   96   70   97   00   97   04   C0 5A 00 02 70 EE D5 06 7E COM1
+#          7E   03   F0   16   01   51   44   01   80   96   70   97   00   97   04   C0   5A   00   02 70 EE D2 06 7E
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x00,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x06]
+  cmd = [0x7E,0x03,0xF0,0x16,0x00,0x46,0x52,0xA0,0x8F,0x96,0x70,0x97,0x00,0x03,0x04,0xc0,0x5a,0x00,0x02]
   mdbtcp = [0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x80,0x00,0x06]
   cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0xe8,0x05,0x03,0x00,0x04]  
   ChekSum = RTM64ChkSUM(cmd_FR_T[1:] , len(cmd_FR_T)-1)
@@ -82,7 +85,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '192.168.1.241'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -134,7 +137,7 @@ def main():
      elif q=='c':
        s.connect((TCP_IP, TCP_PORT))
      elif q=='t':
-       mdb = int_to_char(mdbtcp)
+       mdb = int_to_char(cmd)
        mdbtcp_s=''
        for i in range(0,len(mdb)):
            mdbtcp_s=mdbtcp_s+mdb[i]

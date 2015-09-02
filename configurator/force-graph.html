@@ -16,16 +16,17 @@
 <body>
 <script src=dtree/d3.min.js></script>
 <script>
-var width = 600
+var width = 2600
     height = 900
 
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
     .charge(0)
-    .linkDistance(100)
+//    .linkDistance(100)
     .linkStrength(0)
     .gravity(0)
+    .friction(0.5)
 
 d3.json("fb00066.json", function(error, graph) {
   if (error) throw error;
@@ -37,7 +38,7 @@ d3.json("fb00066.json", function(error, graph) {
 
 for (nd in graph.nodes){    
   if (graph.nodes[nd].x>width){
-    width = graph.nodes[nd].x+100
+    width = graph.nodes[nd].x+800
   }
   if (graph.nodes[nd].y>height){
     height = graph.nodes[nd].y+100

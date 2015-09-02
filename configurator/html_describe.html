@@ -157,15 +157,15 @@ void fb00066_exec(void)
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
 				if (IN->KodPSM.Data.uint8 != VAR->TempExtra.Data.uint8) {</span> </small></td></tr>
-</table>
-</td>
-</tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
 				        if (OUT->GZUsost.Data.uint16 & Zamer) {	OUT->EndPeriod.Data.bit = 1; }
 </span> </small></td></tr>
+</table>
+</td>
+</tr>
 </table>
 </td>
 </tr>
@@ -333,6 +333,7 @@ void fb00066_exec(void)
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
             if  ( ( ((OUT->GZUsost.Data.uint16 & Manual) == 0) && (IN->OtvMask.Data.uint16 & (1 << ((IN->KodPSM.Data.uint8 & 0x0F) - 1))) ) || \
+              ( (OUT->GZUsost.Data.uint16 & Manual) && ((IN->KodPSM.Data.uint8 & 0x0F) == OUT->ManualOtvNum.Data.uint8) ) )
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -965,9 +966,6 @@ void fb00068_exec(void)
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
   for(i=0;i<(TIME_PERIOD_NUMBER*2);i++)
 </span> </small></td></tr>
-</table>
-</td>
-</tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
@@ -985,9 +983,6 @@ void fb00068_exec(void)
 </table>
 </td>
 </tr>
-</table>
-</td>
-</tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
@@ -1002,6 +997,911 @@ void fb00068_exec(void)
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
     if (OUT->WattCurrentDay.Data.uint32 == 0xFFFFFFFF){OUT->WattCurrentDay.Data.float32=0;}
 </span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if((VAR->KernelClk.Data.uint32%KernelInfo.FBkernelRate)==0){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if((VAR->KernelClk.Data.uint32%FBkernelRate)==0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if ((time_fb68&BIT(SEC))&&((VAR->SecTimer.Data.uint32%60)==0)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (time_fb68&BIT(SEC)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (input_mask & BIT(ACTUATOR)) {
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (OUT->KNAPTimer.Data.uint16<0xFFFE) OUT->KNAPTimer.Data.uint16++;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      else 
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    }else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (OUT->State.Data.uint32&BIT(START_TIME)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(OUT->DisregardTimer.Data.uint16!=0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if(IN->KnapOK.Data.bit){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (VAR->KnapCalc.Data.uint32 <= IN->KnapCalc.Data.uint8){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    }else{</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if(time_fb68&BIT(MIN)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (input_mask & BIT(ACTUATOR)){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (DaySec==0){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if(OUT->DayUpTimer.Data.uint16!=0) OUT->PrevDayUpTimer.Data.uint16=OUT->DayUpTimer.Data.uint16;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if ((VAR->Input_mask.Data.uint16 & BIT(ACTUATOR))!=(input_mask & BIT(ACTUATOR))){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if(IN->KnapOK.Data.bit){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (OUT->Knap.Data.uint8 < IN->KnapPorog.Data.uint8){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(VAR->KnapCalc.Data.uint32 > IN->KnapIgnor.Data.uint8){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (VAR->KnapFail.Data.uint8 > IN->KnapCalc.Data.uint8){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if(IN->InputPressure.Data.uint16 > IN->MaxPressure.Data.uint16){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if(VAR->PRESSURE_FILT.Data.uint16>FiltPressure) {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else if(IN->InputPressure.Data.uint16 < IN->MinPressure.Data.uint16){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if(VAR->PRESSURE_FILT.Data.uint16>FiltPressure){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (!(IN->Mode.Data.uint8 & BIT(ENABLE_SP))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else if (input_mask&BIT(ACTUATOR)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (!(OUT->State.Data.uint32&BIT(START_TIME))){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(OUT->State.Data.uint32 & BIT(SP)){OUT->SPTimer.Data.uint16=IN->SPTime.Data.uint16;}
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if ((time_fb68&BIT(MIN))&&(OUT->SPTimer.Data.uint16!=0)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (OUT->SPTimer.Data.uint16>1){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->CntRestartSP.Data.uint16 > 0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (!(IN->Mode.Data.uint8&BIT(ENABLE_PRESSURE))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else if (input_mask&BIT(ACTUATOR)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (!(OUT->State.Data.uint32&BIT(START_TIME))){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(OUT->State.Data.uint32 & BIT(PRESSURE_BIG)){OUT->APVTimer.Data.uint16=IN->DownTimeBigPressure.Data.uint16;}
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(OUT->State.Data.uint32 & BIT(PRESSURE_LOW)){OUT->APVTimer.Data.uint16=IN->DownTimeLowPressure.Data.uint16;}
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (IN->Protection.Data.bit){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if ((time_fb68&BIT(MIN))&&(OUT->APVTimer.Data.uint16!=0)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (OUT->APVTimer.Data.uint16>1){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (OUT->CntRestartAPV.Data.uint16 > 0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if(input_mask&BIT(ARM_BUTTON)){ </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else if(input_mask&BIT(AVTO_BUTTON)){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if(IN->Mode.Data.uint8 & OPERATOR_MODE){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (!(OUT->State.Data.uint32 & BIT(OPERATOR))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if(IN->Mode.Data.uint8&BIT(PUSK)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    else{</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (IN->Mode.Data.uint8 & TIME_MODE){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if(!(OUT->State.Data.uint32 & BIT(TIME))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (IN->Mode.Data.uint8 & BIT(PUSK)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          for(i=0;i<TIME_PERIOD_NUMBER;i++)
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if ((IN->Time[i].Data.uint16 !=0xFFFF)&&(IN->Time[i+5].Data.uint16 !=0xFFFF)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              if (IN->Time[i].Data.uint16 < IN->Time[i+5].Data.uint16){ 
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                if ((MinuteOnDay >= IN->Time[i].Data.uint16)&&(MinuteOnDay <= IN->Time[i+5].Data.uint16)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                }else {OUT->State.Data.uint32&=~BIT(i+16);}</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+              }else if (IN->Time[i].Data.uint16 > IN->Time[i+5].Data.uint16){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                    (MinuteOnDay <= IN->Time[i+5].Data.uint16)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+                }else {OUT->State.Data.uint32&=~BIT(i+16);}</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (IN->Mode.Data.uint8 & TIMER_MODE){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if(!(OUT->State.Data.uint32 & BIT(TIMER))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if((IN->Mode.Data.uint8 & BIT(PUSK)) &&(OUT->State.Data.uint32&BIT(TIMING_PUSK))){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if(OUT->DownTimer.Data.uint16 == 0 && OUT->UpTimer.Data.uint16 == 0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (OUT->DownTimer.Data.uint16 != 0 && OUT->UpTimer.Data.uint16 == 0){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (time_fb68&BIT(MIN)) OUT->DownTimer.Data.uint16--;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          }else if (OUT->UpTimer.Data.uint16 != 0 && OUT->DownTimer.Data.uint16 == 0){</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+            if (time_fb68&BIT(MIN)) OUT->UpTimer.Data.uint16--;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if((IN->Mode.Data.uint8 & BIT(PUSK))&&(OUT->State.Data.uint32&BIT(TIMING_PUSK))){   </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        ||((OUT->APVTimer.Data.uint16!=0))){//соответсвующих защит или аварий
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if ((OUT->State.Data.uint32&BIT(PUSK_ACTUATOR))&&(OUT->State.Data.uint32 & BIT(BEFORSTART))){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if(time_fb68&BIT(SEC)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if ((--OUT->TimerBeforeStart.Data.uint8)==0){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if (IN->Mode.Data.uint8 & IMPULSE){ </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if ((OUT->State.Data.uint32&BIT(PUSK_ACTUATOR))!=(input_mask & BIT(ACTUATOR))){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if ((OUT->State.Data.uint32&BIT(PUSK_ACTUATOR)) && IN->ActuatorRestart.Data.uint32 && VAR->ActuatorTimer.Data.uint32==0){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (!(OUT->State.Data.uint32&BIT(PUSK_ACTUATOR))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    }else{
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (input_mask & BIT(ACTUATOR)){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (time_fb68&BIT(SEC)){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+      if (VAR->ActuatorTimer.Data.uint32){
+</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if(VAR->ActuatorTimer.Data.uint32==0){</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  }else{                                  </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+    if (!(OUT->ActuatorOn.Data.bit) && (OUT->State.Data.uint32&BIT(PUSK_ACTUATOR))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if ((DaySec == 0)&&(time_fb68&BIT(SEC))){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if((time_fb68&BIT(MIN))){ </span> </small></td></tr>
+</table>
+</td>
+</tr>
 </table>
 </td>
 </tr>

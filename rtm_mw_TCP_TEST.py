@@ -98,7 +98,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.233'
+  TCP_IP = '192.168.1.231'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -162,7 +162,7 @@ def main():
         print ("Can't send tcp Packet")
       if data_buf:
         str_temp = Packet.ChekPacket(data_buf)
-        if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!= 192 or Packet.DataInPacket[2]!= 168 or Packet.DataInPacket[3]!= 1 or Packet.DataInPacket[4]!= 233):
+        if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!= 192 or Packet.DataInPacket[2]!= 168 or Packet.DataInPacket[3]!= 1 or Packet.DataInPacket[4]!= 231):
           str_temp += 'DataInPacket_Error'
         if(len(Packet.DataInPacket)!=5):
           str_temp += 'DataInPacket_Error'
@@ -209,7 +209,7 @@ def main():
             s.connect((TCP_IP, TCP_PORT))
         if data_buf:
           str_temp = Packet.ChekPacket(data_buf)
-          if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!= 192 or Packet.DataInPacket[2]!= 168 or Packet.DataInPacket[3]!= 1 or Packet.DataInPacket[4]!= 233):
+          if (Packet.DataInPacket[0]!= 2 or Packet.DataInPacket[1]!= 192 or Packet.DataInPacket[2]!= 168 or Packet.DataInPacket[3]!= 1 or Packet.DataInPacket[4]!= 231):
             str_temp += 'DataInPacket_Error'
           if(len(Packet.DataInPacket)!=5):
             str_temp += 'DataInPacket_Error'
@@ -249,12 +249,12 @@ class RTM_MW(object):
   def __init__(self,Data):
     self.Kod = 250
     self.Len = [0x00,0x00]
-    self.RetranNum = 0
+    self.RetranNum = 1
     self.Flag = 0x00
     self.MyAdd = [7,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [12,0,0x00]
+    self.DestAdd = [3,0,0x00]
     self.DestAdd[2] = 2
     self.Tranzaction  = 0xe4
     self.PacketNumber = 1

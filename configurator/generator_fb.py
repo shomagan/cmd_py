@@ -1,6 +1,5 @@
 import sys
 import re
-import networkx as nx
 import variable_fb
 
 class SpaceType:
@@ -30,37 +29,50 @@ HTML_CONTENT = '<meta http-equiv="Content-Type" content="text/html; charset=wind
 HTML_CONTENT_NAME = '<meta content="MSHTML 6.00.2900.3698" name="GENERATOR">'
 HTML_STYLE = '<style></style><!-- saved from url=(0038)http://192.168.1.232/sp.shtml --></head>'
 HTML_TABLE_OPEN = '<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'
-ITERABLE_TEMPLATE = '^\s*((while)|(for)|(if)|(else\s*(if)*)|(switch))'
-ITERABLE_TEMPLATE_FULl = '^\s*(?P<operator>((while)|(for)|(if)|(else\s*(if)*)|(switch))\s*[\w\W]*)?$'
+ITERABLE_TEMPLATE = '^\s*(\})?\s*((while)|(for)|(if)|(else\s*(if)*)|(switch))'
+
 ANYTHING_TEMPLATE = '\s*[\d\w]'
 class GraphType:
     """Position control"""
     def __init__(self):
         self.current_position = [80, 0]
-        self.position = {}
-        self.label_position = {}
+        self.position = []
+        self.links = []
+        self.node_number = 0
 
-    def node(self, label):
-        label = label[:-1]
-        r_e = re.compile(ITERABLE_TEMPLATE_FULl)
-        test = r_e.match(label)
-        if test:
-            l = r_e.search(label)
-            label = l.group('operator')
-            self.position[label] = (self.current_position[0], self.current_position[1])
-            self.current_position[1] += 20
+    def add_node(self, label):
+        #ITERABLE_TEMPLATE_FULl = '^\s*(?P<operator>((while)|(for)|(if)|(else\s*(if)*)|(switch))\s*[\w\W]*)?$'
+        label = label.replace("\n", "")
+        label = label.replace("\\", "")
+        label = label.replace("\t", "")
+        if "if" in label:
+            self.position.append((label, self.current_position[0], self.current_position[1], self.node_number, 1))
+        elif "else" in label:
+            self.position.append((label, self.current_position[0], self.current_position[1], self.node_number, 2))
+        elif "for" in label:
+            self.position.append((label, self.current_position[0], self.current_position[1], self.node_number, 3))
+        elif "while" in label:
+            self.position.append((label, self.current_position[0], self.current_position[1], self.node_number, 4))
+        self.node_number += 1
+        self.current_position[1] += 20
     def add_var(self, label):
-        self.position[label] = (self.current_position[0], self.current_position[1])
+        self.position.append((label, self.current_position[0], self.current_position[1], self.node_number, 5))
+        self.node_number += 1
         self.current_position[1] += 20
-
+    def add_link(self, node1, node2):
+        self.links.append((node1, node2))
     def label(self, label):
+        label = label.replace("\n", "")
+        label = label.replace("\\", "")
+        label = label.replace("\t", "")
+        self.position.append((label, self.current_position[0], self.current_position[1], self.node_number,8))
+        self.node_number += 1
         self.current_position[1] += 20
-        label = str(self.current_position[1])+label
-        self.label_position[label] = (self.current_position[0], self.current_position[1])
-
     def clear(self):
         self.current_position = [0, 0]
-        self.position = {}
+        self.position = []
+        self.links = []
+        self.node_number = 0
 
 def main():
     """build fb description """
@@ -75,15 +87,12 @@ def main():
     fb_html_describe.write('<body>'+'\n')
     fb_name.write('Number FB and Name\n')
     current = 65
-    start_structure = 0
     comment = 0
-    G = nx.MultiGraph()
     graph = GraphType()
 
     while 1:
         current += 1
         graph.clear()
-        G.clear()
         if current == 69:
             fb_html_describe.write('</table>'+'\n')
             fb_html_describe.write('</body></html>')
@@ -128,33 +137,31 @@ def main():
                 function_name = name + '_exec'
                 function_name_r = name.upper() + '_exec'
                 if function_name in line_full:
+                    graph.current_position[1] = 20
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
                     max_position_x = 0
-                    for key in graph.position:
-                        if graph.position[key][0] > max_position_x:
-                            max_position_x = graph.position[key][0]
-                        graph.position[key] = (graph.position[key][0], graph.position[key][1]+0.3)
-                    max_position_y = abs(graph.current_position[1])
-                    variable = variable_fb.find(current)
+                    max_position_y = graph.current_position[1]
                     json_file = open(name+'.json', 'w')
                     json_file.write('{"nodes":[')
-                    for key in graph.position:
-                        json_file.write('{"name":'+'"'+key+'"'+',"group":1,"x":'+str(graph.position[key][0])+
-                                        ',"y":'+str(graph.position[key][1])+'},\n')
-                    graph.clear()
+                    variable = variable_fb.find(current)
                     dY = max_position_y/len(variable.in_array)
                     if dY < 1:
                         dY = 1
                     graph.current_position[0] = 40
-
+                    graph.current_position[1] = 40
                     for key in variable.in_array:
                         graph.current_position[1] += dY
                         graph.add_var(variable.in_array[key][0])
-                    for key in graph.position:
-                        json_file.write('{"name":'+'"'+key+'"'+',"group":1,"x":'+str(graph.position[key][0])+
-                                        ',"y":'+str(graph.position[key][1])+'},\n')
-
-                    json_file.write('{"name":"close","group":8,"x":0,"y":'+str(max_position_y)+'}],\n"links":[]}')
+                        add_links(variable.in_array[key][0], graph, len(graph.position))
+                    for i in range(len(graph.position)):
+                        json_file.write('{"name":'+'"'+graph.position[i][0]+'"'+',"group":'+str(graph.position[i][4])+',"x":'+str(graph.position[i][1])+
+                                        ',"y":'+str(graph.position[i][2])+',"pos":'+str(graph.position[i][3])+'},\n')
+                    json_file.write('{"name":"close","group":8,"x":0,"y":'+str(max_position_y)+'}],\n"links":[')
+                    for i in range(len(graph.links)):
+                        json_file.write('{"source":'+str(graph.links[i][0])+',"target":'+str(graph.links[i][1])+','+'"value":1},\n')
+                    graph.clear()
+                    json_file.write('{"source":1,"target":0,"value":1}\n]}')
+                    # {"source":1,"target":0,"value":1},
                     json_file.close()
                 elif function_name_r in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
@@ -164,7 +171,7 @@ def main():
 
 
 def find_iterable(fb_temp, fb_html_describe, line_current, graph):
-    graph.current_position[0] += 20
+    graph.current_position[0] += 40
     fb_html_describe.write('<tr><td valign=TOP>'+'\n')
     fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
     fb_html_describe.write('<tr>'+'\n')
@@ -172,7 +179,14 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                            '<small><span style="color:black;">'+'\n')
     fb_html_describe.write(line_current+'</span> </small></td>')
     fb_html_describe.write('</tr>'+'\n')
-    graph.node(line_current)
+    graph.add_node(line_current)
+    if '{' in line_current:
+        start_c = line_current.find("{")
+        find_c = line_current.find("}", start_c)
+        if find_c != -1:
+            graph.current_position[0] -= 40
+            close_space(fb_html_describe)
+            return
     comment = 0
     line_full = fb_temp.readline()
     while line_full:
@@ -186,15 +200,34 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                 comment = 0
         else:
             if '}' in line_full:
-                graph.current_position[0] -= 20
-                close_space(fb_html_describe)
-                if '{' in line_full:
-                    find_iterable(fb_temp, fb_html_describe, line_full, graph)
-                return
+                start_c = line_full.find("{")
+                if start_c != -1:
+                    find_c = line_full.find("}", 0, start_c)
+                    if find_c != -1:
+                        graph.current_position[0] -= 40
+                        close_space(fb_html_describe)
+                    else:
+                        find_iterable(fb_temp, fb_html_describe, line_full, graph)
+                        line_full = fb_temp.readline()
+                else:
+                    graph.current_position[0] -= 40
+                    close_space(fb_html_describe)
+                    return
+
+
             iterable_type = re.compile(ITERABLE_TEMPLATE)
             start_place = iterable_type.match(line_full)
             if start_place:
+                number_hooks = find_condition_hooks(line_full)
                 condition = line_full
+                if number_hooks != 0:
+                    line_full = fb_temp.readline()
+                    number_hooks += find_condition_hooks(line_full)
+                    condition += line_full
+                    if number_hooks != 0:
+                        line_full = fb_temp.readline()
+                        number_hooks += find_condition_hooks(line_full)
+                        condition += line_full
                 if '{' in line_full:
                     find_iterable(fb_temp, fb_html_describe, line_full, graph)
                 else:
@@ -216,13 +249,13 @@ def find_iterable(fb_temp, fb_html_describe, line_current, graph):
                                 break
                             elif '}' in line_full:
                                 close_space(fb_html_describe)
-                                graph.current_position[0] -= 20
+                                graph.current_position[0] -= 40
                                 return
                             elif ones_condition:
-                                graph.current_position[0] += 20
+                                graph.current_position[0] += 40
                                 graph.current_position[1] += 20
-                                graph.node(condition)
-                                graph.current_position[0] -= 20
+                                graph.add_node(condition)
+                                graph.current_position[0] -= 40
                                 fb_html_describe.write('<tr><td valign=TOP>'+'\n')
                                 fb_html_describe.write('<table border=1 cellspacing=0 cellpadding=8 >'+'\n')
                                 fb_html_describe.write('<tr>'+'\n')
@@ -242,8 +275,19 @@ def close_space(fb_html_describe):
     fb_html_describe.write('</tr>'+'\n')
 
 
-def find_operator_condition(fb_temp,line_current):
+def find_condition_hooks(line):
+    pattern_open = re.compile("\(")
+    pattern_close = re.compile("\)")
+    open_num = len(pattern_open.findall(line))
+    close_num = len(pattern_close.findall(line))
+    return open_num - close_num
 
+
+def add_links(name, graph, length):
+    for i in range(length):
+        node = 'IN->'+name
+        if node in graph.position[i][0]:
+            graph.add_link((length-1), graph.position[i][3])
 
 
 
