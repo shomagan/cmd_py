@@ -1,15 +1,49 @@
 #!/c/Python33/ python
 import rtm_mw,sys
 import msvcrt
+import getopt
 if __name__ == '__main__':
-  print('helo')
-  TCP_IP = '192.168.1.231'
-  TCP_PORT = 502
-  data = [2,73,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
-  Packet = rtm_mw.RTM_MW(data)
-  Packet.RetranNum =1
-  Packet.DestOne = [3,0,7]
-  Packet.DestTwo =  [8,0,7]
+  '''test controller mega12'''
+  conf = {
+          'ip_addr': '192.168.1.218',
+          'port': 502,
+          'data' : [2,74,0],
+          'retrun_num': 0,
+          'dest': [218,0,8],
+          'chanel': 8,
+         }
+  print (sys.argv)
+  try:
+      opts, args = getopt.getopt(sys.argv[1:], "w:r:a:c:i:v", ['ip_addr', 'version'])
+  except getopt.GetoptError as err:
+      # print help information and exit:
+      print(str(err)) # will print something like "option -a not recognized"
+      usage()
+      sys.exit(2)
+  print(opts)
+  for o, a in opts:
+      if o == '-r':
+          conf['data'][1] = eval(a)
+          print(conf['data'])
+      elif o == '-w':
+          conf['write'] = 1
+      elif o == '-a':
+          conf['dest'][0] = eval(a)
+      elif o == '-i' or o == '--ip_addr':
+          print (a)
+          conf['ip_addr'] = a
+      elif o == '-v' or o == '--version':
+          print('exit')
+          sys.exit(0)
+      else:
+          assert False, "Unhandled option"
+
+  print(conf)
+
+  Packet = rtm_mw.RTM_MW(conf['data'])
+  Packet.RetranNum = conf['retrun_num']
+  Packet.DestOne = conf['dest']
+  Packet.DestTwo =  [13,0,2]
   Packet.DestThree = [200,0,5]
 
   print(Packet)
@@ -20,7 +54,7 @@ if __name__ == '__main__':
       del Packet
       sys.exit(1)
     elif ord(q)==99:#c
-      Packet.connect(TCP_IP, TCP_PORT)
+      Packet.connect(conf['ip_addr'],conf['port'])
     elif ord(q)==115:#s
       try:
         Packet.Send()

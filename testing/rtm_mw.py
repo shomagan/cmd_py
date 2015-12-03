@@ -126,7 +126,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.2.243'
+  TCP_IP = '172.16.1.6'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -251,8 +251,8 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [3,0,5]
-    self.DestTwo =  [13,0,7]
+    self.DestOne = [6,1,4]
+    self.DestTwo =  [4,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
     self.TranzactionSend  = 3
@@ -333,7 +333,10 @@ class RTM_MW(object):
 #      error_log = open('error_log_rv.txt','a')
 #      error_log.write (str(Packet_str))
 #      error_log.close()
+
       self.s.send(Packet_str)
+
+
       self.s.settimeout(2)
 #data = s.recvfrom(BUFFER_SIZE)
       try:

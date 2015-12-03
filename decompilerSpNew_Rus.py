@@ -7,20 +7,21 @@ def main():
   time_start=time.time()
   HtmlFile = open ('fs/sp.shtml','w')
   HtmlDescribe = open ('describe.html','w')
+  CsvDescribe = open ('describe.csv','w')
   TagStructFile = open ('struct.pat','w')
   OwnVariableFile = open('ownvariablname.pat','w')
   Vars = open('../vars.h','r',encoding='cp1251',errors='ignore')
   TempHtml = open ('STM32F2x7ADC.shtml','r')
   struct = 0
-  #WorkHtml.write(TempHtml.readline())
-  #WorkHtml.write(TempHtml.())
   for i in range(27):
     line = TempHtml.readline()
     HtmlFile.writelines(line)
-#    HtmlDescribe.writelines(line)
+
+  HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" >'+'\n')
+  HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1" cellspacing="1">'+'\n')
+
   OwnVariableFile.writelines('NetworkFlashVariable_t const NetworkFlashVariable[INTERNAL_VAR_NUM ]={'+'\n')
   for linefull in Vars:
-#    line_x = Vars.readline()
     if('//' in linefull):
       start = linefull.find('//')
       line = linefull[:start]
@@ -32,12 +33,14 @@ def main():
       SP_b = SP()
     if (struct == 1 & ('}'in line)):
         struct = 0
-    if (struct == 1):
+    if struct == 1:
       SP_b.check(linefull)
       if SP_b.SizeArray:
-        SP_b.save(OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile)
-        SP_b.SP_Numm+=1
+        SP_b.save(OwnVariableFile, HtmlFile, HtmlDescribe, TagStructFile, CsvDescribe)
+        SP_b.SP_Numm += 1
 
+  HtmlFile.write('</table>'+'\n')
+  HtmlDescribe.write('</table>'+'\n')
   print("first config variable "+str(SP_b.GuID))
   OwnVariableFile.writelines('};')
   for i in range(10):
@@ -54,7 +57,8 @@ def main():
   print ('start makefsdata.exe')
   os.system("C:/Work_MC/Mega11/mega12family_usercopy/inc/makefsdata.exe")
   HtmlDescribe.writelines(TempHtml.readline())
-
+  HtmlDescribe.close()
+  CsvDescribe.close()
   TempHtml.close()
   Vars.close()
   input ("exit")
@@ -81,6 +85,7 @@ class SP:
       self.InternalName ='"'+l.group('name')+'"'
       if(l.group('descript')):
         self.description = l.group('descript')
+        self.description = self.description[:-1]
         n_t = re.compile('\"[\w\d\-\(\)\[\]]+\"')
         name_rs = n_t.search(self.description)
         if name_rs:
@@ -136,8 +141,10 @@ class SP:
           self.SizeArray = 18
         elif(l.group('size')=="ChanelCount"):
           self.SizeArray = 9
-        elif(l.group('size')=="LOAD_BUFF_SIZE"):
-          self.SizeArray = 512
+        elif l.group('size')=="LOAD_BUFF_SIZE":
+          self.SizeArray = 256
+        elif l.group('size')=="RESERV_BUFF_SIZE":
+          self.SizeArray = 228
         else:
           self.SizeArray = int(l.group('size'))*self.SizeArray
     else:
@@ -145,29 +152,23 @@ class SP:
 
     self.Flag = 0x00
 
-  def save(self,OwnVariableFile,HtmlFile,HtmlDescribe,TagStructFile):
+  def save(self, OwnVariableFile, HtmlFile, HtmlDescribe, TagStructFile, CsvDescribe):
     OwnVariableFile.writelines(self.pDefault+','+self.Name+','+self.InternalName+','+self.Type+','+str(self.Ind)+','+str(int(self.GuID))+','+str(self.SizeArray)+','+str(self.Flag)+','+self.description+'\n')
-    HtmlFile.write('<table style="width: 961px; height: 30px;" border="1" cellpadding="1">'+'\n')
-    HtmlDescribe.write('<table style="width: 961px; height: 30px;" border="1" cellspacing="1">'+'\n')
-    HtmlFile.write('<tbody>'+'\n')
-    HtmlDescribe.write('<tbody>'+'\n')
     HtmlFile.write('<tr>'+'\n')
     HtmlDescribe.write('<tr>'+'\n')
-    HtmlFile.write('<td style="width: 100px;font-weight: bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
+    HtmlFile.write('<td style="width:100px;"><small><span>'+'\n')
     HtmlDescribe.write('<td style="width: 5px;font-weight:bold; font-style: italic; font-family: Verdana; background-color: rgb(0, 251, 213);"><small><span style="color: black ;">'+'\n')
-    HtmlFile.write(self.Name+'\n')
+    HtmlFile.write(str(self.Ind)+' '+self.Name+'\n')
     HtmlDescribe.write(str(self.Ind)+'\n')
+    CsvDescribe.write(str(self.Ind)+';')
     HtmlDescribe.write('<td style="rgb(0, 251, 213);font-weight:bold;font-family: Verdana"><small><span style="color: black ;">'+'\n')
-    HtmlDescribe.write(self.InternalName+'\t'+'Type = '+'\t'+self.Type+'\t'+'Size = '+'\t'+str(self.SizeArray)+'\t'+'Mdb_Addr = '+str(self.GuID) + '\t'+self.description+'\n')
+    HtmlDescribe.write(self.InternalName+'\t'+'Type = '+'\t'+self.Type+'\t'+'Size = '+'\t'+str(self.SizeArray)+'\t'+'Mdb_Addr = '+str(self.GuID) + '\t'+self.description+ '</td>'+'\n')
+    CsvDescribe.write(self.Name+'\t;'+self.Type+'\t;'+str(self.SizeArray)+'\t;' + str(self.GuID) + '\t;'+self.description + ';'+'\n')
     HtmlFile.write('</span> </small></td>'+'\n')
-    HtmlFile.write('<td style="font-style: italic;font-family: Verdana;background-color: rgb(0, 251, 213);"><span style="color: black ;"><!--#'+str(self.Ind)+'--></span></td>'+'\n')
+    HtmlFile.write('<td><span><!--#'+str(self.Ind)+'--></span></td>'+'\n')
     HtmlFile.write('</tr>'+'\n')
     HtmlDescribe.write('</tr>'+'\n')
-    HtmlFile.write('</tbody>'+'\n')
-    HtmlDescribe.write('</tbody>'+'\n')
-    HtmlFile.write('</table>'+'\n')
-    HtmlDescribe.write('</table>'+'\n')
-    TagStructFile.write('    "'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
+    TagStructFile.write ('    "'+str(self.Ind)+'"'+','+'//'+self.Name+'\n')
     self.Ind += 1
     if(self.Type =="KodInt8"):
       if(self.SizeArray==1):

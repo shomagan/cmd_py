@@ -23,12 +23,12 @@ def data_gen():
     successful_packet = data_gen.successful_packet
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
-
-    TCP_IP = '192.168.1.241'
+    ip_error = data_gen.ip_error
+    TCP_IP = '192.168.2.244'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 75, 0]
+    data = [2, 75, 0, 139, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -53,8 +53,7 @@ def data_gen():
             data_buf = packet.send_packet(s, 1)
             if data_buf:
                 str_temp = packet.chek_packet(data_buf)
-                raz_rezet = packet.DataInPacket[1] | (packet.DataInPacket[2]<<8)
-                if len(packet.DataInPacket) != 3:
+                if len(packet.DataInPacket) != 5:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
@@ -63,6 +62,8 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
+                    ip_error = packet.DataInPacket[3] | (packet.DataInPacket[4]<<8)
+                    raz_rezet = packet.DataInPacket[1] | (packet.DataInPacket[2]<<8)
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")
@@ -96,7 +97,7 @@ def data_gen():
                 s.close()
                 sys.exit(1)
         t = time.time() - time_start
-        yield t, raz_rezet
+        yield t, raz_rezet, ip_error
 
 def main():
     font = {'family' : 'serif',
@@ -110,42 +111,52 @@ def main():
     data_gen.successful_packet = 0
     data_gen.connection_error = 0
     data_gen.raz_rezet = 0
+    data_gen.ip_error = 0
+
     fig = plt.figure()
     ax = fig.add_subplot(111, autoscale_on=False)
     line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
+    line_ip_err, = ax.plot([], [], lw=2, label='ip error')
     raz_rezet_template = ' raz_rezet_text = %.1f '
+    ip_error_template = ' ip_error = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
+    ip_error_text = ax.text(0.05, 0.8, '', transform=ax.transAxes)
 
     ax.legend()
     ax.set_ylim(0, 10)
     ax.set_xlim(0, 5)
     ax.grid()
-    xdata, ydata = [], []
+    xdata, y_rezet_data, y_ip_error_data = [], [], []
     def init():
         line_raz_rezet.set_data([], [])
+        line_ip_err.set_data([], [])
         raz_rezet_text.set_text('')
-        return line_raz_rezet, raz_rezet_text
+        ip_error_text.set_text('')
+        return line_raz_rezet, raz_rezet_text, line_ip_err, ip_error_text
 
     def run(data):
     # update the data
-        t, y = data
+        t, y_rezet, y_ip_error = data
         xdata.append(t)
-        ydata.append(y)
+        y_rezet_data.append(y_rezet)
+        y_ip_error_data.append(y_ip_error)
         xmin, xmax = ax.get_xlim()
         if t >= xmax:
             xmax *= 2
             ax.set_xlim(xmin, xmax)
             ax.figure.canvas.draw()
         ymin, ymax = ax.get_ylim()
-        if y >= ymax:
-            ymax += 20
+        if (y_rezet >= ymax) | (y_ip_error >= ymax):
+            ymax += 200
             ax.set_ylim(ymin, ymax)
             ax.figure.canvas.draw()
 
-        line_raz_rezet.set_data(xdata, ydata)
-        raz_rezet_text.set_text(raz_rezet_template % y)
+        line_raz_rezet.set_data(xdata, y_rezet_data)
+        line_ip_err.set_data(xdata, y_ip_error_data)
+        raz_rezet_text.set_text(raz_rezet_template % y_rezet)
+        ip_error_text.set_text(ip_error_template % y_ip_error)
 
-        return line_raz_rezet, raz_rezet_text
+        return line_raz_rezet, raz_rezet_text, line_ip_err, ip_error_text
     ani = animation.FuncAnimation(fig, run, data_gen, blit=True, interval=1000,init_func=init)
     plt.show()
 
@@ -160,7 +171,7 @@ class RTM_MW(object):
         self.MyAdd = [7,0,0]
         self.Chan = 1
         self.MyAdd[2] = 0x01
-        self.DestAdd = [3, 0, 0x00]
+        self.DestAdd = [7, 0, 0x00]
         self.DestAdd[2] = 2
         self.Tranzaction  = 0xe4
         self.PacketNumber = 1

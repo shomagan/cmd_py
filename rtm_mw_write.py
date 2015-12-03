@@ -42,10 +42,11 @@ def ComList(ser,a):
       print(hello,ord(hello))
 
 def main():
-  ser = serial.Serial(1)  # open first serial port
-  ser.baudrate = 115200;
-  print (ser.name)          # check which port was really used
   try:
+    ser = serial.Serial(0)  # open first serial port
+    ser.baudrate = 115200;
+    print (ser.name)          # check which port was really used
+
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
       ser.baudrate,
@@ -53,12 +54,17 @@ def main():
       ser.parity,
       ser.stopbits,
     ))
+    ser.write(serial.to_bytes([4]))
+    a = 0
+    if(ser):
+      thread.start_new_thread(ComList, (ser,a ))
+
   except serial.SerialException as e:
-    sys.stderr.write("could not open port %r: %s\n" % (port, e))
-    sys.exit(1)
+    sys.stderr.write("could not open port ")
+
   hello = 'hello'
 
-  ser.write(serial.to_bytes([4]))
+
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
   cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x01]
@@ -98,17 +104,15 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.235'
+  TCP_IP = '192.168.2.244'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  a = 0
-  thread.start_new_thread(ComList, (ser,a ))
-  print ('tread is start')
-  data = [2,6,0,7,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+
+  data = [2,6,0,188,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_w =[3,6,0,52,6,7,0,0xff,0xff,0xff,0x00]
+  data_w =[3,6,0,96,139,188,0,1,0]
   Packet = RTM_MW(data)
 
 
@@ -123,7 +127,7 @@ def main():
       sys.exit(1)
     elif ord(q)==119:#w
       Packet_w = RTM_MW(data_w)
-      Packet_w.SendPacket(ser,0)
+      Packet_w.SendPacket(s,1)
     elif ord(q)==110:#n
       print(Cmd_NI)
       ser.write(Cmd_NI)
@@ -234,12 +238,12 @@ class RTM_MW(object):
     self.Len = [0x00,0x00]
     self.RetranNum = 0
     self.Flag = 0x02
-    self.MyAdd = [7,0,0]
+    self.MyAdd = [8,0,0]
     self.Chan = 1
     self.MyAdd[2] = 0x01
-    self.DestAdd = [3,0,0x00]
-    self.DestAdd[2] = 2
-    self.DestAddEnd = [8,0,0x00]
+    self.DestAdd = [7,0,0x00]
+    self.DestAdd[2] = 5
+    self.DestAddEnd = [11,0,0x00]
 #    self.DestAddEnd = [0xeb,0x03,0]
 #    self.DestAddEnd = [202,0x00,0]
     self.DestAddEnd[2] = 2
@@ -265,8 +269,8 @@ class RTM_MW(object):
     Packet.append(self.DestAdd[1])
     Packet.append(self.DestAdd[2])
 #    Packet.append(self.DestAddEnd[0])
- #   Packet.append(self.DestAddEnd[1])
-  #  Packet.append(self.DestAddEnd[2])
+#    Packet.append(self.DestAddEnd[1])
+#    Packet.append(self.DestAddEnd[2])
     Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)
