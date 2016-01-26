@@ -41,7 +41,7 @@ def ComList(ser):
       print(ord(hello))
 def main():
   ser = serial.Serial(1)  # open first serial port
-  port = 1
+  port = 0
   ser.baudrate = 115200;
   print (ser.name)          # check which port was really used
   try:
@@ -63,8 +63,8 @@ def main():
   cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x96,0x70,0x97,0x00,0x97,0x04,0xc0,0x5a,0x00,0x02]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
-  mdbtcp = [0x01,0x09,0x03,0x04,0x05,0x06,0x07,0x03,0x33,0x11,0x00,0x02]
-  mdb = [0x0D,0x03,0x00,0x00,0x00,0x02]
+  mdbtcp = [0x01,0x09,0x03,0x04,0x05,0x06,0x06,0x03,0x00,0x00,0x00,0x04]
+  mdb = [0x04,0x03,0x00,0x00,0x00,0x04]
   mdbwrite = [0x03,0x10,0x00,27,0x00,0x01,0x02,0x15,0xE2]
   CRC = crc16(mdb,len(mdb))
   mdb.append(CRC&0xFF)
@@ -106,7 +106,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.2.244'
+  TCP_IP = '192.168.2.191'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -136,7 +136,6 @@ def main():
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==116:#t
-    
       mdbtcp_s = bytearray(mdbtcp[0:])
       print(mdbtcp[0:])
       s.send(mdbtcp_s)
@@ -160,6 +159,49 @@ def main():
       kerneltime = (data[9]<<8|data[10])/10
       print(data)
       print(time_pr,'ms')
+    elif ord(q)==108:#l
+      while(1):
+        try:
+          mdbtcp_s = bytearray(mdbtcp[0:])
+          print(mdbtcp[0:])
+          s.send(mdbtcp_s)
+          time_start=time.time()
+          s.settimeout(4)
+          data = s.recv(BUFFER_SIZE)
+          time_pr=time.time() - time_start
+          print (data)
+          print(time_pr,'ms')
+        except OSError:
+          print ("Can't send tcp Packet")
+          error_log = open('error_log_rv.txt','a')
+          error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
+          error_log.close()
+          try:
+            s.close()
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((TCP_IP, TCP_PORT))
+          except TimeoutError:
+            print (time.asctime())
+            print ("mega12 not TCP connected ")
+            error_log = open('error_log_rv.txt','a')
+            error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
+            error_log.close()
+          except ConnectionAbortedError:
+            print (time.asctime())
+            print ("mega12 connect aborted TCP")
+            error_log = open('error_log_rv.txt','a')
+            error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
+            erro_log.close()
+            s.connect((TCP_IP, TCP_PORT))
+        time.sleep(0.2)
+        if(msvcrt.kbhit()):
+          q = msvcrt.getch()
+          print(ord(q))
+          if ord(q) == 113:#q
+            s.close()
+            sys.exit(1)
+
+
   #        sys.stderr.write(cmd_mdb)
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""

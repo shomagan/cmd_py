@@ -43,7 +43,7 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial(0)  # open first serial port
+    ser = serial.Serial(1)  # open first serial port
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
 
@@ -104,15 +104,15 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.2.244'
+  TCP_IP = '172.16.0.242'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-  data = [2,6,0,188,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data = [2,6,0,3,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_w =[3,6,0,96,139,188,0,1,0]
+  data_w = [3,6,0,96,139,3,0,192,168,2,190]
   Packet = RTM_MW(data)
 
 
@@ -127,7 +127,7 @@ def main():
       sys.exit(1)
     elif ord(q)==119:#w
       Packet_w = RTM_MW(data_w)
-      Packet_w.SendPacket(s,1)
+      Packet_w.SendPacket(ser,0)
     elif ord(q)==110:#n
       print(Cmd_NI)
       ser.write(Cmd_NI)
@@ -238,12 +238,10 @@ class RTM_MW(object):
     self.Len = [0x00,0x00]
     self.RetranNum = 0
     self.Flag = 0x02
-    self.MyAdd = [8,0,0]
+    self.MyAdd = [8,0,1]
     self.Chan = 1
-    self.MyAdd[2] = 0x01
-    self.DestAdd = [7,0,0x00]
-    self.DestAdd[2] = 5
-    self.DestAddEnd = [11,0,0x00]
+    self.DestAdd = [3,0,5]
+    self.DestAddEnd = [16,1,0x00]
 #    self.DestAddEnd = [0xeb,0x03,0]
 #    self.DestAddEnd = [202,0x00,0]
     self.DestAddEnd[2] = 2

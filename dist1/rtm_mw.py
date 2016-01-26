@@ -69,9 +69,8 @@ ValType = {KodBit:1,
 }
 
 def main():
-  have_serial = 1
   try:
-    ser = serial.Serial(2)  # open first serial port
+    ser = serial.Serial(1)  # open first serial port
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -82,7 +81,6 @@ def main():
       ser.stopbits,
     ))
   except serial.SerialException as e:
-    have_serial = 0
     print("could not open port \n")
 #    sys.stderr.write("could not open port %r: %s\n" % (port, e))
 #    sys.exit(1)
@@ -128,16 +126,15 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.12'
+  TCP_IP = '192.168.2.243'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   a = 0
-  if have_serial:
-    thread.start_new_thread(ComList, (ser,a ))
+  thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,3,0,1,0,2,0]
+  data = [2,3,0]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -254,7 +251,7 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [242,0,5]
+    self.DestOne = [3,0,5]
     self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
@@ -377,10 +374,6 @@ class RTM_MW(object):
         error_log.close()
     elif(type == 0):
       print(Packet)
-      error_log = open('error_log_rv.txt','a')
-      error_log.write (str(Packet))
-      error_log.close()
-
       ser.write(Packet)
   def HandPacket(self,DataVal):
     if DataVal:
@@ -424,13 +417,10 @@ class RTM_MW(object):
             self.Value = [0 for x in range(self.ArraySize[i])]
             for x in range (0,self.ArraySize[i]):
               for y in range (0,ValType[self.Type[i]]):
-                if self.Type[i] == KodBit:
-                  self.Value[x] = DataVal[k]&0x01
-                else:
-                  self.Value[x] |= DataVal[k]<<(8*y)
+                self.Value[x] |= DataVal[k]<<(8*y)
                 #print(x,k)
                 k +=1
-            print("Value = ",(self.Value))
+            print("Value = ",self.Value)
             self.FlagRecv = DataVal[k]
             k+=1
             print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -441,10 +431,7 @@ class RTM_MW(object):
           self.Value = [0 for x in range(self.ArraySize[i])]
           for x in range (0,self.ArraySize[i]):
             for y in range (0,ValType[self.Type[i]]):
-              if self.Type[i] == KodBit:
-                self.Value[x] = DataVal[k]&0x01
-              else:
-                self.Value[x] |= DataVal[k]<<(8*y)
+              self.Value[x] |= DataVal[k]<<(8*y)
               k +=1
             if self.Type[i] == KodFloat32:
               flo32[x] = struct.pack('I',self.Value[x])
