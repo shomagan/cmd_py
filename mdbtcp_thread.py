@@ -40,11 +40,11 @@ def ComList(ser):
       #print(char_to_int(hello,len(hello)))
       print(ord(hello))
 def main():
-  ser = serial.Serial(1)  # open first serial port
-  port = 0
-  ser.baudrate = 115200;
-  print (ser.name)          # check which port was really used
+  have_serial = 1
   try:
+    ser = serial.Serial(2)  # open first serial port
+    ser.baudrate = 115200;
+    print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
       ser.baudrate,
@@ -53,17 +53,16 @@ def main():
       ser.stopbits,
     ))
   except serial.SerialException as e:
-    sys.stderr.write("could not open port %r: %s\n" % (port, e))
-    sys.exit(1)
+    have_serial = 0
+    print("could not open port \n")
   hello = 'hello'
-  ser.write(serial.to_bytes([4]))      # write a string
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #          7E   03   F0   16   01   51   44   01   80   96   70   97   00   97   04   C0   5A   00   02 70 EE D2 06 7E
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
   cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x96,0x70,0x97,0x00,0x97,0x04,0xc0,0x5a,0x00,0x02]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
-  mdbtcp = [0x01,0x09,0x03,0x04,0x05,0x06,0x06,0x03,0x00,0x00,0x00,0x04]
+  mdbtcp = [0x01,0x09,0x03,0x04,0x05,0x06,0x03,0x04,0x00,0x00,0x00,0x0a]
   mdb = [0x04,0x03,0x00,0x00,0x00,0x04]
   mdbwrite = [0x03,0x10,0x00,27,0x00,0x01,0x02,0x15,0xE2]
   CRC = crc16(mdb,len(mdb))
@@ -106,13 +105,16 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.2.191'
+  TCP_IP = '172.16.0.7'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  thread.start_new_thread(ComList, (ser, ))
+  if have_serial:
+    thread.start_new_thread(ComList, (ser, ))
   print ('tread is start')
+  good_transaction = 0
+  bad_transaction = 0
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -143,7 +145,12 @@ def main():
       s.settimeout(4)
       data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
-      print (data)
+      data_s =[]
+#        print(data)
+      for i in range(0,len(data)):
+        data_s.append(data[i])
+      print(data_s)
+      print("lenght",len(data_s))
       print(time_pr,'ms')
     elif ord(q)==102:#f
       mdb = int_to_char(cmd_FR_T)
@@ -168,9 +175,19 @@ def main():
           time_start=time.time()
           s.settimeout(4)
           data = s.recv(BUFFER_SIZE)
+          good_transaction+=1
           time_pr=time.time() - time_start
-          print (data)
+          data_s =[]
+          for i in range(0,len(data)):
+            data_s.append(data[i])
+          print(data_s)
+          print("lenght",len(data_s))
+          if data_s:
+            if ChekErrorPacket(data_s):
+              bad_transaction+=1
           print(time_pr,'ms')
+          print('transaction number',good_transaction)
+          print('error transaction number',bad_transaction)
         except OSError:
           print ("Can't send tcp Packet")
           error_log = open('error_log_rv.txt','a')
@@ -193,7 +210,7 @@ def main():
             error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
             erro_log.close()
             s.connect((TCP_IP, TCP_PORT))
-        time.sleep(0.2)
+        time.sleep(0.5)
         if(msvcrt.kbhit()):
           q = msvcrt.getch()
           print(ord(q))
@@ -201,7 +218,12 @@ def main():
             s.close()
             sys.exit(1)
 
-
+def ChekErrorPacket(data):
+  if len(data)==9:
+    print(data[-3:-1])
+    if data[-2]==132:
+      return 1
+  return 0
   #        sys.stderr.write(cmd_mdb)
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""

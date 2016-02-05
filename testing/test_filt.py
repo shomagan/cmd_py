@@ -28,7 +28,7 @@ def data_gen():
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 75, 0, 139, 0]
+    data = [2, 156, 0, 157, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -53,7 +53,7 @@ def data_gen():
             data_buf = packet.send_packet(s, 1)
             if data_buf:
                 str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 5:
+                if len(packet.DataInPacket) != 9:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
@@ -62,8 +62,8 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
-                    ip_error = packet.DataInPacket[3] | (packet.DataInPacket[4]<<8)
-                    raz_rezet = packet.DataInPacket[1] | (packet.DataInPacket[2]<<8)
+                    ip_error = packet.DataInPacket[5] | (packet.DataInPacket[6]<<8)| (packet.DataInPacket[7]<<16)| (packet.DataInPacket[8]<<24)
+                    raz_rezet = packet.DataInPacket[1] | (packet.DataInPacket[2]<<8)| (packet.DataInPacket[3]<<16)| (packet.DataInPacket[4]<<24)
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")
@@ -117,13 +117,13 @@ def main():
     ax = fig.add_subplot(111, autoscale_on=False)
     line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
     line_ip_err, = ax.plot([], [], lw=2, label='ip error')
-    raz_rezet_template = ' raz_rezet_text = %.1f '
-    ip_error_template = ' ip_error = %.1f '
+    raz_rezet_template = ' input = %.1f '
+    ip_error_template = ' output = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
     ip_error_text = ax.text(0.05, 0.8, '', transform=ax.transAxes)
 
     ax.legend()
-    ax.set_ylim(0, 10)
+    ax.set_ylim(0, 2000)
     ax.set_xlim(0, 5)
     ax.grid()
     xdata, y_rezet_data, y_ip_error_data = [], [], []
@@ -147,7 +147,7 @@ def main():
             ax.figure.canvas.draw()
         ymin, ymax = ax.get_ylim()
         if (y_rezet >= ymax) | (y_ip_error >= ymax):
-            ymax += 200
+            ymax += 1000
             ax.set_ylim(ymin, ymax)
             ax.figure.canvas.draw()
 
