@@ -47,12 +47,12 @@ def ComList(ser,a):
       error_log.close()
       print(hello,ord(hello))
 
-KodBit =	0x00
-KodInt8 =	0x20
-KodInt16 =	0x40
-KodInt32 =	0x60
-KodFloat32 =	0x80
-KodTime32 =	0xA0
+KodBit =  0x00
+KodInt8 = 0x20
+KodInt16 =  0x40
+KodInt32 =  0x60
+KodFloat32 =  0x80
+KodTime32 = 0xA0
 ValTypeName = {KodBit:"KodBit",
            KodInt8 :"KodInt8",
            KodInt16 :"KodInt16",
@@ -71,7 +71,7 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial(3)  # open first serial port
+    ser = serial.Serial(1)
     ser.baudrate = 115200
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -146,6 +146,7 @@ def main():
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
     print(ord(q))
+    print(q)
     if ord(q) == 113:#q
       s.close()
       sys.exit(1)
@@ -255,8 +256,8 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [5,0,1]
-    self.DestTwo =  [3,0,7]
+    self.DestOne = [3,0,5]
+    self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
     self.TranzactionSend  = 3
