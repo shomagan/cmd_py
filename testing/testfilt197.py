@@ -25,11 +25,11 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
     ip_error = data_gen.ip_error
-    TCP_IP = '192.168.2.195'
+    TCP_IP = '192.168.2.197'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 157, 0, 158, 0]
+    data = [2, 156, 0, 157, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -54,7 +54,7 @@ def data_gen():
             data_buf = packet.send_packet(s, 1)
             if data_buf:
                 str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 9:
+                if len(packet.DataInPacket) != 7:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
@@ -63,11 +63,11 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
-#                    ip_error_byte = str(packet.DataInPacket[5])+str(packet.DataInPacket[6]<<8)+str(packet.DataInPacket[7]<<16)+str(packet.DataInPacket[8]<<24)
- #                   raz_rezet_byte = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16)|(packet.DataInPacket[4]<<24)
+                    ip_error = packet.DataInPacket[3]|(packet.DataInPacket[4]<<8)|(packet.DataInPacket[5]<<16)|(packet.DataInPacket[6]<<24)
+                    raz_rezet = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)
                     
-                    ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
-                    raz_rezet = struct.unpack('f',bytearray(packet.DataInPacket[1:5]))
+ #                   ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
+  #                  raz_rezet = struct.unpack('f',bytearray(packet.DataInPacket[1:5]))
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")

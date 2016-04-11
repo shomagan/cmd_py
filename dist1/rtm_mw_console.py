@@ -23,20 +23,21 @@ def main():
   -i ip address if use
   -a rtm_mw address
   -p comport
-
+  -r ind numm 
   '''
   conf = {
           'ip_addr': '192.168.1.250',
           'port': 502,
           'data' : [2,74,0],
           'retrun_num': 0,
-          'dest': [1,0,8],
-          'chanel': 8,
+          'dest': [1,0,5],
+          'dest1': [8,0,5],
+          'chanel': 5,
           'com_channel': 0,
          }
   print (sys.argv)
   try:
-      opts, args = getopt.getopt(sys.argv[1:], "w:n:a:c:i:p:v", ['ip_addr', 'version'])
+      opts, args = getopt.getopt(sys.argv[1:], "w:n:a:r:c:i:p:", ['ip_addr', 'version'])
   except getopt.GetoptError as err:
       # print help information and exit:
       print(str(err)) # will print something like "option -a not recognized"
@@ -50,16 +51,15 @@ def main():
       elif o == '-w':
           conf['data'][0] = 1
       elif o == '-a':
-          conf['dest'][0] = eval(a)
+          conf['dest'][0] = eval(a)&0xff
+          conf['dest'][1] = eval(a)>>8&0xff
+      elif o == '-r':                                          
+          conf['retrun_num'] = eval(a)
       elif o == '-i' or o == '--ip_addr':
           print (a)
           conf['ip_addr'] = a
-      elif o == '-p':
+      elif o == '-p':                                          
           conf['com_channel'] = eval(a)-1
-#          print (a)
-      elif o == '-v' or o == '--version':
-          print('exit')
-          sys.exit(0)
       else:
           assert False, "Unhandled option"
 
@@ -84,6 +84,7 @@ def main():
   Packet.RetranNum = conf['retrun_num']
   conf['dest'][2] = conf['chanel']
   Packet.DestOne = conf['dest']
+  Packet.DestTwo = conf['dest1']
   a=0
   if open_com_port:
     thread.start_new_thread(ComList, (ser,a))

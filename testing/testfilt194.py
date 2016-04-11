@@ -25,11 +25,11 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
     ip_error = data_gen.ip_error
-    TCP_IP = '192.168.2.195'
+    TCP_IP = '192.168.2.194'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 157, 0, 158, 0]
+    data = [2, 156, 0, 157, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -63,11 +63,11 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
-#                    ip_error_byte = str(packet.DataInPacket[5])+str(packet.DataInPacket[6]<<8)+str(packet.DataInPacket[7]<<16)+str(packet.DataInPacket[8]<<24)
- #                   raz_rezet_byte = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16)|(packet.DataInPacket[4]<<24)
+                    ip_error = packet.DataInPacket[5]|(packet.DataInPacket[6]<<8)|packet.DataInPacket[7]<<16|(packet.DataInPacket[8]<<24)
+                    raz_rezet = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|packet.DataInPacket[3]<<16|(packet.DataInPacket[4]<<24)
                     
-                    ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
-                    raz_rezet = struct.unpack('f',bytearray(packet.DataInPacket[1:5]))
+ #                   ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
+  #                  raz_rezet = struct.unpack('f',bytearray(packet.DataInPacket[1:5]))
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")
@@ -119,8 +119,8 @@ def main():
 
     fig = plt.figure()
     ax = fig.add_subplot(111, autoscale_on=False)
-    line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
-    line_ip_err, = ax.plot([], [], lw=2, label='ip error')
+    line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='ip error')
+    line_ip_err, = ax.plot([], [], lw=2, label='successful packet')
     raz_rezet_template = ' input = %.1f '
     ip_error_template = ' output = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)

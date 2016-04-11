@@ -71,8 +71,8 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial(2)  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial(3)  # open first serial port
+    ser.baudrate = 115200
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -128,7 +128,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.12'
+  TCP_IP = '192.168.2.194'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -137,7 +137,8 @@ def main():
   if have_serial:
     thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,3,0,1,0,2,0]
+#          fa 39 00 00 01 
+  data = [2,88,0]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -254,8 +255,8 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [242,0,5]
-    self.DestTwo =  [13,0,7]
+    self.DestOne = [5,0,1]
+    self.DestTwo =  [3,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
     self.TranzactionSend  = 3
@@ -279,7 +280,6 @@ class RTM_MW(object):
     self.IntName = []
     self.ArraySize = [0x00000 for x in range(200)]
     self.Value = []
-    self.Flag = 0    
     self.Errorcnt = 0
     self.OkReceptionCnt = 0
     self.CheckCRC = 0
