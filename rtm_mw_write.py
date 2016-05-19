@@ -43,7 +43,7 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial(2)  # open first serial port
+    ser = serial.Serial(0)  # open first serial port
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
 
@@ -104,7 +104,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.4'
+  TCP_IP = '192.168.2.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -112,7 +112,7 @@ def main():
 
   data = [2,6,0,45,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_w = [3,6,0,218,1,45,0,15,0,0,0]
+  data_w = [3,6,0,218,1,45,0,7,0,0,0]
   Packet = RTM_MW(data)
 
 
@@ -141,7 +141,7 @@ def main():
       print (cmd[-11:-3])
       ser.write(mdb)
     elif ord(q)==97:#a
-      Packet.SendPacket(s,1)
+      Packet.SendPacket(ser,0)
     elif ord(q)==43:#+
       data_p[1] += 1
       Packet_p = RTM_MW(data_p)  
@@ -240,7 +240,7 @@ class RTM_MW(object):
     self.Flag = 0x02
     self.MyAdd = [8,0,1]
     self.Chan = 1
-    self.DestAdd = [4,0,5]
+    self.DestAdd = [5,0,5]
     self.DestAddEnd = [16,1,0x00]
 #    self.DestAddEnd = [0xeb,0x03,0]
 #    self.DestAddEnd = [202,0x00,0]

@@ -25,11 +25,11 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
     ip_error = data_gen.ip_error
-    TCP_IP = '192.168.2.197'
+    TCP_IP = '172.16.1.4'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 156, 0, 157, 0]
+    data = [2, 154, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -54,7 +54,7 @@ def data_gen():
             data_buf = packet.send_packet(s, 1)
             if data_buf:
                 str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 7:
+                if len(packet.DataInPacket) != 37:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
@@ -63,7 +63,7 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
-                    ip_error = packet.DataInPacket[3]|(packet.DataInPacket[4]<<8)|(packet.DataInPacket[5]<<16)|(packet.DataInPacket[6]<<24)
+                    ip_error = packet.DataInPacket[33]|(packet.DataInPacket[34]<<8)|(packet.DataInPacket[35]<<16)|(packet.DataInPacket[36]<<24)
                     raz_rezet = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)
                     
  #                   ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
@@ -161,7 +161,7 @@ def main():
         ip_error_text.set_text(ip_error_template % y_ip_error)
 
         return line_raz_rezet, raz_rezet_text, line_ip_err, ip_error_text
-    ani = animation.FuncAnimation(fig, run, data_gen, blit=True, interval=1000,init_func=init)
+    ani = animation.FuncAnimation(fig, run, data_gen, blit=True, interval=100,init_func=init)
     plt.show()
 
 
@@ -175,7 +175,7 @@ class RTM_MW(object):
         self.MyAdd = [7,0,0]
         self.Chan = 1
         self.MyAdd[2] = 0x01
-        self.DestAdd = [3, 0, 0x00]
+        self.DestAdd = [4, 0, 0x00]
         self.DestAdd[2] = 2
         self.Tranzaction  = 0xe4
         self.PacketNumber = 1
