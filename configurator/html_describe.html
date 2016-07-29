@@ -15,6 +15,24 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+	if (KernelInfo.EventFlags.Bit.CfgFirstSec&&(IN->KodPSM.Data.uint8 & 0x0F)) {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+  if ((FB_N_In!=17)||(FB_N_Vars!=6)||(FB_N_Out!=9)){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
   if (IN->Enable.Data.bit) </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -51,15 +69,6 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-          if (OUT->GZUsost.Data.uint16 & Zamer)
-</span> </small></td></tr>
-</table>
-</td>
-</tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
           if (IN->ManualOtvNum.Data.uint8 == 0)   </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -82,11 +91,6 @@ void fb00066_exec(void)
 </table>
 </td>
 </tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-          else if ((OUT->GZUsost.Data.uint16 & Forward) == 0)                         </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
@@ -126,12 +130,7 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-	  if (IN->ExtraOtvNum.Data.uint8 && (IN->ExtraOtvNum.Data.uint8 <= IN->GZU_OtvNum.Data.uint8)) {    </span> </small></td></tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-				if (OUT->GZUsost.Data.uint16 & (Manual)) { </span> </small></td></tr>
+      if (IN->ExtraOtvNum.Data.uint8 && (IN->ExtraOtvNum.Data.uint8 <= IN->GZU_OtvNum.Data.uint8)) {    </span> </small></td></tr>
 </table>
 </td>
 </tr>
@@ -139,7 +138,17 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-				} else {
+      if ((IN->GP_enabled.Data.bit) && !(OUT->GZUsost.Data.uint16 & (Forward | Reverse | GPbraked)) && (VAR->TempExtra.Data.uint8 != 0)) { </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+        if (IN->KodPSM.Data.uint8 != VAR->TempExtra.Data.uint8) {</span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+          if (OUT->GZUsost.Data.uint16 & Zamer) {	OUT->EndPeriod.Data.bit = 1; }
 </span> </small></td></tr>
 </table>
 </td>
@@ -151,29 +160,7 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-	  if ((IN->GP_enabled.Data.bit) && !(OUT->GZUsost.Data.uint16 & (Manual | Forward | Reverse)) && (VAR->TempExtra.Data.uint8 != 0)) { </span> </small></td></tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-				if (IN->KodPSM.Data.uint8 != VAR->TempExtra.Data.uint8) {</span> </small></td></tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-				        if (OUT->GZUsost.Data.uint16 & Zamer) {	OUT->EndPeriod.Data.bit = 1; }
-</span> </small></td></tr>
-</table>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr><td valign=TOP>
-<table border=1 cellspacing=0 cellpadding=8 >
-<tr>
-<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-				} else {
+        } else {
 </span> </small></td></tr>
 </table>
 </td>
@@ -239,6 +226,15 @@ void fb00066_exec(void)
 </table>
 </td>
 </tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+				if (otvod) VAR->TempExtra.Data.uint8 = otvod;
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
 </table>
 </td>
 </tr>
@@ -246,7 +242,7 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-      if (!(OUT->GZUsost.Data.uint16 & (Stop | FullStop)) )
+      if (!(OUT->GZUsost.Data.uint16 & (Stop | FullStop | GPbraked) ) )
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -332,7 +328,7 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-            if  ( ( ((OUT->GZUsost.Data.uint16 & Manual) == 0) && (IN->OtvMask.Data.uint16 & (1 << ((IN->KodPSM.Data.uint8 & 0x0F) - 1))) ) || \
+            if  ( ( ((OUT->GZUsost.Data.uint16 & Manual) == 0) && (IN->OtvMask.Data.uint16 & (1 << ((IN->KodPSM.Data.uint8 & 0x0F) - 1))) && ((IN->KodPSM.Data.uint8 & 0x0F) == OUT->ManualOtvNum.Data.uint8)) || \
               ( (OUT->GZUsost.Data.uint16 & Manual) && ((IN->KodPSM.Data.uint8 & 0x0F) == OUT->ManualOtvNum.Data.uint8) ) )
 </span> </small></td></tr>
 <tr><td valign=TOP>
@@ -370,6 +366,31 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+					if (IN->ForwardTime.Data.uint16!=OUT->TimerUstOut.Data.uint16) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						if (IN->ForwardTime.Data.uint16<=OUT->TimerOut.Data.uint16) { </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						} else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
           if ((!VAR->Timer1.Data.uint32) || (!IN->GP_enabled.Data.bit) )
 </span> </small></td></tr>
 </table>
@@ -387,7 +408,32 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-          if (!VAR->Timer1.Data.uint32)
+					if (IN->ReverseTime.Data.uint16!=OUT->TimerUstOut.Data.uint16) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						if (IN->ReverseTime.Data.uint16<=OUT->TimerOut.Data.uint16) { </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						} else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+					if (!VAR->Timer1.Data.uint32)
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -603,6 +649,31 @@ void fb00066_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+					if (IN->StabTime.Data.uint16!=OUT->TimerUstOut.Data.uint16) </span> </small></td></tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						if (IN->StabTime.Data.uint16<=OUT->TimerOut.Data.uint16) { </span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+						} else {
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
           if (!VAR->Timer1.Data.uint32)
 </span> </small></td></tr>
 </table>
@@ -693,6 +764,15 @@ void fb00066_exec(void)
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
               if (OUT->GZUsost.Data.uint16 & Manual1Cnt){
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+							} else {
 </span> </small></td></tr>
 </table>
 </td>
@@ -908,6 +988,15 @@ void fb00066_exec(void)
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
   else
+</span> </small></td></tr>
+</table>
+</td>
+</tr>
+<tr><td valign=TOP>
+<table border=1 cellspacing=0 cellpadding=8 >
+<tr>
+<td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
+	if (!KernelInfo.EventFlags.Bit.CfgFirstSec){
 </span> </small></td></tr>
 </table>
 </td>
@@ -1146,7 +1235,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-  if(time_fb68&BIT(MIN)){
+  if(time_fb68&BIT(MINUT)){
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -1326,7 +1415,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-    if ((time_fb68&BIT(MIN))&&(OUT->SPTimer.Data.uint16!=0)){
+    if ((time_fb68&BIT(MINUT))&&(OUT->SPTimer.Data.uint16!=0)){
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -1434,7 +1523,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-    if ((time_fb68&BIT(MIN))&&(OUT->APVTimer.Data.uint16!=0)){
+    if ((time_fb68&BIT(MINUT))&&(OUT->APVTimer.Data.uint16!=0)){
 </span> </small></td></tr>
 <tr><td valign=TOP>
 <table border=1 cellspacing=0 cellpadding=8 >
@@ -1674,7 +1763,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-            if (time_fb68&BIT(MIN)) OUT->DownTimer.Data.uint16--;
+            if (time_fb68&BIT(MINUT)) OUT->DownTimer.Data.uint16--;
 </span> </small></td></tr>
 </table>
 </td>
@@ -1691,7 +1780,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-            if (time_fb68&BIT(MIN)) OUT->UpTimer.Data.uint16--;
+            if (time_fb68&BIT(MINUT)) OUT->UpTimer.Data.uint16--;
 </span> </small></td></tr>
 </table>
 </td>
@@ -1898,7 +1987,7 @@ void fb00068_exec(void)
 <table border=1 cellspacing=0 cellpadding=8 >
 <tr>
 <td style="font-weight:font-style:italic;font-family:Verdana;><small><span style="color:black;">
-  if((time_fb68&BIT(MIN))){ </span> </small></td></tr>
+  if((time_fb68&BIT(MINUT))){ </span> </small></td></tr>
 </table>
 </td>
 </tr>

@@ -71,8 +71,8 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial(1)  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM5')  # open first serial port
+    ser.baudrate = 9600;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
