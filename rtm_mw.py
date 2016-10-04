@@ -71,7 +71,7 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial(1)
+    ser = serial.Serial("COM2")
     ser.baudrate = 115200
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -138,7 +138,7 @@ def main():
     thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
 #          fa 39 00 00 01 
-  data = [2,88,0]
+  data = [2,84,0]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -256,7 +256,7 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [3,0,5]
+    self.DestOne = [4,0,5]
     self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
