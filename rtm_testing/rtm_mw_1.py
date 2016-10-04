@@ -1,15 +1,15 @@
 #!/c/Python33/ python
 import rtm_mw,sys
 import msvcrt
-if __name__ == '__main__':
+def main():                                                                       
   print('helo')
-  TCP_IP = '172.16.1.9'
+  TCP_IP = '172.16.1.5'
   TCP_PORT = 502
-  data = [2,73,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
+  data = [2,3,0,22,0]#,73,0,48,0,49,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
   Packet = rtm_mw.RTM_MW(data)
   Packet.RetranNum =0
-  Packet.DestOne = [9,1,7]
-  Packet.DestTwo =  [8,0,7]
+  Packet.DestOne = [5,0,4]
+  Packet.DestTwo =  [5,0,0]
   Packet.DestThree = [200,0,5]
 
   print(Packet)
@@ -58,4 +58,6 @@ if __name__ == '__main__':
           if ord(q) == 113:#q
             s.close()
             sys.exit(1)
+if __name__ == "__main__":
+    main()
 
