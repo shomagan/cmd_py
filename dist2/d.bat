@@ -1,0 +1,1 @@
+C:\Anaconda3\python.exe mdbtcp_thread.py -a 3 -f 3 -r 0x0003 -i 192.168.2.180
