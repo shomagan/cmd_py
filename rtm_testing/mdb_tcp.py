@@ -26,36 +26,25 @@ FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
 add addres property befor start program
 """
 import sys, os, _thread as thread, threading,socket,atexit,io,serial,time
-import winsound
+
 try:
     from serial.tools.list_ports import comports
 except ImportError:
     comports = None
 import msvcrt
-import struct
 #def hextoascii():
-global receive_byte_numm
 def ComList(ser):
-  receive_packet = 0
-  global receive_byte_numm
-  receive_byte_numm=0
-  array_byte=[0 for x in range(17)]
   while(1):
     hello = ser.read(1)
     if (hello != ''):
       #print(char_to_int(hello,len(hello)))
-#      array_byte[receive_byte_numm] = ord(hello)
-      receive_byte_numm+=1
-      print(ord(hello),receive_byte_numm)
-      
+      print(ord(hello))
 def main():
   have_serial = 1
   try:
-    ser.rts=0
-    ser = serial.Serial('COM12')  
+    ser = serial.Serial('COM7')
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
-    print(ser)
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
       ser.baudrate,
@@ -67,66 +56,43 @@ def main():
     have_serial = 0
     print("could not open port \n")
   hello = 'hello'
-  cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
-#          7E   03   F0   16   01   51   44   01   80   96   70   97   00   97   04   C0   5A   00   02 70 EE D2 06 7E
-#         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x03,0x70,0x97,0x00,1,4,0x80,0x36,0,2]
-#  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
-  Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
-  mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb =    [80,0x03,8,52,0x00,11]
-  byte_array = [85]
-#  mdb =    [0x01,0x03,0x00,0x0d,0x00,0x2]
- 
- # mdb =    [0x01,0x03,0x10,0x10,0x00,0x4]
- # mdb =      [0x01,0x41,0x00,0x0b,0x00,0x00,0x1e,0x05]
-  mdbwrite = [0x01,0x10,0x10,0x10,0x00,0x04,0x08,0x0f,0xff,0x0f,0xff,0x00,0x00,0x00,0x00]
-  CRC = crc16(mdb,len(mdb))
-  mdb.append(CRC&0xFF)
-  mdb.append((CRC>>8)&0xFF)
-#  mdb.append(0xFF)
-  CRC = crc16(mdbwrite,len(mdbwrite))
-  mdbwrite.append(CRC&0xFF)
-  mdbwrite.append((CRC>>8)&0xFF)
+  mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
+  mdb_address = 5
+  mdb_command = 3
+  start_address = 0
+  reg_numm = 4
+  data = [0x0005]
+  mdbtcp.append(mdb_address)
+  mdbtcp.append(mdb_command)
+  mdbtcp.append((start_address>>8)&0xff)
+  mdbtcp.append(start_address&0xff)
+  if mdb_command == 3 or mdb_command == 4:
+    mdbtcp.append((reg_numm>>8)&0xff)
+    mdbtcp.append(reg_numm&0xff)
+  elif mdb_command == 16:
+    reg_numm = len(data)&0xffff
+    reg_numm_bytes = reg_numm*2
+    mdbtcp.append((reg_numm>>8)&0xff)
+    mdbtcp.append(reg_numm&0xff)
+    mdbtcp.append(reg_numm_bytes&0xff)
+    for i in range(reg_numm):
+      mdbtcp.append((data[i]>>8)&0xff)
+      mdbtcp.append(data[i]&0xff)
+  elif mdb_command == 6:
+    mdbtcp.append((data[0]>>8)&0xff)
+    mdbtcp.append(data[0]&0xff)
+  else:
+    print('command not responde')
+  print(mdbtcp)
 
-
-  cmd_FR_T = [0x7E,0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x00,0x01,0x02]  
-  ChekSum = RTM64ChkSUM(cmd_FR_T[1:] , len(cmd_FR_T)-1)
-  cmd_FR_T.append(ChekSum&0xFF)
-  cmd_FR_T.append((ChekSum>>8)&0xFF)
-  cmd_FR_T.append(0x7e)
-  ChekSum = RTM64ChkSUM(Cmd_NI[1:] , len(Cmd_NI)-1)
-  Cmd_NI.append(ChekSum&0xFF)
-  Cmd_NI.append((ChekSum>>8)&0xFF)
-  Cmd_NI.append(0x7E)
-#            7E 03   F0   16   00    4D  42    E8   83   B5  7F    21   02   01   03   00  01    00    01 D5 CA FF 05 7E
-  CRC = crc16(cmd[-6:],6)
-  Buff= [0x7E, 0x02, 0xF0, 0x0C, 0x00, 0x56, 0x4D, 0x03, 0x80, 0x05, 0x00 ]
-  ChekSum = RTM64ChkSUM(Buff[1:] , len(Buff)-1)
-  Buff.append(ChekSum&0xFF)
-  Buff.append((ChekSum>>8)&0xFF)
-  print_hex (Buff,len(Buff))
-  cmd.append(CRC&0xFF)
-  cmd.append((CRC>>8)&0xFF)
-  ChekSum = RTM64ChkSUM(cmd[1:] , len(cmd)-1)
-  cmd.append(ChekSum&0xFF)
-  cmd.append((ChekSum>>8)&0xFF)
-  cmd.append(0x7E)
-  print_hex (cmd,len(cmd))
-#  print (int_to_char(cmd))
-  cmd_fr =[0x03,0xF0,0x11,0x00,0x46,0x52,0xA0,0x8F,0x03,0x70,0x05,0x00,0x10,0x01,0x02]
-  cmd_vm = [0x02,0xF0,0x0C,0x00,0x56,0x4D,0xA0,0x8F,0x03,0x00]
-  cmd_four = [0xAE,0x08,0x18,0x28]
-  cmd_fs = [0x02,0xF0,0x0F,0x00,0x46,0x52,0xA0,0x8F,0x03,0x00,0x28,0x01,0x02]
-  cmd_s = [0 for x in range(100)]
   count = 0
-
-  TCP_IP = '192.168.1.232'
+#  print (RTM64ChkSUM(cmd_fs , 13))
+#  print (0x02f6)
+  TCP_IP = '192.168.2.186'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
   if have_serial:
     thread.start_new_thread(ComList, (ser, ))
   print ('tread is start')
@@ -149,21 +115,12 @@ def main():
       print(cmd_FR_T)
       ser.write(cmd_FR_T)
     elif ord(q)==109:#m
-      ser.rts=1
-      print("ser.rts_state",ser.rts)
-      time_while = time.time()
-      while ser.cts==0:
-        if (time.time() - time_while)>0.5:
-          break;
-      if ser.cts:
-        time.sleep(0.1)
-        ser.write(mdb)
-        print('send packet ',mdb)
-        print("ser.cts_state",ser.cts)
-        time.sleep(0.1)
-      else:
-        print('cts not rising from device')
-      ser.rts=0
+      mdb_rtu = mdbtcp[6:]
+      crc = crc16(mdb_rtu,len(mdb_rtu))
+      mdb_rtu.append(crc&0xFF)
+      mdb_rtu.append((crc>>8)&0xFF)
+      print (mdb_rtu)
+      ser.write(mdb_rtu)
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==116:#t
@@ -178,42 +135,10 @@ def main():
 #        print(data)
       for i in range(0,len(data)):
         data_s.append(data[i])
-      print(data_s)          
+      parse_mdb_tcp_response(data_s)
+      print(data_s)
       print("lenght",len(data_s))
       print(time_pr,'ms')
-    elif ord(q)==115:#s
-      cmd_s = bytearray(cmd[0:])
-    #  print(cmd[0:])
-      s.send(cmd_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      data_s =[]
-#        print(data)
-   #   print(data[-9],data[-8],data[-7],data[-6])
-  #    print(hex(data[-9]),hex(data[-8]),hex(data[-7]),hex(data[-6]))
-      value = data[-6]
-      value |= data[-7]<<8
-      value |= data[-8]<<16
-      value |= data[-9]<<24
-      flo32 = struct.pack('I',value)
-      print ("Value L = ",value)
-#      print("Value = ",struct.unpack('f',flo32))
-      for i in range(0,len(data)):
-        data_s.append(data[i])
-#      print(data_s)
- #     print("lenght",len(data_s))
- #     print(time_pr,'ms')
-
-    elif ord(q)==102:#f
-      if ser.rts==1:
-        ser.rts=0
-      else:
-        ser.rts=1
-      print("ser.rtscts",ser.rtscts)
-      print("ser.rts_state",ser.rts)
-      print("ser.cts_state",ser.cts)
 
     elif ord(q)==108:#l
       while(1):
@@ -266,64 +191,36 @@ def main():
           if ord(q) == 113:#q
             s.close()
             sys.exit(1)
-    elif ord(q)==105:#i
-      send_packet=0
-      while 1:
-        ser.rts=1
-        print("ser.rts_state",ser.rts)
-        time_while = time.time()
-        while ser.cts==0:
-          if (time.time() - time_while)>0.6:
-            break;
-        if ser.cts:
- #         time.sleep(0.1)
-          send_packet +=1
-          print('numm send packet',send_packet)
-          global receive_byte_numm
-          receive_byte_numm=0
-          ser.write(mdb)
-          print('send packet ',mdb)
-#          winsound.PlaySound('*',winsound.SND_ALIAS)
-          print("ser.cts_state",ser.cts)
-          time.sleep(0.13)
-        else:
-          print('cts not rising from device')
-        ser.rts=0
-        time.sleep(8)
-        if(msvcrt.kbhit()):
-          q = msvcrt.getch()
-          print(ord(q))
-          if ord(q) == 113:#q
-            s.close()
-            sys.exit(1)
-    elif ord(q)==106:#j
-      while 1:
-        ser.rts=1
-        print("ser.rts_state",ser.rts)
-        time_while = time.time()
-        while ser.cts==0:
-          if (time.time() - time_while)>0.5:
-            break;
-        if ser.cts:
-          time.sleep(0.1)
-          ser.write(byte_array)
-          print('send packet ',byte_array)
-          print("ser.cts_state",ser.cts)
-          time.sleep(0.1)
-        else:
-          print('cts not rising from device')
-        ser.rts=0
-        time.sleep(3)
-        if(msvcrt.kbhit()):
-          q = msvcrt.getch()
-          print(ord(q))
-          if ord(q) == 113:#q
-            s.close()
-            sys.exit(1)
+def parse_mdb_tcp_response(packet):
+  parse_mdb_response(packet[6:])
+  return
+def parse_mdb_response(packet):
+  print('address', packet[0], 'hex', hex(packet[0]))
+  print('command', packet[1], 'hex', hex(packet[1]))
+  if packet[1] ==3 or packet[1]==4:
+    print('response byte', packet[2], hex(packet[2]))
+    for i in range(packet[2]//2):
+      data = (packet[3+i*2]<<8)&0xff00
+      data |= (packet[3+i*2+1]&0x00ff)
+      print('data of regs', i, '= ', data, 'hex', hex(data))
+  elif packet[1] ==16:
+    address = (packet[2]<<8)&0xff00
+    address |= (packet[3]&0x00ff)
+    print('start address', address, 'hex', hex(address))
+    number_write_reg = (packet[4]<<8)&0xff00
+    number_write_reg |= (packet[5]&0x00ff)
+    print('number_write_reg', number_write_reg, 'hex', hex(number_write_reg))
+
+  elif packet[1]==6:
+    address = (packet[2]<<8)&0xff00
+    address |= (packet[3]&0x00ff)
+    print('start address', address, 'hex', hex(address))
+    reg_value = (packet[4]<<8)&0xff00
+    reg_value |= (packet[5]&0x00ff)
+    print('reg_value', reg_value, 'hex', hex(reg_value))
+  return
 
   
-
-
 def ChekErrorPacket(data):
   if len(data)==9:
     print(data[-3:-1])
@@ -344,11 +241,11 @@ def RTM64CRC16(pbuffer , Len):
       if (CRC & 0x8000): CRC = (((CRC<<1)&0xFFFF)^0x1021)
       else: CRC = ((CRC<<1)&0xFFFF)
   return CRC
-def crc16(pck,len):
+def crc16(pck,lenght):
   """CRC16 for modbus"""
   CRC = 0xFFFF
   i = 0
-  while ( i < len ):
+  while ( i < lenght):
     CRC ^= pck[i]
     i+=1
     j = 0 

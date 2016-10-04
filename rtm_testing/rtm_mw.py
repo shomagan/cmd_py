@@ -255,7 +255,7 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [4,0,5]
+    self.DestOne = [3,0,5]
     self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
@@ -279,6 +279,7 @@ class RTM_MW(object):
     self.IntName = []
     self.ArraySize = [0x00000 for x in range(200)]
     self.Value = []
+    self.Flag = 0    
     self.Errorcnt = 0
     self.OkReceptionCnt = 0
     self.CheckCRC = 0
