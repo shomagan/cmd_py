@@ -337,7 +337,7 @@ class RTM_MW(object):
 #      error_log.write (str(Packet_str))
 #      error_log.close()
       self.s.send(Packet_str)
-      self.s.settimeout(4)
+      self.s.settimeout(6)
 #data = s.recvfrom(BUFFER_SIZE)
       try:
         data = self.s.recv(BUFFER_SIZE)
@@ -473,6 +473,7 @@ class RTM_MW(object):
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       error_log.close()
       self.s.connect((TCP_IP, TCP_PORT))
+    return self.s
 
   def ChekPacket(self,data):
     str_buf = ''
