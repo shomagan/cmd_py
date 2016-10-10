@@ -24,13 +24,13 @@ DEFAULT_RTS = None
 DEFAULT_DTR = None
 
 
-def send_mdb_packet(mdb_packet,log,rtm_mw_packet):
+def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6):
   global TCP_IP
   global TCP_PORT
   global s_socket
 
   try:
-    mdb_packet.send(s_socket,log)
+    mdb_packet.send(s_socket,log,timeout = timeout)
   except OSError:
     print ("Can't send tcp Packet")
     error_log = open('error_log_rv.txt','a')
@@ -55,13 +55,13 @@ def send_mdb_packet(mdb_packet,log,rtm_mw_packet):
       s_socket = rtm_mw_packet.connect(TCP_IP, TCP_PORT)
 
 
-def send_rtm_mw_packet(rtm_mw_packet,log):
+def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
   global TCP_IP
   global TCP_PORT
   global s_socket
 
   try:
-    rtm_mw_packet.Send()
+    rtm_mw_packet.Send(timeout = timeout)
   except OSError:
     print ("Can't send tcp Packet")
     error_log = open('error_log_rv.txt','a')
@@ -85,6 +85,47 @@ def send_rtm_mw_packet(rtm_mw_packet,log):
       erro_log.close()
       s_socket=rtm_mw_packet.connect(TCP_IP, TCP_PORT)
 
+class Controller_info(object):
+  def __init__(self): 
+    self.address = 0
+    self.di_sost = 0
+    self.do_sost = 0
+    self.ai_sost = 0
+  def __del__(self):
+    print("controller info")
+  def request_address()
+    for i in range(250):
+      send_mdb_packet(mdb_packet,log,Packet)      
+  def parse_mdb_response(packet):
+    packet_dict = {'address':0,'command':0}
+    if len(packet):
+      packet_dict.
+      
+    print('address', packet[0], 'hex', hex(packet[0]))
+    print('command', packet[1], 'hex', hex(packet[1]))
+    if packet[1] ==3 or packet[1]==4:
+      print('response byte', packet[2], hex(packet[2]))
+      for i in range(packet[2]//2):
+        data = (packet[3+i*2]<<8)&0xff00
+        data |= (packet[3+i*2+1]&0x00ff)
+        print('data of regs', i, '= ', data, 'hex', hex(data))
+    elif packet[1] ==16:
+      address = (packet[2]<<8)&0xff00
+      address |= (packet[3]&0x00ff)
+      print('start address', address, 'hex', hex(address))
+      number_write_reg = (packet[4]<<8)&0xff00
+      number_write_reg |= (packet[5]&0x00ff)
+      print('number_write_reg', number_write_reg, 'hex', hex(number_write_reg))
+
+    elif packet[1]==6:
+      address = (packet[2]<<8)&0xff00
+      address |= (packet[3]&0x00ff)
+      print('start address', address, 'hex', hex(address))
+      reg_value = (packet[4]<<8)&0xff00
+      reg_value |= (packet[5]&0x00ff)
+      print('reg_value', reg_value, 'hex', hex(reg_value))
+    return
+    
 
 def main():
   global TCP_IP
@@ -99,7 +140,7 @@ def main():
   mdb_packet = mdb_tcp_request.Mdb()
   log = open('log_rv.txt','a')
   log.write ("mega12 test mdb retranslate"+time.asctime()+'\n')
-  
+  controller = Controller_info()
 
   while 1:
     q = msvcrt.getch()
@@ -156,6 +197,45 @@ def main():
           del Packet
           del mdb_packet
           sys.exit(1)
+    elif ord(q)==116:#t
+      mdb_packet.mdb_address = 4
+      for i in range(15):
+        send_mdb_packet(mdb_packet,log,Packet)
+        time.sleep(0.2)
+        if(msvcrt.kbhit()):
+          log.close()
+          del Packet
+          del mdb_packet
+          sys.exit(1)
+      for i in range(15):
+        Packet.RetranNum = 0
+        Packet.DestOne = [4,0,4]
+        time.sleep(0.3)
+        send_rtm_mw_packet(Packet,log)
+        time.sleep(0.2)
+        if(msvcrt.kbhit()):
+          log.close()
+          del Packet
+          del mdb_packet
+          sys.exit(1)
+      for i in range(15):
+        Packet.RetranNum = 1
+        Packet.DestOne = [4,0,7]
+        Packet.DestTwo =  [3,0,0]
+        send_rtm_mw_packet(Packet,log)
+        time.sleep(0.2)
+        if(msvcrt.kbhit()):
+          log.close()
+          del Packet
+          del mdb_packet
+          sys.exit(1)
+
+
+      if(msvcrt.kbhit()):
+        log.close()
+        del Packet
+        del mdb_packet
+        sys.exit(1)
 
 
 if __name__ == '__main__':

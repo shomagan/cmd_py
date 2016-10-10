@@ -287,7 +287,7 @@ class RTM_MW(object):
     if self.s:
       self.s.close()
     print("dlt packet")
-  def SendPacket(self,ser,type):
+  def SendPacket(self,ser,type,time_out = 6):
     BUFFER_SIZE = 1024
     Packet = [self.Kod]
     Packet.append(self.Len[0])
@@ -328,6 +328,7 @@ class RTM_MW(object):
     CRC = RTM64CRC16(Packet, len(Packet))
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
+    data_s =[]
     if (type == 1):
       print(Packet)
       print(len(Packet))
@@ -336,15 +337,15 @@ class RTM_MW(object):
 #      error_log = open('error_log_rv.txt','a')
 #      error_log.write (str(Packet_str))
 #      error_log.close()
+      self.s.settimeout(time_out)
       self.s.send(Packet_str)
-      self.s.settimeout(6)
 #data = s.recvfrom(BUFFER_SIZE)
       try:
         data = self.s.recv(BUFFER_SIZE)
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
 #        data = char_to_int(data,len(data))
-        data_s =[]
+
 #        print(data)
         for i in range(0,len(data)):
           data_s.append(data[i])
@@ -380,8 +381,8 @@ class RTM_MW(object):
       error_log = open('error_log_rv.txt','a')
       error_log.write (str(Packet))
       error_log.close()
-
       ser.write(Packet)
+    return data_s
   def HandPacket(self,DataVal):
     if DataVal:
       if self.Instruction == 1:
@@ -535,14 +536,14 @@ class RTM_MW(object):
         else:
           self.CheckCRC = 1
     return str_buf
-  def Send(self):
+  def Send(self,timeout = 6):
     self.Data[0] = 1
     self.Instruction  = 1
-    self.SendPacket(self.s,1);
+    self.SendPacket(self.s,1,time_out = timeout);
 #    time.sleep(1.2)
     self.Data[0] = 2
     self.Instruction  = 2
-    self.SendPacket(self.s,1);
+    self.SendPacket(self.s,1,time_out = timeout);
     
 
 def RTM64CRC16(pbuffer , Len):

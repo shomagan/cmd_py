@@ -57,7 +57,7 @@ class Mdb(object):
     self.good_transaction = 0
     self.bad_transaction = 0
 
-  def send(self,s_socket,log):
+  def send(self,s_socket,log,timeout = 6):
     mdbtcp = []
     mdbtcp = [self.mdbtcp[i] for i in range(len(self.mdbtcp)) ]
     mdbtcp.append(self.mdb_address)
@@ -85,19 +85,29 @@ class Mdb(object):
     s = s_socket
     mdbtcp_s = bytearray(mdbtcp[0:])
     print(mdbtcp[0:])
-    s.send(mdbtcp_s)
     time_start=time.time()
-    s.settimeout(6)
-    data = s.recv(BUFFER_SIZE)
-    time_pr=time.time() - time_start
+    s.settimeout(timeout)
+    s.send(mdbtcp_s)
     data_s =[]
-    for i in range(0,len(data)):
-      data_s.append(data[i])
-    parse_mdb_tcp_response(data_s)
-    log.write ('receive mb packet'+str(data_s) + '\n')
-    print(data_s)
-    print("lenght",len(data_s))
-    print(time_pr,'ms')
+    try:
+      data = s.recv(BUFFER_SIZE)
+      time_pr=time.time() - time_start
+      for i in range(0,len(data)):
+        data_s.append(data[i])
+      if data_s:
+        parse_mdb_tcp_response(data_s)
+        log.write ('receive mb packet'+str(data_s) + '\n')
+        print(data_s)
+        print("lenght",len(data_s))
+      print(time_pr,'ms') 
+
+    except socket.timeout:
+      print("TCP_RecvError",self.Errorcnt)
+      print (time.asctime())
+      error_log = open('error_log_rv.txt','a')
+      error_log.write ("TCP_RecvError"+time.asctime()+str(self.Errorcnt)+'\n')
+      error_log.close()
+    return data_s
 
 
 def parse_mdb_tcp_response(packet):
