@@ -48,8 +48,8 @@ ValType = {KodBit: 1,
 
 
 def main():
-    ser = serial.Serial(1)  # open first serial port
-    ser.baudrate = 9600
+    ser = serial.Serial("COM2")  # open first serial port
+    ser.baudrate = 115200
     print(ser.name)  # check which port was really used
     try:
       sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (

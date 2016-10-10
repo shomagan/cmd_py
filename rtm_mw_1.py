@@ -3,13 +3,13 @@ import rtm_mw,sys
 import msvcrt
 def main():                                                                       
   print('helo')
-  TCP_IP = '172.16.1.5'
+  TCP_IP = '192.168.2.205'
   TCP_PORT = 502
   data = [2,0,0,30,0]#,73,0,48,0,49,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
   Packet = rtm_mw.RTM_MW(data)
-  Packet.RetranNum =2
-  Packet.DestOne = [5,0,5]
-  Packet.DestTwo =  [6,0,0]
+  Packet.RetranNum =1
+  Packet.DestOne = [4,0,7]
+  Packet.DestTwo =  [3,0,0]
   Packet.DestThree = [7,0,2]
 
   print(Packet)

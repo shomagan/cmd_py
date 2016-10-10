@@ -8,7 +8,6 @@ import socket
 import time
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import struct
 
 try:
     from serial.tools.list_ports import comports
@@ -25,11 +24,11 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
     ip_error = data_gen.ip_error
-    TCP_IP = '192.168.2.195'
+    TCP_IP = '172.16.0.5'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data = [2, 157, 0, 158, 0]
+    data = [2, 75,0,154, 0]
     packet = RTM_MW(data)
     packet.Chan = 0x01
     try:
@@ -54,7 +53,7 @@ def data_gen():
             data_buf = packet.send_packet(s, 1)
             if data_buf:
                 str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 9:
+                if len(packet.DataInPacket) != 39:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
@@ -63,11 +62,8 @@ def data_gen():
                     error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
                     error_log.close()
                 else:
-#                    ip_error_byte = str(packet.DataInPacket[5])+str(packet.DataInPacket[6]<<8)+str(packet.DataInPacket[7]<<16)+str(packet.DataInPacket[8]<<24)
- #                   raz_rezet_byte = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16)|(packet.DataInPacket[4]<<24)
-                    
-                    ip_error = struct.unpack('f',bytearray(packet.DataInPacket[5:9]))
-                    raz_rezet = struct.unpack('f',bytearray(packet.DataInPacket[1:5]))
+                    ip_error =  packet.DataInPacket[35] | (packet.DataInPacket[36]<<8)|(packet.DataInPacket[37]<<16) | (packet.DataInPacket[38]<<24)
+                    raz_rezet = packet.DataInPacket[1] | (packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16) | (packet.DataInPacket[4]<<24)
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")
@@ -121,13 +117,13 @@ def main():
     ax = fig.add_subplot(111, autoscale_on=False)
     line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
     line_ip_err, = ax.plot([], [], lw=2, label='ip error')
-    raz_rezet_template = ' input = %.1f '
-    ip_error_template = ' output = %.1f '
+    raz_rezet_template = ' raz_rezet_text = %.1f '
+    ip_error_template = ' ip_error = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
     ip_error_text = ax.text(0.05, 0.8, '', transform=ax.transAxes)
 
     ax.legend()
-    ax.set_ylim(0, 4100)
+    ax.set_ylim(0, 10)
     ax.set_xlim(0, 5)
     ax.grid()
     xdata, y_rezet_data, y_ip_error_data = [], [], []
@@ -146,12 +142,12 @@ def main():
         y_ip_error_data.append(y_ip_error)
         xmin, xmax = ax.get_xlim()
         if t >= xmax:
-            xmax += 10
+            xmax *= 2
             ax.set_xlim(xmin, xmax)
             ax.figure.canvas.draw()
         ymin, ymax = ax.get_ylim()
         if (y_rezet >= ymax) | (y_ip_error >= ymax):
-            ymax += 1000
+            ymax += 200
             ax.set_ylim(ymin, ymax)
             ax.figure.canvas.draw()
 
@@ -175,7 +171,7 @@ class RTM_MW(object):
         self.MyAdd = [7,0,0]
         self.Chan = 1
         self.MyAdd[2] = 0x01
-        self.DestAdd = [3, 0, 0x00]
+        self.DestAdd = [5, 0, 0x00]
         self.DestAdd[2] = 2
         self.Tranzaction  = 0xe4
         self.PacketNumber = 1

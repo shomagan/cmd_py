@@ -42,8 +42,8 @@ def ComList(ser):
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM7')
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM10')
+    ser.baudrate = 38400;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -57,7 +57,7 @@ def main():
     print("could not open port \n")
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb_address = 7
+  mdb_address = 3
   mdb_command = 3
   start_address = 0
   reg_numm = 4

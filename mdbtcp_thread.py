@@ -26,7 +26,7 @@ FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
 add addres property befor start program
 """
 import sys, os, _thread as thread, threading,socket,atexit,io,serial,time
-
+import winsound
 try:
     from serial.tools.list_ports import comports
 except ImportError:
@@ -34,18 +34,28 @@ except ImportError:
 import msvcrt
 import struct
 #def hextoascii():
+global receive_byte_numm
 def ComList(ser):
+  receive_packet = 0
+  global receive_byte_numm
+  receive_byte_numm=0
+  array_byte=[0 for x in range(17)]
   while(1):
     hello = ser.read(1)
     if (hello != ''):
       #print(char_to_int(hello,len(hello)))
-      print(ord(hello))
+#      array_byte[receive_byte_numm] = ord(hello)
+      receive_byte_numm+=1
+      print(ord(hello),receive_byte_numm)
+      
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM6')  
+    ser.rts=0
+    ser = serial.Serial('COM12')  
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
+    print(ser)
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
       ser.baudrate,
@@ -64,7 +74,8 @@ def main():
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb =    [0x01,0x03,0x00,0x00,0x00,0x3]
+  mdb =    [80,0x03,8,52,0x00,11]
+  byte_array = [85]
 #  mdb =    [0x01,0x03,0x00,0x0d,0x00,0x2]
  
  # mdb =    [0x01,0x03,0x10,0x10,0x00,0x4]
@@ -118,7 +129,6 @@ def main():
 
   if have_serial:
     thread.start_new_thread(ComList, (ser, ))
-
   print ('tread is start')
   good_transaction = 0
   bad_transaction = 0
@@ -139,8 +149,21 @@ def main():
       print(cmd_FR_T)
       ser.write(cmd_FR_T)
     elif ord(q)==109:#m
-      print (mdb)
-      ser.write(mdb)
+      ser.rts=1
+      print("ser.rts_state",ser.rts)
+      time_while = time.time()
+      while ser.cts==0:
+        if (time.time() - time_while)>0.5:
+          break;
+      if ser.cts:
+        time.sleep(0.1)
+        ser.write(mdb)
+        print('send packet ',mdb)
+        print("ser.cts_state",ser.cts)
+        time.sleep(0.1)
+      else:
+        print('cts not rising from device')
+      ser.rts=0
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==116:#t
@@ -155,7 +178,7 @@ def main():
 #        print(data)
       for i in range(0,len(data)):
         data_s.append(data[i])
-      print(data_s)
+      print(data_s)          
       print("lenght",len(data_s))
       print(time_pr,'ms')
     elif ord(q)==115:#s
@@ -185,36 +208,15 @@ def main():
  #     print("lenght",len(data_s))
  #     print(time_pr,'ms')
       '''
-    elif ord(q)==112:#p
-      mdbtcp_s = bytearray(mdb[0:])
-      print(mdb[0:])
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      data_s =[]
-#        print(data)
-      for i in range(0,len(data)):
-        data_s.append(data[i])
-      print(data_s)
-      print("lenght",len(data_s))
-      print(time_pr,'ms')
-
     elif ord(q)==102:#f
-      mdb = int_to_char(cmd_FR_T)
-      mdbtcp_s=''
-      for i in range(0,len(mdb)):
-          mdbtcp_s=mdbtcp_s+mdb[i]
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data_s = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      data = char_to_int(data_s,len(data_s))
-      kerneltime = (data[9]<<8|data[10])/10
-      print(data)
-      print(time_pr,'ms')
+      if ser.rts==1:
+        ser.rts=0
+      else:
+        ser.rts=1
+      print("ser.rtscts",ser.rtscts)
+      print("ser.rts_state",ser.rts)
+      print("ser.cts_state",ser.cts)
+
     elif ord(q)==108:#l
       while(1):
         try:
@@ -266,6 +268,63 @@ def main():
           if ord(q) == 113:#q
             s.close()
             sys.exit(1)
+    elif ord(q)==105:#i
+      send_packet=0
+      while 1:
+        ser.rts=1
+        print("ser.rts_state",ser.rts)
+        time_while = time.time()
+        while ser.cts==0:
+          if (time.time() - time_while)>0.6:
+            break;
+        if ser.cts:
+ #         time.sleep(0.1)
+          send_packet +=1
+          print('numm send packet',send_packet)
+          global receive_byte_numm
+          receive_byte_numm=0
+          ser.write(mdb)
+          print('send packet ',mdb)
+#          winsound.PlaySound('*',winsound.SND_ALIAS)
+          print("ser.cts_state",ser.cts)
+          time.sleep(0.13)
+        else:
+          print('cts not rising from device')
+        ser.rts=0
+        time.sleep(8)
+        if(msvcrt.kbhit()):
+          q = msvcrt.getch()
+          print(ord(q))
+          if ord(q) == 113:#q
+            s.close()
+            sys.exit(1)
+    elif ord(q)==106:#j
+      while 1:
+        ser.rts=1
+        print("ser.rts_state",ser.rts)
+        time_while = time.time()
+        while ser.cts==0:
+          if (time.time() - time_while)>0.5:
+            break;
+        if ser.cts:
+          time.sleep(0.1)
+          ser.write(byte_array)
+          print('send packet ',byte_array)
+          print("ser.cts_state",ser.cts)
+          time.sleep(0.1)
+        else:
+          print('cts not rising from device')
+        ser.rts=0
+        time.sleep(3)
+        if(msvcrt.kbhit()):
+          q = msvcrt.getch()
+          print(ord(q))
+          if ord(q) == 113:#q
+            s.close()
+            sys.exit(1)
+
+  
+
 
 def ChekErrorPacket(data):
   if len(data)==9:
