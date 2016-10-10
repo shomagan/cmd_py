@@ -43,7 +43,7 @@ def ComList(ser):
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM12')  
+    ser = serial.Serial('COM6')  
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -60,7 +60,7 @@ def main():
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #          7E   03   F0   16   01   51   44   01   80   96   70   97   00   97   04   C0   5A   00   02 70 EE D2 06 7E
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x03,0x70,0x97,0x00,1,4,0x80,0x36,0,2]
+  cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x2d,0x71,0x97,0x00,3,3,0x00,0x00,0,4]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
@@ -159,7 +159,9 @@ def main():
       print("lenght",len(data_s))
       print(time_pr,'ms')
     elif ord(q)==115:#s
-      cmd_s = bytearray(cmd[0:])
+      print(cmd)
+      ser.write(cmd[0:])
+      '''cmd_s = bytearray(cmd[0:])
     #  print(cmd[0:])
       s.send(cmd_s)
       time_start=time.time()
@@ -182,7 +184,7 @@ def main():
 #      print(data_s)
  #     print("lenght",len(data_s))
  #     print(time_pr,'ms')
-
+      '''
     elif ord(q)==112:#p
       mdbtcp_s = bytearray(mdb[0:])
       print(mdb[0:])
