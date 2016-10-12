@@ -283,11 +283,12 @@ class RTM_MW(object):
     self.Errorcnt = 0
     self.OkReceptionCnt = 0
     self.CheckCRC = 0
+    self.answer_cheked = 0
   def __del__(self):
     if self.s:
       self.s.close()
     print("dlt packet")
-  def SendPacket(self,ser,type,time_out = 6):
+  def SendPacket(self,ser,type,time_out = 6,hand_packet = 0):
     BUFFER_SIZE = 1024
     Packet = [self.Kod]
     Packet.append(self.Len[0])
@@ -330,35 +331,26 @@ class RTM_MW(object):
     Packet.append((CRC>>8)&0xFF)
     data_s =[]
     if (type == 1):
-      print(Packet)
-      print(len(Packet))
       Packet_str = bytearray(Packet[0:])
       time_start=time.time()
-#      error_log = open('error_log_rv.txt','a')
-#      error_log.write (str(Packet_str))
-#      error_log.close()
       self.s.settimeout(time_out)
       self.s.send(Packet_str)
-#data = s.recvfrom(BUFFER_SIZE)
       try:
         data = self.s.recv(BUFFER_SIZE)
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
-#        data = char_to_int(data,len(data))
-
-#        print(data)
         for i in range(0,len(data)):
           data_s.append(data[i])
-        print(data_s,self.OkReceptionCnt)
-        print("lenght",len(data_s))
-#        self.s.settimeout(4)
- #       data = self.s.recv(BUFFER_SIZE)
-  #      self.OkReceptionCnt+=1
         if data_s:
-          self.ChekPacket(data_s)
+          err_str = self.ChekPacket(data_s)
+          if len(err_str)>0:
+            self.answer_cheked = 0
+          else:
+            self.answer_cheked = 1
           if self.CheckCRC:
             if (len(self.DataInPacket)>1):
-              self.HandPacket(self.DataInPacket)
+              if hand_packet:
+                self.HandPacket(self.DataInPacket)
             else:
               print ("empty packet")
           else:
@@ -367,17 +359,12 @@ class RTM_MW(object):
             error_log.write ("CRC_ERROR"+time.asctime()+str(self.Errorcnt)+'\n')
             error_log.close()
 
-        print(time_pr,'s')
-        print(len(data))
       except socket.timeout:
         self.Errorcnt+=1
-        print("TCP_RecvError",self.Errorcnt)
-        print (time.asctime())
         error_log = open('error_log_rv.txt','a')
         error_log.write ("TCP_RecvError"+time.asctime()+str(self.Errorcnt)+'\n')
         error_log.close()
     elif(type == 0):
-      print(Packet)
       error_log = open('error_log_rv.txt','a')
       error_log.write (str(Packet))
       error_log.close()
@@ -539,12 +526,14 @@ class RTM_MW(object):
   def Send(self,timeout = 6):
     self.Data[0] = 1
     self.Instruction  = 1
+    self.answer_cheked = 0
     self.SendPacket(self.s,1,time_out = timeout);
 #    time.sleep(1.2)
     self.Data[0] = 2
     self.Instruction  = 2
+    self.answer_cheked = 0
     self.SendPacket(self.s,1,time_out = timeout);
-    
+    return self.answer_cheked
 
 def RTM64CRC16(pbuffer , Len):
   """CRC16 for RTM64"""
