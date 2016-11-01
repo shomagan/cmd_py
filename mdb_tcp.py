@@ -39,11 +39,12 @@ def ComList(ser):
     if (hello != ''):
       #print(char_to_int(hello,len(hello)))
       print(ord(hello))
+      print(hex(ord(hello)))
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM10')
-    ser.baudrate = 38400;
+    ser = serial.Serial('COM11')
+    ser.baudrate = 9600;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -59,9 +60,9 @@ def main():
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
   mdb_address = 3
   mdb_command = 3
-  start_address = 0
-  reg_numm = 4
-  data = [0x0005]
+  start_address = 653
+  reg_numm = 2
+  data = [3]
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
   mdbtcp.append((start_address>>8)&0xff)
@@ -109,8 +110,16 @@ def main():
       print(mdbwrite)
       ser.write(mdbwrite)
     elif ord(q)==110:#n
-      print(Cmd_NI)
-      ser.write(Cmd_NI)
+      for i in range(1,250):
+        mdb_rtu = mdbtcp[6:]
+        mdb_rtu[0] = i
+        crc = crc16(mdb_rtu,len(mdb_rtu))
+        mdb_rtu.append(crc&0xFF)
+        mdb_rtu.append((crc>>8)&0xFF)
+        print (mdb_rtu)
+        ser.write(mdb_rtu)
+        time.sleep(0.3)
+
     elif ord(q)==114:#r
       print(cmd_FR_T)
       ser.write(cmd_FR_T)

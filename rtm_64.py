@@ -48,7 +48,7 @@ ValType = {KodBit: 1,
 
 
 def main():
-    ser = serial.Serial("COM2")  # open first serial port
+    ser = serial.Serial("COM7")  # open first serial port
     ser.baudrate = 115200
     print(ser.name)  # check which port was really used
     try:
@@ -90,7 +90,7 @@ def main():
             Packet.connect(TCP_IP, TCP_PORT)
         elif ord(q) == 115:  # s
             try:
-                Packet.SendPacket(ser, 1)
+                Packet.SendPacket(s, 1)
             except OSError:
                 print("Can't send tcp Packet")
         elif ord(q) == 108:  # l

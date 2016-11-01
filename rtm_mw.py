@@ -71,8 +71,8 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM10')  # open first serial port
-    ser.baudrate = 38400;
+    ser = serial.Serial('COM5')  # open first serial port
+    ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -255,7 +255,7 @@ class RTM_MW(object):
     self.Flag = 0x0
     self.MyAdd = [7,0,7]
     self.MyAdd[2] = 0x02
-    self.DestOne = [5,0,5]
+    self.DestOne = [6,0,5]
     self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]

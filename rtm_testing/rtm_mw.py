@@ -351,10 +351,7 @@ class RTM_MW(object):
             if (len(self.DataInPacket)>1):
               if hand_packet:
                 self.HandPacket(self.DataInPacket)
-            else:
-              print ("empty packet")
           else:
-            print('CRC_ERROR')
             error_log = open('error_log_rv.txt','a')
             error_log.write ("CRC_ERROR"+time.asctime()+str(self.Errorcnt)+'\n')
             error_log.close()

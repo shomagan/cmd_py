@@ -23,6 +23,8 @@ DEFAULT_BAUDRATE = 115200
 DEFAULT_RTS = None
 DEFAULT_DTR = None
 ADDRESS_MDB_SHIFT_REG = 154
+
+
 def start_progress():
   sys.stdout.write('\r'+"/")
   sys.stdout.flush()
@@ -202,7 +204,7 @@ def main():
   global s_socket
   data = [2,3,0,1,0]#,73,0,48,0,49,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
   Packet = rtm_mw.RTM_MW(data)
-  print('helo from ',TCP_IP,TCP_PORT)
+  print('hello from ',TCP_IP,TCP_PORT)
   print(Packet)
   mdb_packet = mdb_tcp_request.Mdb()
   log = open('log_rv.txt','a')
@@ -319,10 +321,11 @@ def main():
         if controller.request_address_mdb_packet(mdb_packet):
           print ('find it')
       if controller.rtm_address==0 and controller.mdb_shift == 1:
+        '''it state sets if ADDRESS_MDB_SHIFT_REG is enabled'''
         data = [0x0000]
         controller.write_regs_for_mdb(mdb_packet,ADDRESS_MDB_SHIFT_REG-1,data)
         controller.request_address_mdb_packet(mdb_packet)
-      print ('test immodule port')
+      print ('rtm_mw test immodule port')
       p = ''
       for i in range(25):
         Packet.RetranNum = 1
@@ -340,7 +343,7 @@ def main():
           del mdb_packet
           sys.exit(1)
       end_progress(p)
-      print ('test com1 port')
+      print ('rtm_mw test com1 port')
       p = ''
       for i in range(25):
         Packet.RetranNum = 1
@@ -359,7 +362,7 @@ def main():
           sys.exit(1)
       end_progress(p)
 
-      print ('test com2 port')
+      print ('rtm_mw test com2 port')
       p = ''
       for i in range(25):
         Packet.RetranNum = 1
@@ -378,24 +381,24 @@ def main():
           sys.exit(1)
       end_progress(p)
 
-      print ('test radio rfm23 port')
-      p = ''
-      for i in range(25):
-        Packet.RetranNum = 1
-        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
-        Packet.DestTwo =  [3,0,0]
-        if (send_rtm_mw_packet(Packet,log,timeout=1)):
-          p+='#'
-        else:
-          p+='*'
-        progress(p)
-        time.sleep(0.05)
-        if(msvcrt.kbhit()):
-          log.close()
-          del Packet
-          del mdb_packet
-          sys.exit(1)
-      end_progress(p)
+#      print ('test radio rfm23 port')
+#      p = ''
+#      for i in range(25):
+#        Packet.RetranNum = 1
+#        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
+#        Packet.DestTwo =  [3,0,0]
+#        if (send_rtm_mw_packet(Packet,log,timeout=1)):
+#          p+='#'
+#        else:
+#          p+='*'
+#        progress(p)
+#        time.sleep(0.05)
+#        if(msvcrt.kbhit()):
+#          log.close()
+#          del Packet
+#          del mdb_packet
+#          sys.exit(1)
+#      end_progress(p)
 
       if(msvcrt.kbhit()):
         log.close()
