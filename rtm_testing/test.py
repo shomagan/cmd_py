@@ -27,35 +27,6 @@ ADDRESS_MDB_SHIFT_REG = 154
 
 
 
-def start_progress():
-  sys.stdout.write('\r'+"/")
-  sys.stdout.flush()
-    
-
-def progress(p):
-  sys.stdout.write('\r'+"/"+p)
-  sys.stdout.flush()
-
-
-def end_progress(p):
-  sys.stdout.write('\r'+"/"+p+'/'+'\n')
-  sys.stdout.flush()
-def socket_connect(s, TCP_IP, TCP_PORT):
-  try:
-    s.connect((TCP_IP, TCP_PORT))
-  except TimeoutError:
-    print (time.asctime())
-    print ("mega12 not TCP connected ")
-    error_log = open('error_log_rv.txt','a')
-    error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
-    error_log.close()
-  except ConnectionAbortedError:
-    print (time.asctime())
-    print ("mega12 connect aborted TCP")
-    error_log = open('error_log_rv.txt','a')
-    error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-    error_log.close()
-    s.connect((TCP_IP, TCP_PORT))
 
 
 
@@ -105,7 +76,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
     try:
       s_socket.close()
       print('close tcp connection')
-      s_socket=rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     except TimeoutError:
       print (time.asctime())
       print ("mega12 not TCP connected ")
@@ -118,7 +89,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
       error_log = open('error_log_rv.txt','a')
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       erro_log.close()
-      s_socket=rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
   return answer_cheked
 
 class Controller_info(object):
@@ -343,6 +314,39 @@ def cycle_rtm_send(cycle,Packet,controller,log,timeout=1):
       del mdb_packet
       sys.exit(1)
   end_progress(p)
+
+
+def start_progress():
+  sys.stdout.write('\r'+"/")
+  sys.stdout.flush()
+    
+
+def progress(p):
+  sys.stdout.write('\r'+"/"+p)
+  sys.stdout.flush()
+
+
+def end_progress(p):
+  sys.stdout.write('\r'+"/"+p+'/'+'\n')
+  sys.stdout.flush()
+
+
+def socket_connect(s, TCP_IP, TCP_PORT):
+  try:
+    s.connect((TCP_IP, TCP_PORT))
+  except TimeoutError:
+    print (time.asctime())
+    print ("mega12 not TCP connected ")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
+    error_log.close()
+  except ConnectionAbortedError:
+    print (time.asctime())
+    print ("mega12 connect aborted TCP")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
+    error_log.close()
+    s.connect((TCP_IP, TCP_PORT))
 
 if __name__ == '__main__':
     '''request modbus packet on com port or tcp connect

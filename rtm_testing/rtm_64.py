@@ -148,7 +148,7 @@ class Rtm64(object):
       self.s.close()
     print("dlt packet")
 
-  def SendPacket(self, ser, type):
+  def SendPacket(self, ser, type,timeout = 1):
     BUFFER_SIZE = 1024
     packet = [self.kod]
     packet.append(self.service_one)
@@ -177,7 +177,7 @@ class Rtm64(object):
       print(packet_str)
       time_start = time.time()
       self.s.send(packet_str)
-      self.s.settimeout(2)
+      self.s.settimeout(timeout)
       try:
         data = self.s.recv(BUFFER_SIZE)
         self.OkReceptionCnt += 1
@@ -216,6 +216,11 @@ class Rtm64(object):
       error_log.write("mega12 connect aborted TCP" + time.asctime() + '\n')
       error_log.close()
       self.s.connect((TCP_IP, TCP_PORT))
+
+  def Send(self,s_socket,timeout = 6):
+    self.s = s_socket 
+    self.SendPacket(self.s,1,time_out = timeout);
+    return self.answer_cheked
 
 
 def RTM64CRC16(pbuffer, Len):
