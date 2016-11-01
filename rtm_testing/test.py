@@ -10,6 +10,7 @@ import rtm_mw
 import mdb_tcp_request 
 import sys
 import time
+import socket
 
 
 try:
@@ -25,6 +26,7 @@ DEFAULT_DTR = None
 ADDRESS_MDB_SHIFT_REG = 154
 
 
+
 def start_progress():
   sys.stdout.write('\r'+"/")
   sys.stdout.flush()
@@ -38,9 +40,26 @@ def progress(p):
 def end_progress(p):
   sys.stdout.write('\r'+"/"+p+'/'+'\n')
   sys.stdout.flush()
+def socket_connect(s, TCP_IP, TCP_PORT):
+  try:
+    s.connect((TCP_IP, TCP_PORT))
+  except TimeoutError:
+    print (time.asctime())
+    print ("mega12 not TCP connected ")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
+    error_log.close()
+  except ConnectionAbortedError:
+    print (time.asctime())
+    print ("mega12 connect aborted TCP")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
+    error_log.close()
+    s.connect((TCP_IP, TCP_PORT))
 
 
-def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
+
+def send_mdb_packet(mdb_packet,log,timeout=6,parse =0):
   global TCP_IP
   global TCP_PORT
   global s_socket
@@ -55,7 +74,7 @@ def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
     try:
       s_socket.close()
       print('close tcp connection')
-      s_socket = rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     except TimeoutError:
       print (time.asctime())
       print ("mega12 not TCP connected ")
@@ -68,7 +87,7 @@ def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
       error_log = open('error_log_rv.txt','a')
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       erro_log.close()
-      s_socket = rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
   return packet_from
 
 def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
@@ -77,7 +96,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
   global s_socket
   answer_cheked =0
   try:
-    answer_cheked = rtm_mw_packet.Send(timeout = timeout)
+    answer_cheked = rtm_mw_packet.Send(s_socket, timeout = timeout)
   except OSError:
     print ("Can't send tcp Packet")
     error_log = open('error_log_rv.txt','a')
@@ -124,7 +143,7 @@ class Controller_info(object):
       mdb_packet.mdb_command = 3
       mdb_packet.mdb_start_address = 0
       mdb_packet.mdb_reg_numm = 2
-      packet = send_mdb_packet(mdb_packet,self.log,self.rtm_mw_packet,timeout = 0.2)
+      packet = send_mdb_packet(mdb_packet,self.log,timeout = 0.2)
       if len(packet) > 3:
         packet_dict = self.parse_mdb_response(packet[6:])
         if packet_dict['command'] == mdb_packet.mdb_command:
@@ -152,7 +171,7 @@ class Controller_info(object):
     mdb_packet.mdb_start_address = mdb_start_address
     mdb_packet.mdb_reg_numm = len(data)
     mdb_packet.mdb_data = data
-    packet = send_mdb_packet(mdb_packet,self.log,self.rtm_mw_packet,timeout=0.4,parse=1)
+    packet = send_mdb_packet(mdb_packet,self.log,timeout=0.4,parse=1)
     succes =0
     if len(packet) > 3:
       packet_dict = self.parse_mdb_response(packet[6:])
@@ -220,7 +239,8 @@ def main():
       del mdb_packet
       sys.exit(1)
     elif ord(q)==99:#c
-      s_socket = Packet.connect(TCP_IP, TCP_PORT)
+      s_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     elif ord(q)==115:#s
       try:
         Packet.Send()

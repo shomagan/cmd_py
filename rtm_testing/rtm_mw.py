@@ -520,12 +520,8 @@ class RTM_MW(object):
         else:
           self.CheckCRC = 1
     return str_buf
-  def Send(self,timeout = 6):
-    self.Data[0] = 1
-    self.Instruction  = 1
-    self.answer_cheked = 0
-    self.SendPacket(self.s,1,time_out = timeout);
-#    time.sleep(1.2)
+  def Send(self,s_socket,timeout = 6):
+    self.s = s_socket 
     self.Data[0] = 2
     self.Instruction  = 2
     self.answer_cheked = 0
