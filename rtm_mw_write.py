@@ -43,8 +43,8 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial('COM5')  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM6')  # open first serial port
+    ser.baudrate = 9600;
     print (ser.name)          # check which port was really used
 
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -106,16 +106,17 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '172.17.1.3'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  crc = [173,64]
-  sp_write = [45,0,16,0,26,0]
+#  crc = [2,230]
+  crc = [75,125]
+  sp_write = [31,0,172,17,1,1]
   data = [2,6,0,45,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
-  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 5,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -126,7 +127,7 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 5,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
       Packet_w.SendPacket(s,1)
       del(Packet_w)
     elif ord(q)==110:#n
@@ -142,7 +143,7 @@ def main():
       print (cmd[-11:-3])
       ser.write(mdb)
     elif ord(q)==97:#a
-      Packet.SendPacket(ser,0)
+      Packet.SendPacket(s,1)
     elif ord(q)==43:#+
       data_p[1] += 1
       Packet_p = RTM_MW(data_p)  

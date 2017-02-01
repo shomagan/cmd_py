@@ -269,20 +269,20 @@ def main():
       print ('rtm_mw test immodule port')
       Packet.RetranNum = 1
       Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,7]
-      Packet.DestTwo =  [3,0,0]
-      cycle_rtm_send(30,Packet,controller,log)
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
 
       print ('rtm_mw test com1 port')
       Packet.RetranNum = 1
       Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,1]
-      Packet.DestTwo =  [3,0,0]
-      cycle_rtm_send(30,Packet,controller,log)
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
 
       print ('rtm_mw test com2 port')
       Packet.RetranNum = 1
       Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
-      Packet.DestTwo =  [3,0,0]
-      cycle_rtm_send(30,Packet,controller,log)
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
 
 #      print ('test radio rfm23 port')
 #      Packet.RetranNum = 1
