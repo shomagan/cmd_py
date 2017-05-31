@@ -1,0 +1,2127 @@
+[
+  {
+    "type": "numeric",
+    "title": "Up hours",
+    "desc": "Choose the time up ",
+    "section": "time_up",
+    "key": "time_hour"
+  },  {
+    "type": "numeric",
+    "title": "Up min",
+    "desc": "Choose the time up",
+    "section": "time_up",
+    "key": "time_min"
+  },  {
+    "type": "numeric",
+    "title": "Down hours",
+    "desc": "Choose the time down",
+    "section": "time_down",
+    "key": "time_hour"
+  },  {
+    "type": "numeric",
+    "title": "Down min",
+    "desc": "Choose the time down",
+    "section": "time_down",
+    "key": "time_min"
+  },  {
+    "type": "string",
+    "title": "Frame1",
+    "desc": "Choose name 1",
+    "section": "Frame1",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 1",
+    "desc": "Choose the time 1",
+    "section": "Frame1",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition1",
+    "desc": "led transition enable 1",
+    "section": "Frame1",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame2",
+    "desc": "Choose name 2",
+    "section": "Frame2",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 2",
+    "desc": "Choose the time 2",
+    "section": "Frame2",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition2",
+    "desc": "led transition enable 2",
+    "section": "Frame2",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame3",
+    "desc": "Choose name 3",
+    "section": "Frame3",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 3",
+    "desc": "Choose the time 3",
+    "section": "Frame3",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition3",
+    "desc": "led transition enable 3",
+    "section": "Frame3",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame4",
+    "desc": "Choose name 4",
+    "section": "Frame4",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 4",
+    "desc": "Choose the time 4",
+    "section": "Frame4",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition4",
+    "desc": "led transition enable 4",
+    "section": "Frame4",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame5",
+    "desc": "Choose name 5",
+    "section": "Frame5",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 5",
+    "desc": "Choose the time 5",
+    "section": "Frame5",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition5",
+    "desc": "led transition enable 5",
+    "section": "Frame5",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame6",
+    "desc": "Choose name 6",
+    "section": "Frame6",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 6",
+    "desc": "Choose the time 6",
+    "section": "Frame6",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition6",
+    "desc": "led transition enable 6",
+    "section": "Frame6",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame7",
+    "desc": "Choose name 7",
+    "section": "Frame7",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 7",
+    "desc": "Choose the time 7",
+    "section": "Frame7",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition7",
+    "desc": "led transition enable 7",
+    "section": "Frame7",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame8",
+    "desc": "Choose name 8",
+    "section": "Frame8",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 8",
+    "desc": "Choose the time 8",
+    "section": "Frame8",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition8",
+    "desc": "led transition enable 8",
+    "section": "Frame8",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame9",
+    "desc": "Choose name 9",
+    "section": "Frame9",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 9",
+    "desc": "Choose the time 9",
+    "section": "Frame9",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition9",
+    "desc": "led transition enable 9",
+    "section": "Frame9",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame10",
+    "desc": "Choose name 10",
+    "section": "Frame10",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 10",
+    "desc": "Choose the time 10",
+    "section": "Frame10",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition10",
+    "desc": "led transition enable 10",
+    "section": "Frame10",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame11",
+    "desc": "Choose name 11",
+    "section": "Frame11",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 11",
+    "desc": "Choose the time 11",
+    "section": "Frame11",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition11",
+    "desc": "led transition enable 11",
+    "section": "Frame11",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame12",
+    "desc": "Choose name 12",
+    "section": "Frame12",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 12",
+    "desc": "Choose the time 12",
+    "section": "Frame12",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition12",
+    "desc": "led transition enable 12",
+    "section": "Frame12",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame13",
+    "desc": "Choose name 13",
+    "section": "Frame13",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 13",
+    "desc": "Choose the time 13",
+    "section": "Frame13",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition13",
+    "desc": "led transition enable 13",
+    "section": "Frame13",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame14",
+    "desc": "Choose name 14",
+    "section": "Frame14",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 14",
+    "desc": "Choose the time 14",
+    "section": "Frame14",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition14",
+    "desc": "led transition enable 14",
+    "section": "Frame14",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame15",
+    "desc": "Choose name 15",
+    "section": "Frame15",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 15",
+    "desc": "Choose the time 15",
+    "section": "Frame15",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition15",
+    "desc": "led transition enable 15",
+    "section": "Frame15",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame16",
+    "desc": "Choose name 16",
+    "section": "Frame16",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 16",
+    "desc": "Choose the time 16",
+    "section": "Frame16",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition16",
+    "desc": "led transition enable 16",
+    "section": "Frame16",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame17",
+    "desc": "Choose name 17",
+    "section": "Frame17",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 17",
+    "desc": "Choose the time 17",
+    "section": "Frame17",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition17",
+    "desc": "led transition enable 17",
+    "section": "Frame17",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame18",
+    "desc": "Choose name 18",
+    "section": "Frame18",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 18",
+    "desc": "Choose the time 18",
+    "section": "Frame18",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition18",
+    "desc": "led transition enable 18",
+    "section": "Frame18",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame19",
+    "desc": "Choose name 19",
+    "section": "Frame19",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 19",
+    "desc": "Choose the time 19",
+    "section": "Frame19",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition19",
+    "desc": "led transition enable 19",
+    "section": "Frame19",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame20",
+    "desc": "Choose name 20",
+    "section": "Frame20",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 20",
+    "desc": "Choose the time 20",
+    "section": "Frame20",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition20",
+    "desc": "led transition enable 20",
+    "section": "Frame20",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame21",
+    "desc": "Choose name 21",
+    "section": "Frame21",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 21",
+    "desc": "Choose the time 21",
+    "section": "Frame21",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition21",
+    "desc": "led transition enable 21",
+    "section": "Frame21",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame22",
+    "desc": "Choose name 22",
+    "section": "Frame22",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 22",
+    "desc": "Choose the time 22",
+    "section": "Frame22",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition22",
+    "desc": "led transition enable 22",
+    "section": "Frame22",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame23",
+    "desc": "Choose name 23",
+    "section": "Frame23",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 23",
+    "desc": "Choose the time 23",
+    "section": "Frame23",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition23",
+    "desc": "led transition enable 23",
+    "section": "Frame23",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame24",
+    "desc": "Choose name 24",
+    "section": "Frame24",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 24",
+    "desc": "Choose the time 24",
+    "section": "Frame24",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition24",
+    "desc": "led transition enable 24",
+    "section": "Frame24",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame25",
+    "desc": "Choose name 25",
+    "section": "Frame25",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 25",
+    "desc": "Choose the time 25",
+    "section": "Frame25",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition25",
+    "desc": "led transition enable 25",
+    "section": "Frame25",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame26",
+    "desc": "Choose name 26",
+    "section": "Frame26",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 26",
+    "desc": "Choose the time 26",
+    "section": "Frame26",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition26",
+    "desc": "led transition enable 26",
+    "section": "Frame26",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame27",
+    "desc": "Choose name 27",
+    "section": "Frame27",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 27",
+    "desc": "Choose the time 27",
+    "section": "Frame27",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition27",
+    "desc": "led transition enable 27",
+    "section": "Frame27",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame28",
+    "desc": "Choose name 28",
+    "section": "Frame28",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 28",
+    "desc": "Choose the time 28",
+    "section": "Frame28",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition28",
+    "desc": "led transition enable 28",
+    "section": "Frame28",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame29",
+    "desc": "Choose name 29",
+    "section": "Frame29",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 29",
+    "desc": "Choose the time 29",
+    "section": "Frame29",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition29",
+    "desc": "led transition enable 29",
+    "section": "Frame29",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame30",
+    "desc": "Choose name 30",
+    "section": "Frame30",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 30",
+    "desc": "Choose the time 30",
+    "section": "Frame30",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition30",
+    "desc": "led transition enable 30",
+    "section": "Frame30",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame31",
+    "desc": "Choose name 31",
+    "section": "Frame31",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 31",
+    "desc": "Choose the time 31",
+    "section": "Frame31",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition31",
+    "desc": "led transition enable 31",
+    "section": "Frame31",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame32",
+    "desc": "Choose name 32",
+    "section": "Frame32",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 32",
+    "desc": "Choose the time 32",
+    "section": "Frame32",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition32",
+    "desc": "led transition enable 32",
+    "section": "Frame32",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame33",
+    "desc": "Choose name 33",
+    "section": "Frame33",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 33",
+    "desc": "Choose the time 33",
+    "section": "Frame33",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition33",
+    "desc": "led transition enable 33",
+    "section": "Frame33",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame34",
+    "desc": "Choose name 34",
+    "section": "Frame34",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 34",
+    "desc": "Choose the time 34",
+    "section": "Frame34",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition34",
+    "desc": "led transition enable 34",
+    "section": "Frame34",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame35",
+    "desc": "Choose name 35",
+    "section": "Frame35",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 35",
+    "desc": "Choose the time 35",
+    "section": "Frame35",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition35",
+    "desc": "led transition enable 35",
+    "section": "Frame35",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame36",
+    "desc": "Choose name 36",
+    "section": "Frame36",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 36",
+    "desc": "Choose the time 36",
+    "section": "Frame36",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition36",
+    "desc": "led transition enable 36",
+    "section": "Frame36",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame37",
+    "desc": "Choose name 37",
+    "section": "Frame37",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 37",
+    "desc": "Choose the time 37",
+    "section": "Frame37",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition37",
+    "desc": "led transition enable 37",
+    "section": "Frame37",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame38",
+    "desc": "Choose name 38",
+    "section": "Frame38",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 38",
+    "desc": "Choose the time 38",
+    "section": "Frame38",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition38",
+    "desc": "led transition enable 38",
+    "section": "Frame38",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame39",
+    "desc": "Choose name 39",
+    "section": "Frame39",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 39",
+    "desc": "Choose the time 39",
+    "section": "Frame39",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition39",
+    "desc": "led transition enable 39",
+    "section": "Frame39",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame40",
+    "desc": "Choose name 40",
+    "section": "Frame40",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 40",
+    "desc": "Choose the time 40",
+    "section": "Frame40",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition40",
+    "desc": "led transition enable 40",
+    "section": "Frame40",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame41",
+    "desc": "Choose name 41",
+    "section": "Frame41",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 41",
+    "desc": "Choose the time 41",
+    "section": "Frame41",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition41",
+    "desc": "led transition enable 41",
+    "section": "Frame41",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame42",
+    "desc": "Choose name 42",
+    "section": "Frame42",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 42",
+    "desc": "Choose the time 42",
+    "section": "Frame42",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition42",
+    "desc": "led transition enable 42",
+    "section": "Frame42",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame43",
+    "desc": "Choose name 43",
+    "section": "Frame43",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 43",
+    "desc": "Choose the time 43",
+    "section": "Frame43",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition43",
+    "desc": "led transition enable 43",
+    "section": "Frame43",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame44",
+    "desc": "Choose name 44",
+    "section": "Frame44",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 44",
+    "desc": "Choose the time 44",
+    "section": "Frame44",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition44",
+    "desc": "led transition enable 44",
+    "section": "Frame44",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame45",
+    "desc": "Choose name 45",
+    "section": "Frame45",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 45",
+    "desc": "Choose the time 45",
+    "section": "Frame45",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition45",
+    "desc": "led transition enable 45",
+    "section": "Frame45",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame46",
+    "desc": "Choose name 46",
+    "section": "Frame46",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 46",
+    "desc": "Choose the time 46",
+    "section": "Frame46",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition46",
+    "desc": "led transition enable 46",
+    "section": "Frame46",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame47",
+    "desc": "Choose name 47",
+    "section": "Frame47",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 47",
+    "desc": "Choose the time 47",
+    "section": "Frame47",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition47",
+    "desc": "led transition enable 47",
+    "section": "Frame47",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame48",
+    "desc": "Choose name 48",
+    "section": "Frame48",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 48",
+    "desc": "Choose the time 48",
+    "section": "Frame48",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition48",
+    "desc": "led transition enable 48",
+    "section": "Frame48",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame49",
+    "desc": "Choose name 49",
+    "section": "Frame49",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 49",
+    "desc": "Choose the time 49",
+    "section": "Frame49",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition49",
+    "desc": "led transition enable 49",
+    "section": "Frame49",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame50",
+    "desc": "Choose name 50",
+    "section": "Frame50",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 50",
+    "desc": "Choose the time 50",
+    "section": "Frame50",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition50",
+    "desc": "led transition enable 50",
+    "section": "Frame50",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame51",
+    "desc": "Choose name 51",
+    "section": "Frame51",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 51",
+    "desc": "Choose the time 51",
+    "section": "Frame51",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition51",
+    "desc": "led transition enable 51",
+    "section": "Frame51",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame52",
+    "desc": "Choose name 52",
+    "section": "Frame52",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 52",
+    "desc": "Choose the time 52",
+    "section": "Frame52",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition52",
+    "desc": "led transition enable 52",
+    "section": "Frame52",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame53",
+    "desc": "Choose name 53",
+    "section": "Frame53",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 53",
+    "desc": "Choose the time 53",
+    "section": "Frame53",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition53",
+    "desc": "led transition enable 53",
+    "section": "Frame53",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame54",
+    "desc": "Choose name 54",
+    "section": "Frame54",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 54",
+    "desc": "Choose the time 54",
+    "section": "Frame54",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition54",
+    "desc": "led transition enable 54",
+    "section": "Frame54",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame55",
+    "desc": "Choose name 55",
+    "section": "Frame55",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 55",
+    "desc": "Choose the time 55",
+    "section": "Frame55",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition55",
+    "desc": "led transition enable 55",
+    "section": "Frame55",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame56",
+    "desc": "Choose name 56",
+    "section": "Frame56",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 56",
+    "desc": "Choose the time 56",
+    "section": "Frame56",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition56",
+    "desc": "led transition enable 56",
+    "section": "Frame56",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame57",
+    "desc": "Choose name 57",
+    "section": "Frame57",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 57",
+    "desc": "Choose the time 57",
+    "section": "Frame57",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition57",
+    "desc": "led transition enable 57",
+    "section": "Frame57",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame58",
+    "desc": "Choose name 58",
+    "section": "Frame58",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 58",
+    "desc": "Choose the time 58",
+    "section": "Frame58",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition58",
+    "desc": "led transition enable 58",
+    "section": "Frame58",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame59",
+    "desc": "Choose name 59",
+    "section": "Frame59",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 59",
+    "desc": "Choose the time 59",
+    "section": "Frame59",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition59",
+    "desc": "led transition enable 59",
+    "section": "Frame59",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame60",
+    "desc": "Choose name 60",
+    "section": "Frame60",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 60",
+    "desc": "Choose the time 60",
+    "section": "Frame60",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition60",
+    "desc": "led transition enable 60",
+    "section": "Frame60",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame61",
+    "desc": "Choose name 61",
+    "section": "Frame61",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 61",
+    "desc": "Choose the time 61",
+    "section": "Frame61",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition61",
+    "desc": "led transition enable 61",
+    "section": "Frame61",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame62",
+    "desc": "Choose name 62",
+    "section": "Frame62",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 62",
+    "desc": "Choose the time 62",
+    "section": "Frame62",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition62",
+    "desc": "led transition enable 62",
+    "section": "Frame62",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame63",
+    "desc": "Choose name 63",
+    "section": "Frame63",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 63",
+    "desc": "Choose the time 63",
+    "section": "Frame63",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition63",
+    "desc": "led transition enable 63",
+    "section": "Frame63",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame64",
+    "desc": "Choose name 64",
+    "section": "Frame64",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 64",
+    "desc": "Choose the time 64",
+    "section": "Frame64",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition64",
+    "desc": "led transition enable 64",
+    "section": "Frame64",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame65",
+    "desc": "Choose name 65",
+    "section": "Frame65",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 65",
+    "desc": "Choose the time 65",
+    "section": "Frame65",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition65",
+    "desc": "led transition enable 65",
+    "section": "Frame65",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame66",
+    "desc": "Choose name 66",
+    "section": "Frame66",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 66",
+    "desc": "Choose the time 66",
+    "section": "Frame66",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition66",
+    "desc": "led transition enable 66",
+    "section": "Frame66",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame67",
+    "desc": "Choose name 67",
+    "section": "Frame67",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 67",
+    "desc": "Choose the time 67",
+    "section": "Frame67",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition67",
+    "desc": "led transition enable 67",
+    "section": "Frame67",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame68",
+    "desc": "Choose name 68",
+    "section": "Frame68",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 68",
+    "desc": "Choose the time 68",
+    "section": "Frame68",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition68",
+    "desc": "led transition enable 68",
+    "section": "Frame68",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame69",
+    "desc": "Choose name 69",
+    "section": "Frame69",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 69",
+    "desc": "Choose the time 69",
+    "section": "Frame69",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition69",
+    "desc": "led transition enable 69",
+    "section": "Frame69",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame70",
+    "desc": "Choose name 70",
+    "section": "Frame70",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 70",
+    "desc": "Choose the time 70",
+    "section": "Frame70",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition70",
+    "desc": "led transition enable 70",
+    "section": "Frame70",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame71",
+    "desc": "Choose name 71",
+    "section": "Frame71",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 71",
+    "desc": "Choose the time 71",
+    "section": "Frame71",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition71",
+    "desc": "led transition enable 71",
+    "section": "Frame71",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame72",
+    "desc": "Choose name 72",
+    "section": "Frame72",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 72",
+    "desc": "Choose the time 72",
+    "section": "Frame72",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition72",
+    "desc": "led transition enable 72",
+    "section": "Frame72",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame73",
+    "desc": "Choose name 73",
+    "section": "Frame73",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 73",
+    "desc": "Choose the time 73",
+    "section": "Frame73",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition73",
+    "desc": "led transition enable 73",
+    "section": "Frame73",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame74",
+    "desc": "Choose name 74",
+    "section": "Frame74",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 74",
+    "desc": "Choose the time 74",
+    "section": "Frame74",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition74",
+    "desc": "led transition enable 74",
+    "section": "Frame74",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame75",
+    "desc": "Choose name 75",
+    "section": "Frame75",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 75",
+    "desc": "Choose the time 75",
+    "section": "Frame75",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition75",
+    "desc": "led transition enable 75",
+    "section": "Frame75",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame76",
+    "desc": "Choose name 76",
+    "section": "Frame76",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 76",
+    "desc": "Choose the time 76",
+    "section": "Frame76",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition76",
+    "desc": "led transition enable 76",
+    "section": "Frame76",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame77",
+    "desc": "Choose name 77",
+    "section": "Frame77",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 77",
+    "desc": "Choose the time 77",
+    "section": "Frame77",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition77",
+    "desc": "led transition enable 77",
+    "section": "Frame77",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame78",
+    "desc": "Choose name 78",
+    "section": "Frame78",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 78",
+    "desc": "Choose the time 78",
+    "section": "Frame78",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition78",
+    "desc": "led transition enable 78",
+    "section": "Frame78",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame79",
+    "desc": "Choose name 79",
+    "section": "Frame79",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 79",
+    "desc": "Choose the time 79",
+    "section": "Frame79",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition79",
+    "desc": "led transition enable 79",
+    "section": "Frame79",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame80",
+    "desc": "Choose name 80",
+    "section": "Frame80",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 80",
+    "desc": "Choose the time 80",
+    "section": "Frame80",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition80",
+    "desc": "led transition enable 80",
+    "section": "Frame80",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame81",
+    "desc": "Choose name 81",
+    "section": "Frame81",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 81",
+    "desc": "Choose the time 81",
+    "section": "Frame81",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition81",
+    "desc": "led transition enable 81",
+    "section": "Frame81",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame82",
+    "desc": "Choose name 82",
+    "section": "Frame82",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 82",
+    "desc": "Choose the time 82",
+    "section": "Frame82",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition82",
+    "desc": "led transition enable 82",
+    "section": "Frame82",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame83",
+    "desc": "Choose name 83",
+    "section": "Frame83",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 83",
+    "desc": "Choose the time 83",
+    "section": "Frame83",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition83",
+    "desc": "led transition enable 83",
+    "section": "Frame83",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame84",
+    "desc": "Choose name 84",
+    "section": "Frame84",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 84",
+    "desc": "Choose the time 84",
+    "section": "Frame84",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition84",
+    "desc": "led transition enable 84",
+    "section": "Frame84",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame85",
+    "desc": "Choose name 85",
+    "section": "Frame85",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 85",
+    "desc": "Choose the time 85",
+    "section": "Frame85",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition85",
+    "desc": "led transition enable 85",
+    "section": "Frame85",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame86",
+    "desc": "Choose name 86",
+    "section": "Frame86",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 86",
+    "desc": "Choose the time 86",
+    "section": "Frame86",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition86",
+    "desc": "led transition enable 86",
+    "section": "Frame86",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame87",
+    "desc": "Choose name 87",
+    "section": "Frame87",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 87",
+    "desc": "Choose the time 87",
+    "section": "Frame87",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition87",
+    "desc": "led transition enable 87",
+    "section": "Frame87",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame88",
+    "desc": "Choose name 88",
+    "section": "Frame88",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 88",
+    "desc": "Choose the time 88",
+    "section": "Frame88",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition88",
+    "desc": "led transition enable 88",
+    "section": "Frame88",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame89",
+    "desc": "Choose name 89",
+    "section": "Frame89",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 89",
+    "desc": "Choose the time 89",
+    "section": "Frame89",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition89",
+    "desc": "led transition enable 89",
+    "section": "Frame89",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame90",
+    "desc": "Choose name 90",
+    "section": "Frame90",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 90",
+    "desc": "Choose the time 90",
+    "section": "Frame90",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition90",
+    "desc": "led transition enable 90",
+    "section": "Frame90",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame91",
+    "desc": "Choose name 91",
+    "section": "Frame91",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 91",
+    "desc": "Choose the time 91",
+    "section": "Frame91",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition91",
+    "desc": "led transition enable 91",
+    "section": "Frame91",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame92",
+    "desc": "Choose name 92",
+    "section": "Frame92",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 92",
+    "desc": "Choose the time 92",
+    "section": "Frame92",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition92",
+    "desc": "led transition enable 92",
+    "section": "Frame92",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame93",
+    "desc": "Choose name 93",
+    "section": "Frame93",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 93",
+    "desc": "Choose the time 93",
+    "section": "Frame93",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition93",
+    "desc": "led transition enable 93",
+    "section": "Frame93",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame94",
+    "desc": "Choose name 94",
+    "section": "Frame94",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 94",
+    "desc": "Choose the time 94",
+    "section": "Frame94",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition94",
+    "desc": "led transition enable 94",
+    "section": "Frame94",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame95",
+    "desc": "Choose name 95",
+    "section": "Frame95",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 95",
+    "desc": "Choose the time 95",
+    "section": "Frame95",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition95",
+    "desc": "led transition enable 95",
+    "section": "Frame95",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame96",
+    "desc": "Choose name 96",
+    "section": "Frame96",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 96",
+    "desc": "Choose the time 96",
+    "section": "Frame96",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition96",
+    "desc": "led transition enable 96",
+    "section": "Frame96",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame97",
+    "desc": "Choose name 97",
+    "section": "Frame97",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 97",
+    "desc": "Choose the time 97",
+    "section": "Frame97",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition97",
+    "desc": "led transition enable 97",
+    "section": "Frame97",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame98",
+    "desc": "Choose name 98",
+    "section": "Frame98",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 98",
+    "desc": "Choose the time 98",
+    "section": "Frame98",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition98",
+    "desc": "led transition enable 98",
+    "section": "Frame98",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame99",
+    "desc": "Choose name 99",
+    "section": "Frame99",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 99",
+    "desc": "Choose the time 99",
+    "section": "Frame99",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition99",
+    "desc": "led transition enable 99",
+    "section": "Frame99",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame100",
+    "desc": "Choose name 100",
+    "section": "Frame100",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 100",
+    "desc": "Choose the time 100",
+    "section": "Frame100",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition100",
+    "desc": "led transition enable 100",
+    "section": "Frame100",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame101",
+    "desc": "Choose name 101",
+    "section": "Frame101",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 101",
+    "desc": "Choose the time 101",
+    "section": "Frame101",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition101",
+    "desc": "led transition enable 101",
+    "section": "Frame101",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame102",
+    "desc": "Choose name 102",
+    "section": "Frame102",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 102",
+    "desc": "Choose the time 102",
+    "section": "Frame102",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition102",
+    "desc": "led transition enable 102",
+    "section": "Frame102",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame103",
+    "desc": "Choose name 103",
+    "section": "Frame103",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 103",
+    "desc": "Choose the time 103",
+    "section": "Frame103",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition103",
+    "desc": "led transition enable 103",
+    "section": "Frame103",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame104",
+    "desc": "Choose name 104",
+    "section": "Frame104",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 104",
+    "desc": "Choose the time 104",
+    "section": "Frame104",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition104",
+    "desc": "led transition enable 104",
+    "section": "Frame104",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame105",
+    "desc": "Choose name 105",
+    "section": "Frame105",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 105",
+    "desc": "Choose the time 105",
+    "section": "Frame105",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition105",
+    "desc": "led transition enable 105",
+    "section": "Frame105",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame106",
+    "desc": "Choose name 106",
+    "section": "Frame106",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 106",
+    "desc": "Choose the time 106",
+    "section": "Frame106",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition106",
+    "desc": "led transition enable 106",
+    "section": "Frame106",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame107",
+    "desc": "Choose name 107",
+    "section": "Frame107",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 107",
+    "desc": "Choose the time 107",
+    "section": "Frame107",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition107",
+    "desc": "led transition enable 107",
+    "section": "Frame107",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame108",
+    "desc": "Choose name 108",
+    "section": "Frame108",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 108",
+    "desc": "Choose the time 108",
+    "section": "Frame108",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition108",
+    "desc": "led transition enable 108",
+    "section": "Frame108",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame109",
+    "desc": "Choose name 109",
+    "section": "Frame109",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 109",
+    "desc": "Choose the time 109",
+    "section": "Frame109",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition109",
+    "desc": "led transition enable 109",
+    "section": "Frame109",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame110",
+    "desc": "Choose name 110",
+    "section": "Frame110",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 110",
+    "desc": "Choose the time 110",
+    "section": "Frame110",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition110",
+    "desc": "led transition enable 110",
+    "section": "Frame110",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame111",
+    "desc": "Choose name 111",
+    "section": "Frame111",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 111",
+    "desc": "Choose the time 111",
+    "section": "Frame111",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition111",
+    "desc": "led transition enable 111",
+    "section": "Frame111",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame112",
+    "desc": "Choose name 112",
+    "section": "Frame112",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 112",
+    "desc": "Choose the time 112",
+    "section": "Frame112",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition112",
+    "desc": "led transition enable 112",
+    "section": "Frame112",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame113",
+    "desc": "Choose name 113",
+    "section": "Frame113",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 113",
+    "desc": "Choose the time 113",
+    "section": "Frame113",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition113",
+    "desc": "led transition enable 113",
+    "section": "Frame113",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame114",
+    "desc": "Choose name 114",
+    "section": "Frame114",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 114",
+    "desc": "Choose the time 114",
+    "section": "Frame114",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition114",
+    "desc": "led transition enable 114",
+    "section": "Frame114",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame115",
+    "desc": "Choose name 115",
+    "section": "Frame115",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 115",
+    "desc": "Choose the time 115",
+    "section": "Frame115",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition115",
+    "desc": "led transition enable 115",
+    "section": "Frame115",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame116",
+    "desc": "Choose name 116",
+    "section": "Frame116",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 116",
+    "desc": "Choose the time 116",
+    "section": "Frame116",
+    "key": "time_sec"
+  },  {
+    "type": "bool",
+    "title": "LED on transition116",
+    "desc": "led transition enable 116",
+    "section": "Frame116",
+    "key": "led"
+  },  {
+    "type": "string",
+    "title": "Frame117",
+    "desc": "Choose name 117",
+    "section": "Frame117",
+    "key": "name"
+  },  {
+    "type": "numeric",
+    "title": "Time in sec 117",
+    "desc": "Choose the time 117",
+    "section": "Frame117",
+    "key": "time_sec"
+  }
+]
