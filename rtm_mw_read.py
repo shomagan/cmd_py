@@ -3,21 +3,16 @@ import rtm_mw,sys
 import msvcrt
 if __name__ == '__main__':
   print('helo')
-  TCP_IP_1 = '172.17.1.3'
+  TCP_IP_1 = '192.168.1.232'
   TCP_PORT = 502
 
-  TCP_IP_2 = '192.168.5.208'
-  TCP_PORT = 502
-
-  data = [1,8,0]#,145,0,146,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
+  data = [1,7,0,8,0]#,145,0,146,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
 
   Packet_1 = rtm_mw.RTM_MW(data)
-  Packet_1.RetranNum = 0
-  Packet_1.DestOne = [3,0,0]
-
-  Packet_2 = rtm_mw.RTM_MW(data)
-  Packet_2.RetranNum = 0
-  Packet_2.DestOne = [3,0,0]
+  Packet_1.RetranNum = 1
+  Packet_1.DestOne = [3,0,5]
+  Packet_1.DestTwo = [3,0,5]
+  Packet_1.DestThree = [4,0,0]
 
   while 1:
     q = msvcrt.getch()
@@ -27,17 +22,17 @@ if __name__ == '__main__':
       sys.exit(1)
     elif ord(q)==99:#c
       Packet_1.connect(TCP_IP_1, TCP_PORT)
-      Packet_2.connect(TCP_IP_2, TCP_PORT)
+
     elif ord(q)==115:#s
       try:
         Packet_1.Send()
-        Packet_2.Send()
+
       except OSError:
         print ("Can't send tcp Packet")
     elif ord(q)==108:#l
       while(1):
         try:
-          Packet.Send()
+          Packet_1.Send()
         except OSError:
           print ("Can't send tcp Packet")
           error_log = open('error_log_rv.txt','a')

@@ -27,19 +27,19 @@ def data_gen():
     connection_error = data_gen.connection_error
     raz_rezet = data_gen.raz_rezet
     ip_error = data_gen.ip_error
-    TCP_IP_232 = '192.168.1.232'
-    TCP_IP_3 = '192.168.1.232'
+    TCP_IP_232 = '192.168.7.232'
+    TCP_IP_3 = '172.16.1.3'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
 
-    data = [1,8,0]
+    data = [2,8,0]
     packet_232 = rtm_mw.RTM_MW(data)
     packet_232.RetranNum =0
-    packet_232.DestOne = [11,1,7]
+    packet_232.DestOne = [3,0,7]
 
     packet_3 = rtm_mw.RTM_MW(data)
     packet_3.RetranNum =0
-    packet_3.DestOne = [11,1,7]
+    packet_3.DestOne = [3,0,7]
 
     try:
         packet_232.connect(TCP_IP_232, TCP_PORT)
@@ -62,37 +62,39 @@ def data_gen():
         s.connect((TCP_IP, TCP_PORT))
     while 1:
         try:
-            data_buf = packet_232.send_packet(s, 1)
+            data_buf = packet_232.SendPacket(packet_232.s,1)
             if data_buf:
-                str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 2:
+                print(data_buf)
+                str_temp = packet_232.ChekPacket(data_buf)
+                print(packet_232.DataInPacket)
+                if len(packet_232.DataInPacket) != 5:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
                     data_error += 1
                     error_log = open('error_log_TCP.txt', 'a')
-                    error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
+                    error_log.write(str_temp+str(len(packet_232.DataInPacket))+time.asctime()+'\n')
                     error_log.close()
                 else:
 #                    ip_error_byte = str(packet.DataInPacket[5])+str(packet.DataInPacket[6]<<8)+str(packet.DataInPacket[7]<<16)+str(packet.DataInPacket[8]<<24)
  #                   raz_rezet_byte = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16)|(packet.DataInPacket[4]<<24)
-                    ip_error = packet.DataInPacket[1]
+                    ip_error = packet_232.DataInPacket[1]
                     successful_packet += 1
-            data_buf = packet_3.send_packet(s, 1)
+            data_buf = packet_3.SendPacket(packet_3.s,1)
             if data_buf:
-                str_temp = packet.chek_packet(data_buf)
-                if len(packet.DataInPacket) != 2:
+                str_temp = packet_3.ChekPacket(data_buf)
+                if len(packet_3.DataInPacket) != 5:
                     str_temp += 'DataInPacket_Error'
                 if str_temp:
                     print(str_temp)
                     data_error += 1
                     error_log = open('error_log_TCP.txt', 'a')
-                    error_log.write(str_temp+str(packet.DataInPacket)+time.asctime()+'\n')
+                    error_log.write(str_temp+str(packet_3.DataInPacket)+time.asctime()+str(len(packet_3.DataInPacket))+'\n')
                     error_log.close()
                 else:
 #                    ip_error_byte = str(packet.DataInPacket[5])+str(packet.DataInPacket[6]<<8)+str(packet.DataInPacket[7]<<16)+str(packet.DataInPacket[8]<<24)
  #                   raz_rezet_byte = packet.DataInPacket[1]|(packet.DataInPacket[2]<<8)|(packet.DataInPacket[3]<<16)|(packet.DataInPacket[4]<<24)
-                    raz_rezet = packet.DataInPacket[1]
+                    raz_rezet = packet_3.DataInPacket[1]
                     successful_packet += 1
         except OSError:
             print("Can't send tcp Packet")
@@ -146,14 +148,14 @@ def main():
     ax = fig.add_subplot(111, autoscale_on=False)
     line_raz_rezet, = ax.plot([], [],'bo', lw=2, label='successful packet')
     line_ip_err, = ax.plot([], [], lw=2, label='ip error')
-    raz_rezet_template = ' input = %.1f '
-    ip_error_template = ' output = %.1f '
+    raz_rezet_template = ' target = %.1f '
+    ip_error_template = ' server = %.1f '
     raz_rezet_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
     ip_error_text = ax.text(0.05, 0.8, '', transform=ax.transAxes)
 
     ax.legend()
-    ax.set_ylim(0, 4100)
-    ax.set_xlim(0, 5)
+    ax.set_ylim(20, 100)
+    ax.set_xlim(0, 100)
     ax.grid()
     xdata, y_rezet_data, y_ip_error_data = [], [], []
     def init():
@@ -171,7 +173,8 @@ def main():
         y_ip_error_data.append(y_ip_error)
         xmin, xmax = ax.get_xlim()
         if t >= xmax:
-            xmax += 10
+            xmax += 1
+            xmin += 1
             ax.set_xlim(xmin, xmax)
             ax.figure.canvas.draw()
         ymin, ymax = ax.get_ylim()

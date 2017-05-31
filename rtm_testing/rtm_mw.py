@@ -345,8 +345,10 @@ class RTM_MW(object):
           err_str = self.ChekPacket(data_s)
           if len(err_str)>0:
             self.answer_cheked = 0
+            print(err_str)
           else:
             self.answer_cheked = 1
+            print(self.answer_cheked)
           if self.CheckCRC:
             if (len(self.DataInPacket)>1):
               if hand_packet:

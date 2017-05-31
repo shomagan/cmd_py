@@ -28,6 +28,7 @@ add addres property befor start program
 import sys, os, _thread as thread, threading,socket,atexit,io,serial,time
 import struct
 import random
+
 try:
     from serial.tools.list_ports import comports
 except ImportError:
@@ -141,6 +142,9 @@ def ComList(ser):
 #      print(hex(ord(hello)))
 def main():
   have_serial = 1
+#  devpy.color_traceback()
+#  log = devpy.autolog() # log is a regular stdlib logger object
+#  log.info('Yes')
   try:
     ser = serial.Serial('COM6')
     ser.baudrate = 115200;
@@ -157,11 +161,11 @@ def main():
     print("could not open port \n")
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb_address = 5
+  mdb_address = 3
   mdb_command = 3
   start_address = 0
-  reg_numm = 4
-  data = [21,172,1,1]
+  reg_numm = 16
+  data = [0x000f,0x000f]  #u16 format u16
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
   mdbtcp.append((start_address>>8)&0xff)
@@ -170,13 +174,14 @@ def main():
     mdbtcp.append((reg_numm>>8)&0xff)
     mdbtcp.append(reg_numm&0xff)
   elif mdb_command == 16:
-    reg_numm = (len(data)//2)&0xffff
+    reg_numm = len(data)&0xffff
     reg_numm_bytes = reg_numm*2
     mdbtcp.append((reg_numm>>8)&0xff)
     mdbtcp.append(reg_numm&0xff)
     mdbtcp.append(reg_numm_bytes&0xff)
-    for i in range(reg_numm*2):
-      mdbtcp.append((data[i])&0xff)
+    for i in range(reg_numm):
+      mdbtcp.append((data[i]>>8)&0xff)
+      mdbtcp.append(data[i]&0xff)
 
   elif mdb_command == 6:
     mdbtcp.append((data[0]>>8)&0xff)
@@ -188,7 +193,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.4.232'
+  TCP_IP = '192.168.1.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -197,10 +202,11 @@ def main():
     print ('tread is start')
   good_transaction = 0
   bad_transaction = 0
-  print ('c - tcp connect'
-         't - mdbtcp send(after connect)'
-         'm - modbus RTU send over uart(open auto)')  
+  print ('c - tcp connect\n'
+         't - mdbtcp send(after connect)\n'
+         'm - modbus RTU send over uart(open auto)\n')  
   arc_parse = 0
+  itt=0
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -245,7 +251,7 @@ def main():
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==116:#t
-      mdbtcp[0] =  random.randint(0, 255)
+#      mdbtcp[0] =  random.randint(0, 255)
       mdbtcp_s = bytearray(mdbtcp[0:])
       print(mdbtcp[0:])
       s.send(mdbtcp_s)

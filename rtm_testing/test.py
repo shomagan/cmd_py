@@ -188,7 +188,7 @@ class Controller_info(object):
 
 def main():
   global TCP_IP
-  TCP_IP = '192.168.2.205'
+  TCP_IP = '192.168.1.232'
   global TCP_PORT
   TCP_PORT = 502
   global s_socket
@@ -200,6 +200,8 @@ def main():
   log = open('log_rv.txt','a')
   log.write ("mega12 test mdb retranslate"+time.asctime()+'\n')
   controller = Controller_info(log,Packet)
+  controller.rtm_address = 3
+  controller.mdb_address = 3
 
   while 1:
     q = msvcrt.getch()
@@ -245,12 +247,12 @@ def main():
         Packet.DestTwo =  [3,0,0]
         cycle_rtm_send(30,Packet,controller,log)
 
-        print ('test radio rfm23 port')
+        '''print ('test radio rfm23 port')
         Packet.RetranNum = 1
         Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
         Packet.DestTwo =  [3,0,0]
         cycle_rtm_send(30,Packet,controller,log)
-
+        '''
         if(msvcrt.kbhit()):
           log.close()
           del Packet
@@ -296,12 +298,10 @@ def main():
         del mdb_packet
         sys.exit(1)
 
-def cycle_rtm_send(cycle,Packet,controller,log,timeout=1):
+def cycle_rtm_send(cycle,Packet,controller,log,timeout=2):
   p = ''
   for i in range(cycle):
     Packet.RetranNum = 1
-    Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
-    Packet.DestTwo =  [3,0,0]
     if (send_rtm_mw_packet(Packet,log,timeout=timeout)):
       p+='#'
     else:

@@ -44,7 +44,7 @@ def ComList(ser,a):
 def main():
   try:
     ser = serial.Serial('COM6')  # open first serial port
-    ser.baudrate = 9600;
+    ser.baudrate =9600
     print (ser.name)          # check which port was really used
 
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -106,17 +106,17 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '192.168.7.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #  crc = [2,230]
   crc = [75,125]
-  sp_write = [10,0,8,0,0,0]
-  data = [2,6,0,10,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  sp_write = [45,0,7,0,26,0]
+  data = [2,6,0,45,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
-  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -127,7 +127,7 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
       Packet_w.SendPacket(s,1)
       del(Packet_w)
     elif ord(q)==110:#n
@@ -136,21 +136,8 @@ def main():
     elif ord(q)==114:#r
       print(cmd_FR_T)
       ser.write(cmd_FR_T)
-
-    elif ord(q)==109:#m
-      #mdb = int_to_char(cmd[-11:-3])
-      mdb = cmd[-11:-3]
-      print (cmd[-11:-3])
-      ser.write(mdb)
     elif ord(q)==97:#a
       Packet.SendPacket(ser,0)
-    elif ord(q)==43:#+
-      data_p[1] += 1
-      Packet_p = RTM_MW(data_p)  
-      try:
-        Packet_p.SendPacket(s,1)
-      except OSError:
-        print ("Can't send tcp Packet")
 
     elif ord(q)==99:#c
       try:
@@ -173,66 +160,6 @@ def main():
         Packet.SendPacket(s,1)
       except OSError:
         print ("Can't send tcp Packet")
-    elif ord(q)==104:#h
-      data = [0x01]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-      for i in range(11):
-        data.append(90+i)
-        data.append(0)
-      PacketAll = RTM_MW(data)
-      PacketAll.SendPacket(ser,0)
-
-    elif ord(q)==108:#l
-      while(1):
-        try:
-          Packet.SendPacket(s,1)
-        except OSError:
-          print ("Can't send tcp Packet")
-          error_log = open('error_log.txt','a')
-          error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-          error_log.close()
-          try:
-            s.close()
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((TCP_IP, TCP_PORT))
-          except TimeoutError:
-            print (time.asctime())
-            print ("mega12 not TCP connected ")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
-            error_log.close()
-          except ConnectionAbortedError:
-            print (time.asctime())
-            print ("mega12 connect aborted TCP")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-            erro_log.close()
-            s.connect((TCP_IP, TCP_PORT))
-        print (time.asctime())
-        time.sleep(0.1)
-        if(msvcrt.kbhit()):
-          q = msvcrt.getch()
-          print(ord(q))
-          if ord(q) == 113:#q
-            s.close()
-            sys.exit(1)
-
-    elif ord(q)==116:#t
-      mdbtcp_s=bytearray(mdbtcp[0:])
-      print(mdbtcp_s)
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-    elif ord(q)==102:#f
-      mdbtcp_s=bytearray(cmd_fr[0:])
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      kerneltime = (data[9]<<8|data[10])/10
-      print(data)
-      print(time_pr,'ms')
   #        sys.stderr.write(cmd_mdb)
 class RTM_MW(object):
   def __init__(self,Data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5):
