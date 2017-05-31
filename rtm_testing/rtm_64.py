@@ -48,7 +48,7 @@ ValType = {KodBit: 1,
 
 
 def main():
-    ser = serial.Serial(1)  # open first serial port
+    ser = serial.Serial('COM7')  # open first serial port
     ser.baudrate = 9600
     print(ser.name)  # check which port was really used
     try:
@@ -90,7 +90,7 @@ def main():
             Packet.connect(TCP_IP, TCP_PORT)
         elif ord(q) == 115:  # s
             try:
-                Packet.SendPacket(ser, 1)
+                Packet.SendPacket(s, 1)
             except OSError:
                 print("Can't send tcp Packet")
         elif ord(q) == 108:  # l
@@ -138,7 +138,7 @@ class Rtm64(object):
     self.len = 0x11
     self.flag = 0x00
     self.command = [0x46, 0x52]
-    self.address = [[0xA0, 0x8f], [0x03, 0x20], [0x08, 0x20]]
+    self.address = [[0xA0, 0x8f], [0x03, 0x20], [0x05, 0x20]]
     self.value = [0xFE, 0x00, 0x32]
     self.crc = 0x0000
     self.error_cnt = 0
@@ -148,7 +148,7 @@ class Rtm64(object):
       self.s.close()
     print("dlt packet")
 
-  def SendPacket(self, ser, type):
+  def SendPacket(self, ser, type,timeout = 1):
     BUFFER_SIZE = 1024
     packet = [self.kod]
     packet.append(self.service_one)
@@ -177,7 +177,7 @@ class Rtm64(object):
       print(packet_str)
       time_start = time.time()
       self.s.send(packet_str)
-      self.s.settimeout(2)
+      self.s.settimeout(timeout)
       try:
         data = self.s.recv(BUFFER_SIZE)
         self.OkReceptionCnt += 1
@@ -216,6 +216,11 @@ class Rtm64(object):
       error_log.write("mega12 connect aborted TCP" + time.asctime() + '\n')
       error_log.close()
       self.s.connect((TCP_IP, TCP_PORT))
+
+  def Send(self,s_socket,timeout = 6):
+    self.s = s_socket 
+    self.SendPacket(self.s,1,time_out = timeout);
+    return self.answer_cheked
 
 
 def RTM64CRC16(pbuffer, Len):

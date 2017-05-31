@@ -26,6 +26,8 @@ FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
 add addres property befor start program
 """
 import sys, os, _thread as thread, threading,socket,atexit,io,serial,time
+import struct
+import random
 
 try:
     from serial.tools.list_ports import comports
@@ -33,17 +35,119 @@ except ImportError:
     comports = None
 import msvcrt
 #def hextoascii():
+def big_to_little(packet):
+  for i in range(len(packet)//2):
+    temp = packet[2*i]
+    packet[2*i] = packet[2*i+1]
+    packet[2*i+1] = temp
+  
+def arc_parse(packet):
+  print(packet,'\n')
+
+  if len(packet) == 54:
+    print('len data packet 54 \n')
+    big_to_little(packet)
+    print(packet)
+    otv_start = packet[0]
+    print('otv start',otv_start,'\n')
+    otv_end = packet[1]
+    print('otv end',otv_end,'\n')
+    start_time = packet[2]|(packet[3]<<8)|(packet[4]<<16)|(packet[5]<<24)
+    print('start_time',start_time,'\n')
+    flo32 = 0.0 
+    value = packet[6]|(packet[7]<<8)|(packet[8]<<16)|(packet[9]<<24)
+    flo32 = struct.pack('I',value)
+    Summ_Mass_Liquid = struct.unpack('f',flo32)
+    print("Summ_Mass_Liquid ",Summ_Mass_Liquid,'\n')
+    value = packet[10]|(packet[11]<<8)|(packet[12]<<16)|(packet[13]<<24)
+    flo32 = struct.pack('I',value)
+    Mass_FlowRate_Liquid = struct.unpack('f',flo32)
+    print("Mass_FlowRate_Liquid ",Mass_FlowRate_Liquid,'\n')
+    value = packet[14]|(packet[15]<<8)|(packet[16]<<16)|(packet[17]<<24)
+    flo32 = struct.pack('I',value)
+    Volume_FlowRate_Gas = struct.unpack('f',flo32)
+    print("Volume_FlowRate_Gas ",Volume_FlowRate_Gas,'\n')
+
+    value = packet[18]|(packet[19]<<8)|(packet[20]<<16)|(packet[21]<<24)
+    flo32 = struct.pack('I',value)
+    Mass_FlowRate_Oil = struct.unpack('f',flo32)
+    print("Mass_FlowRate_Oil ",Mass_FlowRate_Oil,'\n')
+
+    value = packet[22]|(packet[23]<<8)|(packet[24]<<16)|(packet[25]<<24)
+    flo32 = struct.pack('I',value)
+    Mass_FlowRate_Water = struct.unpack('f',flo32)
+    print("Mass_FlowRate_Water ",Mass_FlowRate_Water,'\n')
+
+    value = packet[26]|(packet[27]<<8)
+    flo32 = value/10000
+    print("Sr_Density_Liquid ",flo32,'\n')
+
+    value = packet[28]|(packet[29]<<8)
+    flo32 = value/100
+    print("Sr_Temperature_Liquid ",flo32,'\n')
+
+    value = packet[30]|(packet[31]<<8)
+    flo32 = value/10000
+    print("Sr_Wm_Water ",flo32,'\n')
+
+    value = packet[32]|(packet[33]<<8)
+    flo32 = value/10000
+    print("Density_Oil_Save ",flo32,'\n')
+
+    value = packet[34]|(packet[35]<<8)
+    flo32 = value/10000
+    print("Density_Water_Save ",flo32,'\n')
+
+    value = packet[36]|(packet[37]<<8)
+    flo32 = value/10000
+    print("Density_Liquid_Save ",flo32,'\n')
+
+    value = packet[38]|(packet[39]<<8)
+    flo32 = value/100
+    print("Pc_Gas ",flo32,'\n')
+
+
+    value = packet[40]|(packet[41]<<8)
+    print("CntTime ",value,'\n')
+
+    value = packet[42]|(packet[43]<<8)
+    print("Sync_Liquid ",value,'\n')
+
+    value = packet[44]|(packet[45]<<8)
+    print("OtvNumber ",value,'\n')
+
+    value = packet[46]|(packet[47]<<8)|(packet[48]<<16)|(packet[49]<<24)
+    flo32 = struct.pack('I',value)
+    Summ_Volume_Gas = struct.unpack('f',flo32)
+    print("Summ_Volume_Gas ",Summ_Volume_Gas,'\n')
+
+    value = packet[50]|(packet[51]<<8)|(packet[52]<<16)|(packet[53]<<24)
+    flo32 = struct.pack('I',value)
+    Volume_FlowRate_Liquid = struct.unpack('f',flo32)
+    print("Volume_FlowRate_Liquid ",Volume_FlowRate_Liquid,'\n')
+
+
+  else:
+    print('len packet mismatch\n',len(packet))
+
+
+  return 1
+
 def ComList(ser):
   while(1):
     hello = ser.read(1)
     if (hello != ''):
       #print(char_to_int(hello,len(hello)))
-      print(ord(hello))
+      print(int.from_bytes(hello,byteorder='big'))
+#      print(hex(ord(hello)))
 def main():
   have_serial = 1
+#  devpy.color_traceback()
+#  log = devpy.autolog() # log is a regular stdlib logger object
+#  log.info('Yes')
   try:
-    ser = serial.Serial('COM10')
-    ser.baudrate = 38400;
+    ser = serial.Serial('COM6')
+    ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -60,8 +164,8 @@ def main():
   mdb_address = 3
   mdb_command = 3
   start_address = 0
-  reg_numm = 4
-  data = [0x0005]
+  reg_numm = 16
+  data = [0x000f,0x000f]  #u16 format u16
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
   mdbtcp.append((start_address>>8)&0xff)
@@ -78,6 +182,7 @@ def main():
     for i in range(reg_numm):
       mdbtcp.append((data[i]>>8)&0xff)
       mdbtcp.append(data[i]&0xff)
+
   elif mdb_command == 6:
     mdbtcp.append((data[0]>>8)&0xff)
     mdbtcp.append(data[0]&0xff)
@@ -88,16 +193,20 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.5'
+  TCP_IP = '192.168.1.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
-  MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   if have_serial:
     thread.start_new_thread(ComList, (ser, ))
-  print ('tread is start')
+    print ('tread is start')
   good_transaction = 0
   bad_transaction = 0
+  print ('c - tcp connect\n'
+         't - mdbtcp send(after connect)\n'
+         'm - modbus RTU send over uart(open auto)\n')  
+  arc_parse = 0
+  itt=0
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -109,8 +218,16 @@ def main():
       print(mdbwrite)
       ser.write(mdbwrite)
     elif ord(q)==110:#n
-      print(Cmd_NI)
-      ser.write(Cmd_NI)
+      for i in range(1,250):
+        mdb_rtu = mdbtcp[6:]
+        mdb_rtu[0] = i
+        crc = crc16(mdb_rtu,len(mdb_rtu))
+        mdb_rtu.append(crc&0xFF)
+        mdb_rtu.append((crc>>8)&0xFF)
+        print (mdb_rtu)
+        ser.write(mdb_rtu)
+        time.sleep(0.3)
+
     elif ord(q)==114:#r
       print(cmd_FR_T)
       ser.write(cmd_FR_T)
@@ -120,21 +237,33 @@ def main():
       mdb_rtu.append(crc&0xFF)
       mdb_rtu.append((crc>>8)&0xFF)
       print (mdb_rtu)
-      ser.write(mdb_rtu)
+
+      if have_serial:
+        ser.reset_input_buffer()
+        ser.write(mdb_rtu)
+        if arc_parse:
+          ser.timeout = 0.4
+          receive_buff = ser.read(59)
+          buff_temp = [receive_buff[i] for i in range(3,57)]
+          arc_parse(buff_temp)
+
+      
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==116:#t
+#      mdbtcp[0] =  random.randint(0, 255)
       mdbtcp_s = bytearray(mdbtcp[0:])
       print(mdbtcp[0:])
       s.send(mdbtcp_s)
       time_start=time.time()
-      s.settimeout(4)
+      s.settimeout(7)
       data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
       data_s =[]
-#        print(data)
+      print(data)
       for i in range(0,len(data)):
         data_s.append(data[i])
+#      arc_parse(data_s[9:])
       parse_mdb_tcp_response(data_s)
       print(data_s)
       print("lenght",len(data_s))

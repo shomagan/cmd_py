@@ -48,7 +48,8 @@ ValType = {KodBit: 1,
 
 
 def main():
-    ser = serial.Serial("COM7")  # open first serial port
+    '''translate from boot mode to user, send simply comman in rtm64 format'''
+    ser = serial.Serial("COM6")  # open first serial port
     ser.baudrate = 115200
     print(ser.name)  # check which port was really used
     try:
@@ -72,80 +73,42 @@ def main():
     a = 0
     thread.start_new_thread(com_list, (ser, a))
     print('tread is start')
-    data = [2, 38,
-            0]  # ,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-    data_p = [1, 0,
-              1]  # ,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+
+    data = [2,38,0]  # ,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+    data_p = [1,0,1]  # ,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
     Packet = Rtm64()
     while 1:
-        # if msvcrt.kbhit():
-        q = msvcrt.getch()
-        print(ord(q))
-        if ord(q) == 113:  # q
-            s.close()
-            sys.exit(1)
-        elif ord(q) == 97:  # a
-            Packet.SendPacket(ser, 0)
-        elif ord(q) == 99:  # c
-            Packet.connect(TCP_IP, TCP_PORT)
-        elif ord(q) == 115:  # s
-            try:
-                Packet.SendPacket(s, 1)
-            except OSError:
-                print("Can't send tcp Packet")
-        elif ord(q) == 108:  # l
-            while (1):
-                try:
-                  Packet.SendPacket(ser, 1)
-                except OSError:
-                  print("Can't send tcp Packet")
-                  error_log = open('error_log_rv.txt', 'a')
-                  error_log.write("mega12 connect aborted TCP" + time.asctime() + '\n')
-                  error_log.close()
-                  try:
-                    Packet.s.close()
-                    Packet.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    Packet.s.connect((TCP_IP, TCP_PORT))
-                  except TimeoutError:
-                    print(time.asctime())
-                    print("mega12 not TCP connected ")
-                    error_log = open('error_log_rv.txt', 'a')
-                    error_log.write("mega12 not TCP connected " + time.asctime() + '\n')
-                    error_log.close()
-                  except ConnectionAbortedError:
-                    print(time.asctime())
-                    print("mega12 connect aborted TCP")
-                    error_log = open('error_log_rv.txt', 'a')
-                    error_log.write("mega12 connect aborted TCP" + time.asctime() + '\n')
-                    error_log.close()
-                    s.connect((TCP_IP, TCP_PORT))
-                print(time.asctime())
-                time.sleep(0.02)
-                if (msvcrt.kbhit()):
-                  q = msvcrt.getch()
-                  print(ord(q))
-                  if ord(q) == 113:  #q
-                    s.close()
-                    sys.exit(1)
-
+      # if msvcrt.kbhit():
+      q = msvcrt.getch()
+      print(ord(q))
+      if ord(q) == 113:  # q
+        s.close()
+        sys.exit(1)
+      elif ord(q) == 97:  # a
+        Packet.SendPacket(ser, 0)
+      elif ord(q) == 99:  # c
+        Packet.connect(TCP_IP, TCP_PORT)
+      elif ord(q) == 115:  # s
+        try:
+          Packet.SendPacket(s, 1)
+        except OSError:
+          print("Can't send tcp Packet")
 
 class Rtm64(object):
   def __init__(self):
-    # 7E 03 F0 11 00 46 52 A0 8F 08 20 07 04 FE 00 32 2E 04 7E
+    # 7E 02 F0 10 00 46 53 A0 8F 03 00 34 00 7D 15 93 03 7E 
     self.kod = 0x7e
-    self.service_one = 0x03
+    self.service_one = 0x02
     self.service_two = 0xF0
     self.len = 0x11
     self.flag = 0x00
-    self.command = [0x46, 0x52]
-    self.address = [[0xA0, 0x8f], [0x03, 0x20], [0x08, 0x20]]
-    self.value = [0xFE, 0x00, 0x32]
+    self.command = [0x46, 0x53]
+    self.address = [[0xA0, 0x8f],[0x03, 0x00]]
+    self.value = [0x34, 0x00, 0x7d, 0x15]
     self.crc = 0x0000
     self.error_cnt = 0
     self.OkReceptionCnt = 0
   def __del__(self):
-    if self.s:
-      self.s.close()
     print("dlt packet")
 
   def SendPacket(self, ser, type):
@@ -161,11 +124,8 @@ class Rtm64(object):
     packet.append(self.address[0][1])
     packet.append(self.address[1][0])
     packet.append(self.address[1][1])
-    packet.append(self.address[2][0])
-    packet.append(self.address[2][1])
-    packet.append(self.value[0])
-    packet.append(self.value[1])
-    packet.append(self.value[2])
+    for i in self.value:
+      packet.append(i)
     self.len = len(packet) + 1
     packet[3] = self.len
     chek_sum = RTM64ChkSUM(packet[1:], len(packet) - 1)

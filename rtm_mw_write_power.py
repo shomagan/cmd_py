@@ -25,7 +25,8 @@ FB_MODBUS_Buffer[LengthPak-1] = (char)(CRC>>8);
 """
 add addres property befor start program
 """
-import sys, os, _thread as thread, threading, socket, atexit, io, serial, time
+import sys, os, _thread as thread, threading,socket,atexit,io,serial,time
+
 try:
     from serial.tools.list_ports import comports
 except ImportError:
@@ -41,11 +42,11 @@ def ComList(ser,a):
       print(hello,ord(hello))
 
 def main():
-
-  ser = serial.Serial(1)  # open first serial port
-  ser.baudrate =115200
-  print (ser.name)          # check which port was really used
   try:
+    ser = serial.Serial('COM6')  # open first serial port
+    ser.baudrate =9600
+    print (ser.name)          # check which port was really used
+
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
       ser.baudrate,
@@ -53,15 +54,22 @@ def main():
       ser.parity,
       ser.stopbits,
     ))
+    ser.write(serial.to_bytes([4]))
+    a = 0
+    if(ser):
+      thread.start_new_thread(ComList, (ser,a ))
+
   except serial.SerialException as e:
-    sys.stderr.write("could not open port %r: %s\n" % (port, e))
-    sys.exit(1)
+    sys.stderr.write("could not open port ")
+
   hello = 'hello'
 
-  ser.write(serial.to_bytes([4]))
+
+
+
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x01]
+  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x05,0x03,0x00,0x00,0x00,0x01]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
   mdbtcp = [0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x80,0x00,0x06]
@@ -98,20 +106,19 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.233'
+  TCP_IP = '192.168.7.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  a = 0
-  thread.start_new_thread(ComList, (ser,a ))
-  print ('tread is start')
-  data = [2,3,0]#,81,,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_p = [0x01,94,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  Packet = RTM_MW(data)  
+#  crc = [2,230]
+  crc = [75,125]
+  sp_write = [45,0,7,0,26,0]
+  data = [2,6,0,45,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data_w = [3,6,0,crc[0],crc[1]]+sp_write
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
   Packet.Chan = 0x01
-  Cnt1 =0
-  Time1 =0
+
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -120,25 +127,17 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      ser.write(cmd)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w.SendPacket(s,1)
+      del(Packet_w)
     elif ord(q)==110:#n
       print(Cmd_NI)
       ser.write(Cmd_NI)
     elif ord(q)==114:#r
       print(cmd_FR_T)
       ser.write(cmd_FR_T)
-
-    elif ord(q)==109:#m
-      #mdb = int_to_char(cmd[-11:-3])
-      mdb = cmd[-11:-3]
-      print (cmd[-11:-3])
-      ser.write(mdb)
     elif ord(q)==97:#a
       Packet.SendPacket(ser,0)
-    elif ord(q)==43:#+
-      Packet_p = RTM_MW(data_p)  
-      Packet_p.SendPacket(ser,0)
-      data_p[1] += 1
 
     elif ord(q)==99:#c
       try:
@@ -161,102 +160,23 @@ def main():
         Packet.SendPacket(s,1)
       except OSError:
         print ("Can't send tcp Packet")
-    elif ord(q)==104:  #h
-      data = [0x01]  #,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-      for i in range(11):
-        data.append(90+i)
-        data.append(0)
-      PacketAll = RTM_MW(data)
-      PacketAll.SendPacket(ser, 0)
-
-    elif ord(q)==108:#l
-      while(1):
-        try:
-          Packet.SendPacket(s, 1)
-        except OSError:
-          print ("Can't send tcp Packet")
-          error_log = open('error_log.txt','a')
-          error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-          error_log.close()
-          try:
-            s.close()
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((TCP_IP, TCP_PORT))
-          except TimeoutError:
-            print (time.asctime())
-            print ("mega12 not TCP connected ")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
-            error_log.close()
-          except ConnectionAbortedError:
-            print (time.asctime())
-            print ("mega12 connect aborted TCP")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-            erro_log.close()
-            s.connect((TCP_IP, TCP_PORT))
-        print (time.asctime())
-        time.sleep(0.2)
-        if(msvcrt.kbhit()):
-          q = msvcrt.getch()
-          print(ord(q))
-          if ord(q) == 113:#q
-            s.close()
-            sys.exit(1)
-
-    elif ord(q)==116:#t
-      mdbtcp_s=bytearray(mdbtcp[0:])
-      print(mdbtcp_s)
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-    elif ord(q)==102:#f
-      mdbtcp_s=bytearray(cmd_fr[0:])
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      kerneltime = (data[9]<<8|data[10])/10
-      print(data)
-      print(time_pr,'ms')
   #        sys.stderr.write(cmd_mdb)
 class RTM_MW(object):
-  def __init__(self,Data):
+  def __init__(self,Data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5):
     self.Kod = 250
     self.Len = [0x00,0x00]
-    self.RetranNum = 1
-    self.Flag = 0x0
-    self.MyAdd = [7,0,0]
-    self.Chan = 2
-    self.MyAdd[2] = 0x01
-    self.DestOne = [12,0,2]
-    self.DestTwo =  [202,0,2]
-    self.DestThree = [200,0,2]
-
-    self.TranzactionSend  = 1
+    self.RetranNum = RetranNum
+    self.Flag = 0x02
+    self.MyAdd = [8,0,Chan]
+    self.DestAdd = [DestAdd1&0xff,((DestAdd1>>8)&0xff),Chan1]
+    self.DestAddEnd = [DestAdd2&0xff,((DestAdd2>>8)&0xff),Chan2]
+#    self.DestAddEnd = [0xeb,0x03,0]
+#    self.DestAddEnd = [202,0x00,0]
+    self.Tranzaction  = 1
     self.PacketNumber = 1
     self.PacketItem   = 1
     self.Instruction  = 1
     self.Data=Data
-    if self.Data:
-      self.Instruction = self.Data[0]
-      self.Ind = []
-      self.IndNum = 0
-      for i in range(0,(len(self.Data)-1)>>1):
-        self.IndNum +=1 
-        self.Ind.append(self.Data[2*i+1]|(self.Data[2*i+2]<<8))
-    self.IndRecv = 0
-    self.Type = [0x00 for x in range(64)]
-    self.GUID = 0x0000
-    self.LenName = 0x00
-    self.Name = []
-    self.LenIntName = 0x00
-    self.IntName = []
-    self.ArraySize = [0x00000 for x in range(64)]
-    self.Value = []
-    self.Flag = 0    
     self.Errorcnt = 0
     self.OkReceptionCnt = 0
 
@@ -270,20 +190,13 @@ class RTM_MW(object):
     Packet.append(self.MyAdd[0])
     Packet.append(self.MyAdd[1])
     Packet.append(self.MyAdd[2])
-    Packet.append(self.DestOne[0])
-    Packet.append(self.DestOne[1])
-    Packet.append(self.DestOne[2])
-    if (self.RetranNum > 0):
-      Packet.append(self.DestTwo[0])
-      Packet.append(self.DestTwo[1])
-      Packet.append(self.DestTwo[2])
-      if (self.RetranNum > 1):
-        Packet.append(self.DestThree[0])
-        Packet.append(self.DestThree[1])
-        Packet.append(self.DestThree[2])
-
-    Packet.append(self.TranzactionSend)
-
+    Packet.append(self.DestAdd[0])
+    Packet.append(self.DestAdd[1])
+    Packet.append(self.DestAdd[2])
+#    Packet.append(self.DestAddEnd[0])
+ #   Packet.append(self.DestAddEnd[1])
+  #  Packet.append(self.DestAddEnd[2])
+    Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)
     for i in range(0,len(self.Data)):
@@ -298,8 +211,8 @@ class RTM_MW(object):
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
     if (type == 1):
+      print(Packet)
       Packet_str = bytearray(Packet[0:])
-      print(Packet_str)
       time_start=time.time()
       s.send(Packet_str)
       s.settimeout(1)
@@ -319,49 +232,12 @@ class RTM_MW(object):
         self.Errorcnt+=1
         print("TCP_RecvError",self.Errorcnt)
         print (time.asctime())
-        error_log = open('error_log_rv.txt','a')
+        error_log = open('error_log.txt','a')
         error_log.write ("TCP_RecvError"+time.asctime()+str(self.Errorcnt)+'\n')
         error_log.close()
     elif(type == 0):
       print(Packet)
       s.write(Packet)
-
-  def ChekPacket(self,data):
-    str_buf = ''
-    [250, 19, 0, 0, 3, 7, 0, 1, 5, 0, 130, 228, 1, 1, 2, 5, 0, 8, 19]
-    i = 0
-    if (data[i] != self.Kod):
-      str_buf = 'Kod_error'+'\t'
-    i +=1
-    lenght = data[i]|data[i+1]<<8
-    i +=2
-    if (lenght!= len(data)):
-      str_buf+='lenght_Error'+'\t'
-    i +=1#retrannum
-    i +=1#flag
-    if (self.MyAdd[0] !=data[i] or self.MyAdd[1]!=data[i+1] or self.MyAdd[2]!=data[i+2]):
-      str_buf+='MyAddr_Error'+'\t'
-    i +=3
-    if (self.DestAdd[0] !=data[i] or self.DestAdd[1]!=data[i+1] or (self.DestAdd[2]|0x80)!=data[i+2]):
-      str_buf+='DestAddr_Error'+'\t'
-    i +=3
-    if (self.Tranzaction != data[i]):
-      str_buf+='Tranzaction_Error'+'\t'
-    i +=1
-    if (self.PacketNumber != data[i]):
-      str_buf+='PacketNumber_Error'+'\t'
-    i +=1
-    if (self.PacketItem != data[i]):
-      str_buf+='PacketItem_Error'+'\t'
-    i +=1
-    self.DataInPacket = data[i:len(data)-2]
-    i += len(self.DataInPacket)
-    CRC = RTM64CRC16(data, len(data)-2)
-    CRCin = data[i]|data[i+1]<<8
-    if(CRC != (CRCin)):
-      str_buf+='CRC_Error'
-    return str_buf
-
 
 
     
@@ -439,5 +315,4 @@ def print_hex(cmd,lenth):
     i+=1
   print (hexf)
 if __name__ == "__main__":
-  print ("told one things")
-  main()
+    main()

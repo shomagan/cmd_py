@@ -71,8 +71,8 @@ ValType = {KodBit:1,
 def main():
   have_serial = 1
   try:
-    ser = serial.Serial('COM10')  # open first serial port
-    ser.baudrate = 38400;
+    ser = serial.Serial('COM1')  # open first serial port
+    ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -137,7 +137,7 @@ def main():
   if have_serial:
     thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,0,0,1,0]
+  data = [2,6,0]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -253,9 +253,8 @@ class RTM_MW(object):
     self.Len = [0x00,0x00]
     self.RetranNum =0
     self.Flag = 0x0
-    self.MyAdd = [7,0,7]
-    self.MyAdd[2] = 0x02
-    self.DestOne = [5,0,5]
+    self.MyAdd = [7,0,2]
+    self.DestOne = [3,0,5]
     self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
@@ -327,46 +326,34 @@ class RTM_MW(object):
     CRC = RTM64CRC16(Packet, len(Packet))
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
+    data_s =[]
     if (type == 1):
       print(Packet)
       print(len(Packet))
       Packet_str = bytearray(Packet[0:])
       time_start=time.time()
-#      error_log = open('error_log_rv.txt','a')
-#      error_log.write (str(Packet_str))
-#      error_log.close()
       self.s.send(Packet_str)
       self.s.settimeout(4)
-#data = s.recvfrom(BUFFER_SIZE)
       try:
         data = self.s.recv(BUFFER_SIZE)
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
-#        data = char_to_int(data,len(data))
-        data_s =[]
-#        print(data)
         for i in range(0,len(data)):
           data_s.append(data[i])
-        print(data_s,self.OkReceptionCnt)
-        print("lenght",len(data_s))
-#        self.s.settimeout(4)
- #       data = self.s.recv(BUFFER_SIZE)
-  #      self.OkReceptionCnt+=1
         if data_s:
           self.ChekPacket(data_s)
           if self.CheckCRC:
             if (len(self.DataInPacket)>1):
               self.HandPacket(self.DataInPacket)
             else:
-              print ("empty packet")
+              print("not empty packet")
+            print(data_s)
           else:
             print('CRC_ERROR')
             error_log = open('error_log_rv.txt','a')
             error_log.write ("CRC_ERROR"+time.asctime()+str(self.Errorcnt)+'\n')
             error_log.close()
-
-        print(time_pr,'s')
-        print(len(data))
+        
       except socket.timeout:
         self.Errorcnt+=1
         print("TCP_RecvError",self.Errorcnt)
@@ -379,13 +366,12 @@ class RTM_MW(object):
       error_log = open('error_log_rv.txt','a')
       error_log.write (str(Packet))
       error_log.close()
-
       ser.write(Packet)
+    return (data_s)
   def HandPacket(self,DataVal):
     if DataVal:
       if self.Instruction == 1:
         k = 1
-#        print(DataVal)
         for i in range(0,self.IndNum):
           self.IndRecv = DataVal[k]|(DataVal[1+k]<<8)
           if (self.IndRecv!=self.Ind[i]):
@@ -453,7 +439,7 @@ class RTM_MW(object):
 #            bar = (self.Value[0] - 800)/(4036 - 800)
 #            bar = bar*6
 #            print("pressure bar = ",bar)
-            print("Value = ",self.Value)
+            print("Value = ",self.Value,'hex',hex(self.Value[0]))
           print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
   def connect(self,TCP_IP, TCP_PORT):
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
@@ -472,6 +458,9 @@ class RTM_MW(object):
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       error_log.close()
       self.s.connect((TCP_IP, TCP_PORT))
+  def close_tcp_connect(self):
+      self.s.close()
+
 
   def ChekPacket(self,data):
     str_buf = ''
@@ -537,10 +526,10 @@ class RTM_MW(object):
     self.Data[0] = 1
     self.Instruction  = 1
     self.SendPacket(self.s,1);
-#    time.sleep(1.2)
-    self.Data[0] = 2
-    self.Instruction  = 2
-    self.SendPacket(self.s,1);
+#    time.sleep(0.05)
+ #   self.Data[0] = 2
+  #  self.Instruction  = 2
+   # self.SendPacket(self.s,1);
     
 
 def RTM64CRC16(pbuffer , Len):

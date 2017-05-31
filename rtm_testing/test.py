@@ -10,6 +10,7 @@ import rtm_mw
 import mdb_tcp_request 
 import sys
 import time
+import socket
 
 
 try:
@@ -23,22 +24,13 @@ DEFAULT_BAUDRATE = 115200
 DEFAULT_RTS = None
 DEFAULT_DTR = None
 ADDRESS_MDB_SHIFT_REG = 154
-def start_progress():
-  sys.stdout.write('\r'+"/")
-  sys.stdout.flush()
-    
-
-def progress(p):
-  sys.stdout.write('\r'+"/"+p)
-  sys.stdout.flush()
 
 
-def end_progress(p):
-  sys.stdout.write('\r'+"/"+p+'/'+'\n')
-  sys.stdout.flush()
 
 
-def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
+
+
+def send_mdb_packet(mdb_packet,log,timeout=6,parse =0):
   global TCP_IP
   global TCP_PORT
   global s_socket
@@ -53,7 +45,7 @@ def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
     try:
       s_socket.close()
       print('close tcp connection')
-      s_socket = rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     except TimeoutError:
       print (time.asctime())
       print ("mega12 not TCP connected ")
@@ -66,7 +58,7 @@ def send_mdb_packet(mdb_packet,log,rtm_mw_packet,timeout=6,parse =0):
       error_log = open('error_log_rv.txt','a')
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       erro_log.close()
-      s_socket = rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
   return packet_from
 
 def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
@@ -75,7 +67,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
   global s_socket
   answer_cheked =0
   try:
-    answer_cheked = rtm_mw_packet.Send(timeout = timeout)
+    answer_cheked = rtm_mw_packet.Send(s_socket, timeout = timeout)
   except OSError:
     print ("Can't send tcp Packet")
     error_log = open('error_log_rv.txt','a')
@@ -84,7 +76,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
     try:
       s_socket.close()
       print('close tcp connection')
-      s_socket=rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     except TimeoutError:
       print (time.asctime())
       print ("mega12 not TCP connected ")
@@ -97,7 +89,7 @@ def send_rtm_mw_packet(rtm_mw_packet,log,timeout=6):
       error_log = open('error_log_rv.txt','a')
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       erro_log.close()
-      s_socket=rtm_mw_packet.connect(TCP_IP, TCP_PORT)
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
   return answer_cheked
 
 class Controller_info(object):
@@ -122,7 +114,7 @@ class Controller_info(object):
       mdb_packet.mdb_command = 3
       mdb_packet.mdb_start_address = 0
       mdb_packet.mdb_reg_numm = 2
-      packet = send_mdb_packet(mdb_packet,self.log,self.rtm_mw_packet,timeout = 0.2)
+      packet = send_mdb_packet(mdb_packet,self.log,timeout = 0.2)
       if len(packet) > 3:
         packet_dict = self.parse_mdb_response(packet[6:])
         if packet_dict['command'] == mdb_packet.mdb_command:
@@ -132,7 +124,7 @@ class Controller_info(object):
             self.mdb_address = packet_dict['data'][1]
             if packet_dict['data'][1] == i:
               self.rtm_address = packet_dict['data'][0]
-              print('it',self.mdb_address,'\n')
+              print('mdb address = ',self.mdb_address,'\n')
             else:
               self.mdb_shift = 1
               print('but not match in packet',packet_dict['data'][1],'\n')
@@ -150,7 +142,7 @@ class Controller_info(object):
     mdb_packet.mdb_start_address = mdb_start_address
     mdb_packet.mdb_reg_numm = len(data)
     mdb_packet.mdb_data = data
-    packet = send_mdb_packet(mdb_packet,self.log,self.rtm_mw_packet,timeout=0.4,parse=1)
+    packet = send_mdb_packet(mdb_packet,self.log,timeout=0.4,parse=1)
     succes =0
     if len(packet) > 3:
       packet_dict = self.parse_mdb_response(packet[6:])
@@ -196,18 +188,20 @@ class Controller_info(object):
 
 def main():
   global TCP_IP
-  TCP_IP = '192.168.2.205'
+  TCP_IP = '192.168.1.232'
   global TCP_PORT
   TCP_PORT = 502
   global s_socket
   data = [2,3,0,1,0]#,73,0,48,0,49,0]#141,0,142,0,143,0,140,0,139,0,138,0,137,0,136,0]#,152,0,150,0]#103,0,104,105,0,106,0,107,0,108,0,109,0,110,0,111,0,112,0,113,0,114,0,115,0,116,0,117,0]#,116,0,117,0]
   Packet = rtm_mw.RTM_MW(data)
-  print('helo from ',TCP_IP,TCP_PORT)
+  print('hello from ',TCP_IP,TCP_PORT)
   print(Packet)
   mdb_packet = mdb_tcp_request.Mdb()
   log = open('log_rv.txt','a')
   log.write ("mega12 test mdb retranslate"+time.asctime()+'\n')
   controller = Controller_info(log,Packet)
+  controller.rtm_address = 3
+  controller.mdb_address = 3
 
   while 1:
     q = msvcrt.getch()
@@ -218,7 +212,8 @@ def main():
       del mdb_packet
       sys.exit(1)
     elif ord(q)==99:#c
-      s_socket = Packet.connect(TCP_IP, TCP_PORT)
+      s_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+      socket_connect(s_socket, TCP_IP, TCP_PORT)
     elif ord(q)==115:#s
       try:
         Packet.Send()
@@ -233,81 +228,31 @@ def main():
           data = [0x0000]
           controller.write_regs_for_mdb(mdb_packet,ADDRESS_MDB_SHIFT_REG-1,data)
           controller.request_address_mdb_packet(mdb_packet)
+
         print ('test immodule port')
-        p = ''
-        for i in range(25):
-          Packet.RetranNum = 1
-          Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,7]
-          Packet.DestTwo =  [3,0,0]
-          if (send_rtm_mw_packet(Packet,log,timeout=1)):
-            p+='#'
-          else:
-            p+='*'
-          progress(p)
-          time.sleep(0.5)
-          if(msvcrt.kbhit()):
-            log.close()
-            del Packet
-            del mdb_packet
-            sys.exit(1)
-        end_progress(p)
+        Packet.RetranNum = 1
+        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,7]
+        Packet.DestTwo =  [3,0,0]
+        cycle_rtm_send(30,Packet,controller,log)
+
         print ('test com1 port')
-        p = ''
-        for i in range(25):
-          Packet.RetranNum = 1
-          Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,1]
-          Packet.DestTwo =  [3,0,0]
-          if (send_rtm_mw_packet(Packet,log,timeout=1)):
-            p+='#'
-          else:
-            p+='*'
-          progress(p)
-          time.sleep(0.5)
-          if(msvcrt.kbhit()):
-            log.close()
-            del Packet
-            del mdb_packet
-            sys.exit(1)
-        end_progress(p)
+        Packet.RetranNum = 1
+        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,1]
+        Packet.DestTwo =  [3,0,0]
+        cycle_rtm_send(30,Packet,controller,log)
 
         print ('test com2 port')
-        p = ''
-        for i in range(25):
-          Packet.RetranNum = 1
-          Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
-          Packet.DestTwo =  [3,0,0]
-          if (send_rtm_mw_packet(Packet,log,timeout=1)):
-            p+='#'
-          else:
-            p+='*'
-          progress(p)
-          time.sleep(0.5)
-          if(msvcrt.kbhit()):
-            log.close()
-            del Packet
-            del mdb_packet
-            sys.exit(1)
-        end_progress(p)
+        Packet.RetranNum = 1
+        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
+        Packet.DestTwo =  [3,0,0]
+        cycle_rtm_send(30,Packet,controller,log)
 
-        print ('test radio rfm23 port')
-        p = ''
-        for i in range(25):
-          Packet.RetranNum = 1
-          Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
-          Packet.DestTwo =  [3,0,0]
-          if (send_rtm_mw_packet(Packet,log,timeout=1)):
-            p+='#'
-          else:
-            p+='*'
-          progress(p)
-          time.sleep(0.5)
-          if(msvcrt.kbhit()):
-            log.close()
-            del Packet
-            del mdb_packet
-            sys.exit(1)
-        end_progress(p)
-
+        '''print ('test radio rfm23 port')
+        Packet.RetranNum = 1
+        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
+        Packet.DestTwo =  [3,0,0]
+        cycle_rtm_send(30,Packet,controller,log)
+        '''
         if(msvcrt.kbhit()):
           log.close()
           del Packet
@@ -319,83 +264,33 @@ def main():
         if controller.request_address_mdb_packet(mdb_packet):
           print ('find it')
       if controller.rtm_address==0 and controller.mdb_shift == 1:
+        '''it state sets if ADDRESS_MDB_SHIFT_REG is enabled'''
         data = [0x0000]
         controller.write_regs_for_mdb(mdb_packet,ADDRESS_MDB_SHIFT_REG-1,data)
         controller.request_address_mdb_packet(mdb_packet)
-      print ('test immodule port')
-      p = ''
-      for i in range(25):
-        Packet.RetranNum = 1
-        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,7]
-        Packet.DestTwo =  [3,0,0]
-        if (send_rtm_mw_packet(Packet,log,timeout=1)):
-          p+='#'
-        else:
-          p+='*'
-        progress(p)
-        time.sleep(0.05)
-        if(msvcrt.kbhit()):
-          log.close()
-          del Packet
-          del mdb_packet
-          sys.exit(1)
-      end_progress(p)
-      print ('test com1 port')
-      p = ''
-      for i in range(25):
-        Packet.RetranNum = 1
-        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,1]
-        Packet.DestTwo =  [3,0,0]
-        if (send_rtm_mw_packet(Packet,log,timeout=1)):
-          p+='#'
-        else:
-          p+='*'
-        progress(p)
-        time.sleep(0.05)
-        if(msvcrt.kbhit()):
-          log.close()
-          del Packet
-          del mdb_packet
-          sys.exit(1)
-      end_progress(p)
+      print ('rtm_mw test immodule port')
+      Packet.RetranNum = 1
+      Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,7]
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
 
-      print ('test com2 port')
-      p = ''
-      for i in range(25):
-        Packet.RetranNum = 1
-        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
-        Packet.DestTwo =  [3,0,0]
-        if (send_rtm_mw_packet(Packet,log,timeout=1)):
-          p+='#'
-        else:
-          p+='*'
-        progress(p)
-        time.sleep(0.05)
-        if(msvcrt.kbhit()):
-          log.close()
-          del Packet
-          del mdb_packet
-          sys.exit(1)
-      end_progress(p)
+      print ('rtm_mw test com1 port')
+      Packet.RetranNum = 1
+      Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,1]
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
 
-      print ('test radio rfm23 port')
-      p = ''
-      for i in range(25):
-        Packet.RetranNum = 1
-        Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
-        Packet.DestTwo =  [3,0,0]
-        if (send_rtm_mw_packet(Packet,log,timeout=1)):
-          p+='#'
-        else:
-          p+='*'
-        progress(p)
-        time.sleep(0.05)
-        if(msvcrt.kbhit()):
-          log.close()
-          del Packet
-          del mdb_packet
-          sys.exit(1)
-      end_progress(p)
+      print ('rtm_mw test com2 port')
+      Packet.RetranNum = 1
+      Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,5]
+      Packet.DestTwo =  [5,0,0]
+      cycle_rtm_send(10,Packet,controller,log)
+
+#      print ('test radio rfm23 port')
+#      Packet.RetranNum = 1
+#      Packet.DestOne = [controller.rtm_address&0xff,(controller.rtm_address>>8)&0xff,0]
+#      Packet.DestTwo =  [3,0,0]
+#       cycle_rtm_send(30,Packet,controller,log)
 
       if(msvcrt.kbhit()):
         log.close()
@@ -403,6 +298,55 @@ def main():
         del mdb_packet
         sys.exit(1)
 
+def cycle_rtm_send(cycle,Packet,controller,log,timeout=2):
+  p = ''
+  for i in range(cycle):
+    Packet.RetranNum = 1
+    if (send_rtm_mw_packet(Packet,log,timeout=timeout)):
+      p+='#'
+    else:
+      p+='*'
+    progress(p)
+    time.sleep(0.05)
+    if(msvcrt.kbhit()):
+      log.close()
+      del Packet
+      del mdb_packet
+      sys.exit(1)
+  end_progress(p)
+
+
+def start_progress():
+  sys.stdout.write('\r'+"/")
+  sys.stdout.flush()
+    
+
+def progress(p):
+  sys.stdout.write('\r'+"/"+p)
+  sys.stdout.flush()
+
+
+def end_progress(p):
+  sys.stdout.write('\r'+"/"+p+'/'+'\n')
+  sys.stdout.flush()
+
+
+def socket_connect(s, TCP_IP, TCP_PORT):
+  try:
+    s.connect((TCP_IP, TCP_PORT))
+  except TimeoutError:
+    print (time.asctime())
+    print ("mega12 not TCP connected ")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
+    error_log.close()
+  except ConnectionAbortedError:
+    print (time.asctime())
+    print ("mega12 connect aborted TCP")
+    error_log = open('error_log_rv.txt','a')
+    error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
+    error_log.close()
+    s.connect((TCP_IP, TCP_PORT))
 
 if __name__ == '__main__':
     '''request modbus packet on com port or tcp connect

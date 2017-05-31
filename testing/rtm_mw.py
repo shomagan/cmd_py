@@ -47,12 +47,12 @@ def ComList(ser,a):
       error_log.close()
       print(hello,ord(hello))
 
-KodBit =	0x00
-KodInt8 =	0x20
-KodInt16 =	0x40
-KodInt32 =	0x60
-KodFloat32 =	0x80
-KodTime32 =	0xA0
+KodBit =  0x00
+KodInt8 = 0x20
+KodInt16 =  0x40
+KodInt32 =  0x60
+KodFloat32 =  0x80
+KodTime32 = 0xA0
 ValTypeName = {KodBit:"KodBit",
            KodInt8 :"KodInt8",
            KodInt16 :"KodInt16",
@@ -69,9 +69,10 @@ ValType = {KodBit:1,
 }
 
 def main():
+  have_serial = 1
   try:
-    ser = serial.Serial(1)  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM6')  # open first serial port
+    ser.baudrate = 38400;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -81,6 +82,7 @@ def main():
       ser.stopbits,
     ))
   except serial.SerialException as e:
+    have_serial = 0
     print("could not open port \n")
 #    sys.stderr.write("could not open port %r: %s\n" % (port, e))
 #    sys.exit(1)
@@ -126,15 +128,16 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.6'
+  TCP_IP = '192.168.2.205'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   a = 0
-  thread.start_new_thread(ComList, (ser,a ))
+  if have_serial:
+    thread.start_new_thread(ComList, (ser,a ))
   print ('tread is start')
-  data = [2,3,0]
+  data = [2,6,0]
   data_p = [1,0,1]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   Packet = RTM_MW(data)  
 
@@ -142,6 +145,7 @@ def main():
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
     print(ord(q))
+    print(q)
     if ord(q) == 113:#q
       s.close()
       sys.exit(1)
@@ -249,16 +253,14 @@ class RTM_MW(object):
     self.Len = [0x00,0x00]
     self.RetranNum =0
     self.Flag = 0x0
-    self.MyAdd = [7,0,7]
-    self.MyAdd[2] = 0x02
-    self.DestOne = [6,1,4]
-    self.DestTwo =  [4,0,7]
+    self.MyAdd = [7,0,2]
+    self.DestOne = [3,0,5]
+    self.DestTwo =  [13,0,7]
     self.DestThree = [200,0,5]
     self.DestFor = [200,0,5]
-    self.TranzactionSend  = 3
+    self.TranzactionSend  = 52
     self.PacketNumber = 1
     self.PacketItem   = 1
-    self.Instruction  = 1
     self.Data=Data
     if self.Data:
       self.Instruction = self.Data[0]
@@ -276,7 +278,6 @@ class RTM_MW(object):
     self.IntName = []
     self.ArraySize = [0x00000 for x in range(200)]
     self.Value = []
-    self.Flag = 0    
     self.Errorcnt = 0
     self.OkReceptionCnt = 0
     self.CheckCRC = 0
@@ -326,18 +327,15 @@ class RTM_MW(object):
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
     if (type == 1):
-      print(Packet)
-      print(len(Packet))
+#      print(Packet)
+#      print(len(Packet))
       Packet_str = bytearray(Packet[0:])
       time_start=time.time()
 #      error_log = open('error_log_rv.txt','a')
 #      error_log.write (str(Packet_str))
 #      error_log.close()
-
       self.s.send(Packet_str)
-
-
-      self.s.settimeout(2)
+      self.s.settimeout(4)
 #data = s.recvfrom(BUFFER_SIZE)
       try:
         data = self.s.recv(BUFFER_SIZE)
@@ -348,11 +346,8 @@ class RTM_MW(object):
 #        print(data)
         for i in range(0,len(data)):
           data_s.append(data[i])
-        print(data_s,self.OkReceptionCnt)
-        print("lenght",len(data_s))
-#        self.s.settimeout(4)
- #       data = self.s.recv(BUFFER_SIZE)
-  #      self.OkReceptionCnt+=1
+#        print(data_s,self.OkReceptionCnt)
+#        print("lenght",len(data_s))
         if data_s:
           self.ChekPacket(data_s)
           if self.CheckCRC:
@@ -366,8 +361,8 @@ class RTM_MW(object):
             error_log.write ("CRC_ERROR"+time.asctime()+str(self.Errorcnt)+'\n')
             error_log.close()
 
-        print(time_pr,'s')
-        print(len(data))
+#        print(time_pr,'s')
+#        print(len(data))
       except socket.timeout:
         self.Errorcnt+=1
         print("TCP_RecvError",self.Errorcnt)
@@ -377,6 +372,10 @@ class RTM_MW(object):
         error_log.close()
     elif(type == 0):
       print(Packet)
+      error_log = open('error_log_rv.txt','a')
+      error_log.write (str(Packet))
+      error_log.close()
+
       ser.write(Packet)
   def HandPacket(self,DataVal):
     if DataVal:
@@ -420,10 +419,13 @@ class RTM_MW(object):
             self.Value = [0 for x in range(self.ArraySize[i])]
             for x in range (0,self.ArraySize[i]):
               for y in range (0,ValType[self.Type[i]]):
-                self.Value[x] |= DataVal[k]<<(8*y)
+                if self.Type[i] == KodBit:
+                  self.Value[x] = DataVal[k]&0x01
+                else:
+                  self.Value[x] |= DataVal[k]<<(8*y)
                 #print(x,k)
                 k +=1
-            print("Value = ",self.Value)
+            print("Value = ",(self.Value))
             self.FlagRecv = DataVal[k]
             k+=1
             print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -434,14 +436,20 @@ class RTM_MW(object):
           self.Value = [0 for x in range(self.ArraySize[i])]
           for x in range (0,self.ArraySize[i]):
             for y in range (0,ValType[self.Type[i]]):
-              self.Value[x] |= DataVal[k]<<(8*y)
+              if self.Type[i] == KodBit:
+                self.Value[x] = DataVal[k]&0x01
+              else:
+                self.Value[x] |= DataVal[k]<<(8*y)
               k +=1
             if self.Type[i] == KodFloat32:
               flo32[x] = struct.pack('I',self.Value[x])
           if self.Type[i] == KodFloat32:
             print("Value = ",struct.unpack('f',flo32[0]))
           else:
-            print("Value = ",self.Value)
+#            bar = (self.Value[0] - 800)/(4036 - 800)
+#            bar = bar*6
+#            print("pressure bar = ",bar)
+            print("Value = ",self.Value,'hex',hex(self.Value[0]))
           print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
   def connect(self,TCP_IP, TCP_PORT):
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
@@ -525,10 +533,10 @@ class RTM_MW(object):
     self.Data[0] = 1
     self.Instruction  = 1
     self.SendPacket(self.s,1);
-#    time.sleep(3)
-    self.Data[0] = 2
-    self.Instruction  = 2
-    self.SendPacket(self.s,1);
+#    time.sleep(0.2)
+#    self.Data[0] = 2
+#    self.Instruction  = 2
+#    self.SendPacket(self.s,1);
     
 
 def RTM64CRC16(pbuffer , Len):

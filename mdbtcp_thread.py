@@ -51,8 +51,9 @@ def ComList(ser):
 def main():
   have_serial = 1
   try:
-    ser.rts=0
+
     ser = serial.Serial('COM12')  
+    ser.rts=0
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     print(ser)
@@ -70,9 +71,15 @@ def main():
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #          7E   03   F0   16   01   51   44   01   80   96   70   97   00   97   04   C0   5A   00   02 70 EE D2 06 7E
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x01,0x80,0x2d,0x71,0x97,0x00,3,3,0x00,0x00,0,4]
-#  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
-  Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
+#  cmd = [0x7E,0x03,0xF0,0x11,0x00,0x46,0x52,0xA0,0x8F,0x5F,0x50,0x5E,0x00,0x28,0x01,0x02] 
+  cmd = [0x7E,0x03,0xF0,0x0E,0x00,0x68,0x20,0x01,0x90,0x5E,0x50,0x5f,0x00] 
+#  cmd = [0x7E,0x03,0xF0,0x0E,0x00,0x68,0x20,0x01,0x90,0x5f,0x50,0x5e,0x10]
+  ChekSum = RTM64ChkSUM(cmd[1:] , len(cmd)-1)
+  cmd.append(ChekSum&0xFF)
+  cmd.append((ChekSum>>8)&0xFF)
+  cmd.append(0x7E)
+
+#  cmd = [0x7E,0x03,0xF0,0x16,0x05,0x51,0x44,0x05,0x80,0x03,0x40,0x97,0x00,80,3,0x00,0x00,0,4]
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
   mdb =    [80,0x03,8,52,0x00,11]
   byte_array = [85]
@@ -95,23 +102,12 @@ def main():
   cmd_FR_T.append(ChekSum&0xFF)
   cmd_FR_T.append((ChekSum>>8)&0xFF)
   cmd_FR_T.append(0x7e)
-  ChekSum = RTM64ChkSUM(Cmd_NI[1:] , len(Cmd_NI)-1)
-  Cmd_NI.append(ChekSum&0xFF)
-  Cmd_NI.append((ChekSum>>8)&0xFF)
-  Cmd_NI.append(0x7E)
 #            7E 03   F0   16   00    4D  42    E8   83   B5  7F    21   02   01   03   00  01    00    01 D5 CA FF 05 7E
-  CRC = crc16(cmd[-6:],6)
   Buff= [0x7E, 0x02, 0xF0, 0x0C, 0x00, 0x56, 0x4D, 0x03, 0x80, 0x05, 0x00 ]
   ChekSum = RTM64ChkSUM(Buff[1:] , len(Buff)-1)
   Buff.append(ChekSum&0xFF)
   Buff.append((ChekSum>>8)&0xFF)
   print_hex (Buff,len(Buff))
-  cmd.append(CRC&0xFF)
-  cmd.append((CRC>>8)&0xFF)
-  ChekSum = RTM64ChkSUM(cmd[1:] , len(cmd)-1)
-  cmd.append(ChekSum&0xFF)
-  cmd.append((ChekSum>>8)&0xFF)
-  cmd.append(0x7E)
   print_hex (cmd,len(cmd))
 #  print (int_to_char(cmd))
   cmd_fr =[0x03,0xF0,0x11,0x00,0x46,0x52,0xA0,0x8F,0x03,0x70,0x05,0x00,0x10,0x01,0x02]
@@ -121,7 +117,7 @@ def main():
   cmd_s = [0 for x in range(100)]
   count = 0
 
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '172.24.130.94'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
@@ -182,32 +178,22 @@ def main():
       print("lenght",len(data_s))
       print(time_pr,'ms')
     elif ord(q)==115:#s
-      print(cmd)
-      ser.write(cmd[0:])
-      '''cmd_s = bytearray(cmd[0:])
-    #  print(cmd[0:])
+      #print(cmd)
+      #ser.write(cmd[0:])
+      cmd_s = bytearray(cmd[0:])
+      print(cmd[0:])
       s.send(cmd_s)
       time_start=time.time()
       s.settimeout(4)
       data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
-      data_s =[]
-#        print(data)
+      print(data)
    #   print(data[-9],data[-8],data[-7],data[-6])
   #    print(hex(data[-9]),hex(data[-8]),hex(data[-7]),hex(data[-6]))
-      value = data[-6]
-      value |= data[-7]<<8
-      value |= data[-8]<<16
-      value |= data[-9]<<24
-      flo32 = struct.pack('I',value)
-      print ("Value L = ",value)
-#      print("Value = ",struct.unpack('f',flo32))
-      for i in range(0,len(data)):
-        data_s.append(data[i])
 #      print(data_s)
  #     print("lenght",len(data_s))
  #     print(time_pr,'ms')
-      '''
+      
     elif ord(q)==102:#f
       if ser.rts==1:
         ser.rts=0

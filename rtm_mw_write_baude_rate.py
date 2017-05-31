@@ -43,8 +43,8 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial('COM2')  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM6')  # open first serial port
+    ser.baudrate =9600
     print (ser.name)          # check which port was really used
 
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -65,9 +65,11 @@ def main():
   hello = 'hello'
 
 
+
+
   cmd_en = 0  #                    command  &rotor    &mega1   &megafinaly modbuss
 #         0    1    2     3   4     5     6   7   8     9   10    11  12    13  14  15    16    17  18
-  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x80,0x00,0x01]
+  cmd = [0x7E,0x03,0xF0,0x16,0x02,0x46,0x52,0xA0,0x8F,0x03,0x70,0x21,0x02,0x05,0x03,0x00,0x00,0x00,0x01]
 #  cmd = [0x7E,0x02,0xF0,0x14,0x02,0x46,0x52,0x03,0x70,0x21,0x02,0x03,0x03,0x00,0x1E,0x00,0x01]
   Cmd_NI =   [0x7E,0x02,0xF0,0x0F,0x00,0x4E,0x49,0xA0,0x8F,0x03,0x00,0x01,0x00,0x06]
   mdbtcp = [0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x80,0x00,0x06]
@@ -109,13 +111,12 @@ def main():
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-  data = [2,6,0,1,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_p = [1,89,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
-  data_w = [3,6,0,156,95,1,0,5,0]
-  Packet = RTM_MW(data)
-
-
+#  crc = [2,230]
+  crc = [2,230]
+  sp_write = [26,0,3,0]
+  data = [2,6,0,26,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  data_w = [3,6,0,crc[0],crc[1]]+sp_write
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 5,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -126,8 +127,9 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 5,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
       Packet_w.SendPacket(s,1)
+      del(Packet_w)
     elif ord(q)==110:#n
       print(Cmd_NI)
       ser.write(Cmd_NI)
@@ -178,73 +180,18 @@ def main():
         data.append(0)
       PacketAll = RTM_MW(data)
       PacketAll.SendPacket(ser,0)
-
-    elif ord(q)==108:#l
-      while(1):
-        try:
-          Packet.SendPacket(s,1)
-        except OSError:
-          print ("Can't send tcp Packet")
-          error_log = open('error_log.txt','a')
-          error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-          error_log.close()
-          try:
-            s.close()
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((TCP_IP, TCP_PORT))
-          except TimeoutError:
-            print (time.asctime())
-            print ("mega12 not TCP connected ")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 not TCP connected "+time.asctime()+'\n')
-            error_log.close()
-          except ConnectionAbortedError:
-            print (time.asctime())
-            print ("mega12 connect aborted TCP")
-            error_log = open('error_log.txt','a')
-            error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
-            erro_log.close()
-            s.connect((TCP_IP, TCP_PORT))
-        print (time.asctime())
-        time.sleep(0.1)
-        if(msvcrt.kbhit()):
-          q = msvcrt.getch()
-          print(ord(q))
-          if ord(q) == 113:#q
-            s.close()
-            sys.exit(1)
-
-    elif ord(q)==116:#t
-      mdbtcp_s=bytearray(mdbtcp[0:])
-      print(mdbtcp_s)
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-    elif ord(q)==102:#f
-      mdbtcp_s=bytearray(cmd_fr[0:])
-      s.send(mdbtcp_s)
-      time_start=time.time()
-      s.settimeout(4)
-      data = s.recv(BUFFER_SIZE)
-      time_pr=time.time() - time_start
-      kerneltime = (data[9]<<8|data[10])/10
-      print(data)
-      print(time_pr,'ms')
   #        sys.stderr.write(cmd_mdb)
 class RTM_MW(object):
-  def __init__(self,Data):
+  def __init__(self,Data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5):
     self.Kod = 250
     self.Len = [0x00,0x00]
-    self.RetranNum = 0
+    self.RetranNum = RetranNum
     self.Flag = 0x02
-    self.MyAdd = [8,0,1]
-    self.Chan = 1
-    self.DestAdd = [5,0,5]
-    self.DestAddEnd = [16,1,0x00]
+    self.MyAdd = [8,0,Chan]
+    self.DestAdd = [DestAdd1&0xff,((DestAdd1>>8)&0xff),Chan1]
+    self.DestAddEnd = [DestAdd2&0xff,((DestAdd2>>8)&0xff),Chan2]
 #    self.DestAddEnd = [0xeb,0x03,0]
 #    self.DestAddEnd = [202,0x00,0]
-    self.DestAddEnd[2] = 2
     self.Tranzaction  = 1
     self.PacketNumber = 1
     self.PacketItem   = 1
@@ -267,8 +214,8 @@ class RTM_MW(object):
     Packet.append(self.DestAdd[1])
     Packet.append(self.DestAdd[2])
 #    Packet.append(self.DestAddEnd[0])
-#    Packet.append(self.DestAddEnd[1])
-#    Packet.append(self.DestAddEnd[2])
+ #   Packet.append(self.DestAddEnd[1])
+  #  Packet.append(self.DestAddEnd[2])
     Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)
@@ -284,8 +231,8 @@ class RTM_MW(object):
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
     if (type == 1):
+      print(Packet)
       Packet_str = bytearray(Packet[0:])
-      print(Packet_str)
       time_start=time.time()
       s.send(Packet_str)
       s.settimeout(1)
