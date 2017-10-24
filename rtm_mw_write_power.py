@@ -43,7 +43,7 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial('COM6')  # open first serial port
+    ser = serial.Serial('COM4')  # open first serial port
     ser.baudrate =9600
     print (ser.name)          # check which port was really used
 
@@ -106,17 +106,17 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.7.232'
+  TCP_IP = '172.16.1.7'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#  crc = [2,230]
-  crc = [75,125]
-  sp_write = [45,0,7,0,26,0]
+  crc = [51,25]
+#  crc = [75,125]
+  sp_write = [45,0,20,0,26,0]
   data = [2,6,0,45,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
-  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 95,Chan1 = 8,DestAdd2 = 96,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -127,8 +127,8 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 6,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
-      Packet_w.SendPacket(s,1)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 95,Chan1 = 8,DestAdd2 = 93,Chan2 = 5)
+      Packet_w.SendPacket(ser,0)
       del(Packet_w)
     elif ord(q)==110:#n
       print(Cmd_NI)
@@ -193,9 +193,10 @@ class RTM_MW(object):
     Packet.append(self.DestAdd[0])
     Packet.append(self.DestAdd[1])
     Packet.append(self.DestAdd[2])
-#    Packet.append(self.DestAddEnd[0])
- #   Packet.append(self.DestAddEnd[1])
-  #  Packet.append(self.DestAddEnd[2])
+    if self.RetranNum:
+      Packet.append(self.DestAddEnd[0])
+      Packet.append(self.DestAddEnd[1])
+      Packet.append(self.DestAddEnd[2])
     Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)

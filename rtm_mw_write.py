@@ -106,17 +106,17 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '172.16.1.3'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #  crc = [2,230]
-  crc = [75,125]
-  sp_write = [10,0,8,0,0,0]
-  data = [2,6,0,10,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
+  crc = [51,25]
+  sp_write = [22,0,0xe1,0x15]
+  data = [2,6,0,22,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
-  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 4,DestAdd1 = 3,Chan1 = 4,DestAdd2 = 3,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -127,7 +127,7 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 4,DestAdd1 = 3,Chan1 = 4,DestAdd2 = 3,Chan2 = 5)
       Packet_w.SendPacket(s,1)
       del(Packet_w)
     elif ord(q)==110:#n
@@ -266,9 +266,10 @@ class RTM_MW(object):
     Packet.append(self.DestAdd[0])
     Packet.append(self.DestAdd[1])
     Packet.append(self.DestAdd[2])
-#    Packet.append(self.DestAddEnd[0])
- #   Packet.append(self.DestAddEnd[1])
-  #  Packet.append(self.DestAddEnd[2])
+    if self.RetranNum==1:
+      Packet.append(self.DestAddEnd[0])
+      Packet.append(self.DestAddEnd[1])
+      Packet.append(self.DestAddEnd[2])
     Packet.append(self.Tranzaction)
     Packet.append(self.PacketNumber)
     Packet.append(self.PacketItem)

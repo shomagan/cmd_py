@@ -43,8 +43,8 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial('COM6')  # open first serial port
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM4')  # open first serial port
+    ser.baudrate = 9600;
     print (ser.name)          # check which port was really used
 
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -69,12 +69,13 @@ def main():
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  crc = [2,230]
+#  crc = [2,230]
 #  crc = [75,125]
-  sp_write = [31,0,172,16,1,1,32,0,255,255,255,0]
+  crc = [51,25]
+  sp_write = [31,0,172,24,131,1,32,0,255,255,255,0]
   data = [2,6,0,31,0,32,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
-  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+  Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
   Packet.Chan = 0x01
 
   while 1:
@@ -85,8 +86,8 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 =4,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
-      Packet_w.SendPacket(s,1)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 =3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w.SendPacket(ser,0)
       del(Packet_w)
     elif ord(q)==97:#a
       Packet.SendPacket(ser,0)

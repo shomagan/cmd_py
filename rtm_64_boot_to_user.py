@@ -49,7 +49,7 @@ ValType = {KodBit: 1,
 
 def main():
     '''translate from boot mode to user, send simply comman in rtm64 format'''
-    ser = serial.Serial("COM6")  # open first serial port
+    ser = serial.Serial("COM4")  # open first serial port
     ser.baudrate = 115200
     print(ser.name)  # check which port was really used
     try:
@@ -64,7 +64,7 @@ def main():
       sys.stderr.write("could not open port %r: %s\n" % (port, e))
       sys.exit(1)
     hello = 'hello'
-    ser.write(serial.to_bytes([4]))
+    ser.write(serial.to_bytes([4]))     
     TCP_IP = '192.168.1.232'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
