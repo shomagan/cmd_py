@@ -63,12 +63,13 @@ def main():
     sys.stderr.write("could not open port ")
 
   count = 0
-  address_rtm = 3
+  address_rtm = 5
   TCP_IP = '172.16.1.'+str(address_rtm)
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  crc = [51,25]
+#  crc = [51,25]
+  crc = [236,12]
 #  crc = [75,125]
   sp_write = [1,0,5,0]
   data = [2,6,0,1,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
@@ -82,7 +83,7 @@ def main():
       sys.exit(1)
     elif ord(q)==119:#w
       Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = address_rtm,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
-      Packet_w.SendPacket(ser,0)
+      Packet_w.SendPacket(s,1)
       del(Packet_w)
     elif ord(q)==97:#a
       Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = address_rtm,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)

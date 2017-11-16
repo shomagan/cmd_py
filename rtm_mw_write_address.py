@@ -63,14 +63,15 @@ def main():
     sys.stderr.write("could not open port ")
 
   count = 0
-  TCP_IP = '172.16.1.3'
+  TCP_IP = '172.24.131.96'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #  crc = [75,125]
-  crc = [2,230]
-  sp_write = [0,0,95,0]
+#  crc = [2,230]
+  crc = [236,12]
+  sp_write = [0,0,204,0]
   data = [2,6,0,0,0]#,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
   data_w = [3,6,0,crc[0],crc[1]]+sp_write
   while 1:
@@ -81,11 +82,11 @@ def main():
       s.close()
       sys.exit(1)
     elif ord(q)==119:#w
-      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet_w = RTM_MW(data_w,RetranNum = 0,Chan = 8,DestAdd1 = 96,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
       Packet_w.SendPacket(s,1)
       del(Packet_w)
     elif ord(q)==97:#a
-      Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+      Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 = 93,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
       Packet.SendPacket(ser,0)
     elif ord(q)==99:#c
       try:
@@ -105,7 +106,7 @@ def main():
         s.connect((TCP_IP, TCP_PORT))
     elif ord(q)==115:#s
       try:
-        Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 =3,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
+        Packet = RTM_MW(data,RetranNum = 0,Chan = 8,DestAdd1 =96,Chan1 = 1,DestAdd2 = 4,Chan2 = 5)
         Packet.SendPacket(s,1)
       except OSError:
         print ("Can't send tcp Packet")

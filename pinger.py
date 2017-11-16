@@ -5,11 +5,12 @@ from os import system as system_call       # Execute a shell command
 def main():
     pinged=[]
     for i in range(256):
-        host = "192.168.1." + str(i)
+        host = "192.168.2." + str(i)
         if ping(host):
             pinged.append(host) 
-    for i in range(host):
-        print(host+' ')
+            print(host)
+    for i in pinged:
+        print(i+' ')
     
             
 
@@ -24,7 +25,7 @@ def ping(host):
     parameters = "-n 2" if system_name().lower()=="windows" else "-c 1"
 
     # Pinging
-    return system_call("ping " + parameters + " " + host + " -w 100") == 0        
+    return system_call("ping " + parameters + " " + host + " -w 50") == 0        
 
 if __name__=="__main__":
     main()

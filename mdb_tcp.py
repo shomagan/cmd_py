@@ -161,10 +161,10 @@ def main():
     print("could not open port \n")
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb_address = 3
+  mdb_address = 5
   mdb_command = 3
   start_address = 0
-  reg_numm = 15
+  reg_numm = 1
   data = [0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,0x0008,0x00009,0x0010,0x0011,0x0012,0x0013,0x0014]  #u16 format u16
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
@@ -218,22 +218,22 @@ def main():
       print(mdbwrite)
       ser.write(mdbwrite)
     elif ord(q)==114:#r
-      mdb_rtu = mdbtcp[6:]
-      crc = crc16(mdb_rtu,len(mdb_rtu))
-      mdb_rtu.append(crc&0xFF)
-      mdb_rtu.append((crc>>8)&0xFF)
+      mdbtcp_s = bytearray(mdbtcp[6:])
+      crc = crc16(mdbtcp_s,len(mdbtcp_s))
+      mdbtcp_s.append(crc&0xFF)
+      mdbtcp_s.append((crc>>8)&0xFF)
 
-      mdbrtu_s = bytearray(mdb_rtu[0:])
-      print(mdb_rtu[0:])
-      s.send(mdbrtu_s)
+      print(mdbtcp_s[0:])
+      s.send(mdbtcp_s)
       time_start=time.time()
-      s.settimeout(2)
+      s.settimeout(5)
       data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
       data_s =[]
       print(data)
       for i in range(0,len(data)):
         data_s.append(data[i])
+#      arc_parse(data_s[9:])
       parse_mdb_response(data_s)
       print(data_s)
       print("lenght",len(data_s))

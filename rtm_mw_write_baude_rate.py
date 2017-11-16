@@ -106,7 +106,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  address_rtm = 8
+  address_rtm = 5
   TCP_IP = '172.16.1.'+str(address_rtm)
   TCP_PORT = 502
   BUFFER_SIZE = 1024
