@@ -565,7 +565,10 @@ def main():
                               '(default: %(default)s)'))
 
     parser.add_argument('-r', '--reboot', type=int, default=0,
-                        help=('start pinger last ip address'
+                        help=('send reboot icmp messege'
+                              '(default: %(default)s)'))
+    parser.add_argument('-t', '--test', type=int, default=0,
+                        help=('while ping'
                               '(default: %(default)s)'))
 
     parser.add_argument('destination')
@@ -585,7 +588,10 @@ def main():
                 pinged.append(host) 
         for i in pinged:
             print(i+' ')
-
+    if args.test:
+        for i in range(10000):
+            ping(args.destination,timeout=100,count=4,packet_size=100)
+            time.sleep(0.200)
 
 if __name__ == '__main__':
     main()
