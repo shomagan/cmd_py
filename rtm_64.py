@@ -48,30 +48,14 @@ ValType = {KodBit: 1,
 
 
 def main():
-    ser = serial.Serial("COM7")  # open first serial port
-    ser.baudrate = 115200
-    print(ser.name)  # check which port was really used
-    try:
-      sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
-        ser.portstr,
-        ser.baudrate,
-        ser.bytesize,
-        ser.parity,
-        ser.stopbits,
-      ))
-    except serial.SerialException as e:
-      sys.stderr.write("could not open port %r: %s\n" % (port, e))
-      sys.exit(1)
-    hello = 'hello'
-    ser.write(serial.to_bytes([4]))
-    TCP_IP = '192.168.1.232'
+    TCP_IP = '172.16.1.8'
     TCP_PORT = 502
     BUFFER_SIZE = 1024
     MESSAGE = "Hello, World!"
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     a = 0
-    thread.start_new_thread(com_list, (ser, a))
-    print('tread is start')
+#    thread.start_new_thread(com_list, (ser, a))
+ #   print('tread is start')
     data = [2, 38,
             0]  # ,81,0,82,0,100,0]#,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b]#,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00,0x0b,0x00]
     data_p = [1, 0,
@@ -138,7 +122,7 @@ class Rtm64(object):
     self.len = 0x11
     self.flag = 0x00
     self.command = [0x46, 0x52]
-    self.address = [[0xA0, 0x8f], [0x03, 0x20], [0x08, 0x20]]
+    self.address = [[0xA0, 0x8f], [0x08, 0x21], [0x28, 0x26]]
     self.value = [0xFE, 0x00, 0x32]
     self.crc = 0x0000
     self.error_cnt = 0

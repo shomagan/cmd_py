@@ -146,8 +146,8 @@ def main():
 #  log = devpy.autolog() # log is a regular stdlib logger object
 #  log.info('Yes')
   try:
-    ser = serial.Serial('COM6')
-    ser.baudrate = 115200;
+    ser = serial.Serial('COM9')
+    ser.baudrate = 9600;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -161,16 +161,16 @@ def main():
     print("could not open port \n")
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb_address = 3
+  mdb_address = 4
   mdb_command = 3
   start_address = 0
-  reg_numm = 16
-  data = [0x000f,0x000f]  #u16 format u16
+  reg_numm = 1
+  data = [0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,0x0008,0x00009,0x0010,0x0011,0x0012,0x0013,0x0014]  #u16 format u16
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
   mdbtcp.append((start_address>>8)&0xff)
   mdbtcp.append(start_address&0xff)
-  if mdb_command == 3 or mdb_command == 4:
+  if mdb_command == 3 or mdb_command == 4 or mdb_command == 1:
     mdbtcp.append((reg_numm>>8)&0xff)
     mdbtcp.append(reg_numm&0xff)
   elif mdb_command == 16:
@@ -193,7 +193,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '172.16.1.5'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -217,20 +217,28 @@ def main():
     elif ord(q)==119:#w
       print(mdbwrite)
       ser.write(mdbwrite)
-    elif ord(q)==110:#n
-      for i in range(1,250):
-        mdb_rtu = mdbtcp[6:]
-        mdb_rtu[0] = i
-        crc = crc16(mdb_rtu,len(mdb_rtu))
-        mdb_rtu.append(crc&0xFF)
-        mdb_rtu.append((crc>>8)&0xFF)
-        print (mdb_rtu)
-        ser.write(mdb_rtu)
-        time.sleep(0.3)
-
     elif ord(q)==114:#r
-      print(cmd_FR_T)
-      ser.write(cmd_FR_T)
+      mdbtcp_s = bytearray(mdbtcp[6:])
+      crc = crc16(mdbtcp_s,len(mdbtcp_s))
+      mdbtcp_s.append(crc&0xFF)
+      mdbtcp_s.append((crc>>8)&0xFF)
+
+      print(mdbtcp_s[0:])
+      s.send(mdbtcp_s)
+      time_start=time.time()
+      s.settimeout(5)
+      data = s.recv(BUFFER_SIZE)
+      time_pr=time.time() - time_start
+      data_s =[]
+      print(data)
+      for i in range(0,len(data)):
+        data_s.append(data[i])
+#      arc_parse(data_s[9:])
+      parse_mdb_response(data_s)
+      print(data_s)
+      print("lenght",len(data_s))
+      print(time_pr,'ms')
+
     elif ord(q)==109:#m
       mdb_rtu = mdbtcp[6:]
       crc = crc16(mdb_rtu,len(mdb_rtu))
@@ -245,7 +253,7 @@ def main():
           ser.timeout = 0.4
           receive_buff = ser.read(59)
           buff_temp = [receive_buff[i] for i in range(3,57)]
-          arc_parse(buff_temp)
+#          arc_parse(buff_temp)
 
       
     elif ord(q)==99:#c
@@ -256,7 +264,7 @@ def main():
       print(mdbtcp[0:])
       s.send(mdbtcp_s)
       time_start=time.time()
-      s.settimeout(7)
+      s.settimeout(5)
       data = s.recv(BUFFER_SIZE)
       time_pr=time.time() - time_start
       data_s =[]
@@ -272,6 +280,8 @@ def main():
     elif ord(q)==108:#l
       while(1):
         try:
+          mdbtcp[8]= ((start_address>>8)&0xff)
+          mdbtcp[9]= (start_address&0xff)
           mdbtcp_s = bytearray(mdbtcp[0:])
           print(mdbtcp[0:])
           s.send(mdbtcp_s)
@@ -313,7 +323,7 @@ def main():
             error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
             erro_log.close()
             s.connect((TCP_IP, TCP_PORT))
-        time.sleep(0.05)
+        time.sleep(0.2)
         if(msvcrt.kbhit()):
           q = msvcrt.getch()
           print(ord(q))

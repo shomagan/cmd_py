@@ -117,7 +117,7 @@ def main():
   cmd_s = [0 for x in range(100)]
   count = 0
 
-  TCP_IP = '172.24.130.94'
+  TCP_IP = '172.16.1.95'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
