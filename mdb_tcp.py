@@ -35,6 +35,17 @@ except ImportError:
     comports = None
 import msvcrt
 #def hextoascii():
+def UdpList(sock):
+  while(1):
+    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    print (addr)
+    print ((data),len(data))
+    data_s = []
+    for i in range(0,len(data)):
+      data_s.append(data[i])
+    print(data_s)
+
+
 def big_to_little(packet):
   for i in range(len(packet)//2):
     temp = packet[2*i]
@@ -146,8 +157,8 @@ def main():
 #  log = devpy.autolog() # log is a regular stdlib logger object
 #  log.info('Yes')
   try:
-    ser = serial.Serial('COM9')
-    ser.baudrate = 9600;
+    ser = serial.Serial('COM2')
+    ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
       ser.portstr,
@@ -161,11 +172,21 @@ def main():
     print("could not open port \n")
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
-  mdb_address = 4
-  mdb_command = 3
-  start_address = 0
+  mdb_address = 3
+  mdb_command = 16
+  start_address = 13079
   reg_numm = 1
-  data = [0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,0x0008,0x00009,0x0010,0x0011,0x0012,0x0013,0x0014]  #u16 format u16
+  #data = [0x15,0xe2]  #float 50.5 to format u32
+  value = struct.unpack('<I',struct.pack('<f',57.5))
+  data = [(value[0]>>8)&0xff,value[0]&0xff,(value[0]>>24)&0xff,(value[0]>>16)&0xff]  #u16 format u16
+  value = struct.unpack('<I',struct.pack('<f',58.5))
+  data.append((value[0]>>8)&0xff)
+  data.append((value[0])&0xff)
+  data.append((value[0]>>24)&0xff)
+  data.append((value[0]>>16)&0xff)
+  
+#  data = [0,0,66,74]  #float 50.5 to format u32
+
   mdbtcp.append(mdb_address)
   mdbtcp.append(mdb_command)
   mdbtcp.append((start_address>>8)&0xff)
@@ -174,18 +195,17 @@ def main():
     mdbtcp.append((reg_numm>>8)&0xff)
     mdbtcp.append(reg_numm&0xff)
   elif mdb_command == 16:
-    reg_numm = len(data)&0xffff
-    reg_numm_bytes = reg_numm*2
+    reg_numm_bytes = len(data)&0xffff
+    reg_numm = reg_numm_bytes>>1
     mdbtcp.append((reg_numm>>8)&0xff)
     mdbtcp.append(reg_numm&0xff)
     mdbtcp.append(reg_numm_bytes&0xff)
-    for i in range(reg_numm):
-      mdbtcp.append((data[i]>>8)&0xff)
+    for i in range(reg_numm_bytes):
       mdbtcp.append(data[i]&0xff)
 
   elif mdb_command == 6:
-    mdbtcp.append((data[0]>>8)&0xff)
     mdbtcp.append(data[0]&0xff)
+    mdbtcp.append(data[1]&0xff)
   else:
     print('command not responde')
   print(mdbtcp)
@@ -193,7 +213,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '172.16.1.5'
+  TCP_IP = '192.168.1.232'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -207,6 +227,15 @@ def main():
          'm - modbus RTU send over uart(open auto)\n')  
   arc_parse = 0
   itt=0
+  UDP_IP = '192.168.1.232'
+  UDP_PORT_CLIENT = 7
+  UDP_PORT_SERVER = 7
+  sock = socket.socket(socket.AF_INET, # Internet
+                       socket.SOCK_DGRAM) # UDP
+  sock.bind(("", UDP_PORT_CLIENT))
+
+  thread.start_new_thread(UdpList, (sock,))
+
   while 1:
 #    if msvcrt.kbhit():
     q = msvcrt.getch()
@@ -254,7 +283,15 @@ def main():
           receive_buff = ser.read(59)
           buff_temp = [receive_buff[i] for i in range(3,57)]
 #          arc_parse(buff_temp)
+    elif ord(q)==117:#u
 
+      mdb_rtu = mdbtcp[6:]
+      crc = crc16(mdb_rtu,len(mdb_rtu))
+      mdb_rtu.append(crc&0xFF)
+      mdb_rtu.append((crc>>8)&0xFF)
+      print (mdb_rtu)
+      Packet_str = bytearray(mdb_rtu[0:])
+      sock.sendto(Packet_str,(UDP_IP, UDP_PORT_SERVER))
       
     elif ord(q)==99:#c
       s.connect((TCP_IP, TCP_PORT))

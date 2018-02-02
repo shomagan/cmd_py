@@ -219,7 +219,7 @@ else:
 
 NUM_PACKETS = 4
 PACKET_SIZE = 22
-WAIT_TIMEOUT = 200
+WAIT_TIMEOUT = 100
 
 #=============================================================================#
 # ICMP parameters
@@ -228,7 +228,7 @@ ICMP_ECHOREPLY  =    0 # Echo reply (per RFC792)
 ICMP_ECHO       =    8 # Echo request (per RFC792)
 ICMP_MAX_RECV   = 2048 # Max size of incoming buffer
 
-MAX_SLEEP = 200
+MAX_SLEEP = 100
 
 class MyStats:
     thisIP   = "0.0.0.0"
@@ -361,6 +361,7 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, packet_size, reboot=0):
     else:
         if reboot:
             data = bytearray("rebootmessageintekicmp".encode("utf-8"))
+            print (data)
         else:
             for i in range(startVal, startVal + (packet_size-8)):
                 padBytes += [(i & 0xff)]  # Keep chars in the 0-255 range
@@ -578,7 +579,7 @@ def main():
     if args.quiet:
         ping = quiet_ping
     if args.reboot:
-        ping(args.destination, timeout=args.timeout, count=2,
+        ping(args.destination, timeout=800, count=2,
              packet_size=args.packet_size,reboot=1)
     if args.pinger:
         pinged=[]
