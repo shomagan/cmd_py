@@ -157,7 +157,7 @@ def main():
 #  log = devpy.autolog() # log is a regular stdlib logger object
 #  log.info('Yes')
   try:
-    ser = serial.Serial('COM2')
+    ser = serial.Serial('COM7')
     ser.baudrate = 115200;
     print (ser.name)          # check which port was really used
     sys.stderr.write('--- Miniterm on %s: %d,%s,%s,%s ---\n' % (
@@ -173,9 +173,9 @@ def main():
   hello = 'hello'
   mdbtcp = [0x00,0x03,0x00,0x00,0x00,0x04]#,6,3,0x00,0x3,0x00,1]#,0x04,0x04,0x21,0x05,0x00]
   mdb_address = 3
-  mdb_command = 16
-  start_address = 13079
-  reg_numm = 1
+  mdb_command = 3
+  start_address = 0
+  reg_numm = 8
   #data = [0x15,0xe2]  #float 50.5 to format u32
   value = struct.unpack('<I',struct.pack('<f',57.5))
   data = [(value[0]>>8)&0xff,value[0]&0xff,(value[0]>>24)&0xff,(value[0]>>16)&0xff]  #u16 format u16
@@ -213,7 +213,7 @@ def main():
   count = 0
 #  print (RTM64ChkSUM(cmd_fs , 13))
 #  print (0x02f6)
-  TCP_IP = '192.168.1.232'
+  TCP_IP = '172.16.1.3'
   TCP_PORT = 502
   BUFFER_SIZE = 1024
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -230,11 +230,11 @@ def main():
   UDP_IP = '192.168.1.232'
   UDP_PORT_CLIENT = 7
   UDP_PORT_SERVER = 7
-  sock = socket.socket(socket.AF_INET, # Internet
-                       socket.SOCK_DGRAM) # UDP
-  sock.bind(("", UDP_PORT_CLIENT))
+#  sock = socket.socket(socket.AF_INET, # Internet
+#                       socket.SOCK_DGRAM) # UDP
+#  sock.bind(("", UDP_PORT_CLIENT))
 
-  thread.start_new_thread(UdpList, (sock,))
+#  thread.start_new_thread(UdpList, (sock,))
 
   while 1:
 #    if msvcrt.kbhit():

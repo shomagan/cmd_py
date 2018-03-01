@@ -62,7 +62,7 @@ def find_type(file_fb_name):
 
 
 def main():
-     find_type("test.c")
+     find_type("test-.c")
 if __name__ == "__main__":
     'test reqursive find'
     main()

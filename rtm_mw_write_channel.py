@@ -16,7 +16,7 @@ def ComList(ser,a):
 
 def main():
   try:
-    ser = serial.Serial('COM4')  # open first serial port
+    ser = serial.Serial('COM7')  # open first serial port
     ser.baudrate =115200
     print (ser.name)          # check which port was really used
 
@@ -41,8 +41,8 @@ def main():
   BUFFER_SIZE = 1024
   MESSAGE = "Hello, World!"
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  data_write = [45,0,22,0,26,0]
-  data_read = [2,6,0,45,0]
+  data_write = [31,0,172,16,1,1,32,0,255,255,255,0]
+  data_read = [2,6,0,31,0,32,0]
 
   packet_read = RTM_MW(data_read,RetranNum = retran_number,DestAdd1 = address)
   packet_read.Chan = 0x01
@@ -56,8 +56,7 @@ def main():
     elif ord(q)==119:#w
       body_write = [3,6,0,packet_read.crc_sp[0],packet_read.crc_sp[1]]+data_write
       packet_write = RTM_MW(body_write,RetranNum = retran_number,DestAdd1 = address)
-
-      packet_write.SendPacket(s)
+      packet_write.SendPacket(ser)
 #      del(Packet_w)
     elif ord(q)==97:#a
       packet_read.SendPacket(ser)
@@ -163,6 +162,7 @@ class RTM_MW(object):
         error_log.close()
     else:
       print(Packet)
+      self.crc_sp = [64,73]
       s.write(Packet)
 
   def ChekPacket(self,data):
