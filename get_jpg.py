@@ -3,7 +3,7 @@ import shutil
 url = 'http://172.16.2.33/jpg/image.jpg'
 user, password = '1', '1'
 resp = requests.get(url, auth=(user, password))
-counter=383
+counter=0
 while(1):
     resp = requests.get(url, auth=(user, password), stream=True)
     if resp.status_code == 200:

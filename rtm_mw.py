@@ -285,7 +285,7 @@ class RTM_MW(object):
     if self.s:
       self.s.close()
     print("dlt packet")
-  def SendPacket(self,ser,type):
+  def SendPacket(self,s):
     BUFFER_SIZE = 1024
     Packet = [self.Kod]
     Packet.append(self.Len[0])
@@ -327,15 +327,15 @@ class RTM_MW(object):
     Packet.append(CRC&0xFF)
     Packet.append((CRC>>8)&0xFF)
     data_s =[]
-    if (type == 1):
+    if type(s) is socket.socket:
       print(Packet)
       print(len(Packet))
       Packet_str = bytearray(Packet[0:])
       time_start=time.time()
-      self.s.send(Packet_str)
-      self.s.settimeout(4)
+      s.send(Packet_str)
+      s.settimeout(4)
       try:
-        data = self.s.recv(BUFFER_SIZE)
+        data = s.recv(BUFFER_SIZE)
         self.OkReceptionCnt+=1
         time_pr=time.time() - time_start
         for i in range(0,len(data)):
@@ -361,12 +361,12 @@ class RTM_MW(object):
         error_log = open('error_log_rv.txt','a')
         error_log.write ("TCP_RecvError"+time.asctime()+str(self.Errorcnt)+'\n')
         error_log.close()
-    elif(type == 0):
+    else:
       print(Packet)
       error_log = open('error_log_rv.txt','a')
       error_log.write (str(Packet))
       error_log.close()
-      ser.write(Packet)
+      s.write(Packet)
     return (data_s)
   def HandPacket(self,DataVal):
     if DataVal:
@@ -445,6 +445,7 @@ class RTM_MW(object):
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
     try:
       self.s.connect((TCP_IP, TCP_PORT))
+      return self.s
     except TimeoutError:
       print (time.asctime())
       print ("mega12 not TCP connected ")
@@ -458,6 +459,7 @@ class RTM_MW(object):
       error_log.write ("mega12 connect aborted TCP"+time.asctime()+'\n')
       error_log.close()
       self.s.connect((TCP_IP, TCP_PORT))
+    
   def close_tcp_connect(self):
       self.s.close()
 
@@ -525,11 +527,11 @@ class RTM_MW(object):
   def Send(self):
     self.Data[0] = 1
     self.Instruction  = 1
-    self.SendPacket(self.s,1);
+    self.SendPacket(self.s);
     time.sleep(0.05)
     self.Data[0] = 2
     self.Instruction  = 2
-    self.SendPacket(self.s,1);
+    self.SendPacket(self.s);
     
 
 def RTM64CRC16(pbuffer , Len):
