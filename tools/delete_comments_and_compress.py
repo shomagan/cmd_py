@@ -20,9 +20,9 @@ def remove_empty_lines(text):
     return re.sub(pattern, "", text)
 
 def compress_if_else_statement(text):
-    pattern_if = re.compile(r'if\s*(.+)\n\s*{',re.MULTILINE)
+    pattern_if = re.compile(r'(\W)if\s*(.+)\n\s*{',re.MULTILINE)
     pattern_else = re.compile(r'}\s*\n\s*else\s*\n\s*{',re.MULTILINE)
-    first_step = re.sub(pattern_if, "if\g<1>{", text)
+    first_step = re.sub(pattern_if, "\g<1>if\g<2>{", text)
     second_step = re.sub(pattern_else, "}else{", first_step)
     return second_step
 
